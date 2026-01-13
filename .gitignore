@@ -7,4 +7,5 @@ themes/classic/views/
 web/stock/
 web/fontawesome-free-7.1.0/
 web/assets/
-/web/config/db.php
+web/config/db.php
+runtime/

@@ -64,6 +64,16 @@ class UsersController extends GeneralController
         $compact = compact(['all']);
         return $this->render('showall',$compact);
     }
+    public function actionAdd()
+    {
+        $users = new UsersAll();
+
+        debug('im here',1,1);
+
+        $all = $users->getAllUsers();
+        $compact = compact(['all']);
+        return $this->render('add',$compact);
+    }
 
     public function actionEdit( string $id )
     {
