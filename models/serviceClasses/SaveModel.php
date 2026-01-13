@@ -1,0 +1,503 @@
+<?php
+namespace app\models\serviceClasses;
+
+use app\models\serviceTables\{Stock,Service_data,Gems,Materials,Images,D3_files};
+use app\models\{UploadImages,Common,Files,Validator,User};
+
+use Yii;
+use yii\base\Model;
+use yii\web\UploadedFile;
+
+/**
+ * Обрабатывает данные из формы сохранения модели
+ */
+class SaveModel extends Common
+{
+
+    public int $modelID;
+
+    public function __construct( int $modelID = 0 )
+    {
+        if ( $modelID < 0 || $modelID > PHP_INT_MAX )
+            throw new \Exception("Wrong id!", 510);
+
+        if ($modelID) $this->modelID = $modelID;
+        parent::__construct();
+    }
+
+    public function addNewModel():bool
+    {
+        $session = Yii::$app->session;
+        $date = date("Y-m-d");
+
+        $stock = new Stock();
+        $stock->number_3d = '0001';
+        $stock->modeller3d = '0001';
+        $stock->client = '';
+        $stock->print_cost = '';
+        $stock->model_cost = '';
+        $stock->size_range = '';
+        $stock->model_weight = '';
+        $stock->description = '';
+        $stock->hashtags = '';
+        $stock->date = $date;
+        $stock->create_date = $date;
+        $stock->creator_id = User::getID();
+        $res = $stock->save(false);
+        $this->modelID = $stock->getPrimaryKey();
+
+        return $res;
+    }
+
+    public function editInputs( int $id, array $post ):bool
+    {
+        $request = Yii::$app->request;
+        $session = Yii::$app->session;
+
+        $name = $post['name'];
+        $value = trim(strip_tags($post['value']));
+        if (empty($value)) return false;
+        
+        $stock  = Stock::find()->select(['id',$name])->where(['id' => $id])->one();
+
+        $stock->$name = $value;
+        return $stock->save(false);
+    }
+
+    public function hashtagByClick( int $id, array $post ) : bool
+    {
+        $name = $post['name'];
+        $value = trim(strip_tags($post['value']));
+        if (empty($value)) return false;
+        
+        $stock  = Stock::find()->select(['id',$name])->where(['id' => $id])->one();
+
+        $hashtags = $stock->$name;
+        $stock->$name = $hashtags.'#'.$value;  
+
+        return $stock->save(false);
+    }
+
+    public function hashtagByText( int $id, array $post ) : bool
+    {
+        $name = $post['name'];
+        $value = trim(strip_tags($post['value']));
+
+        if (empty($value)) return false;
+
+        $knownHashtag = Service_data::find()->where(['tab'=>'hashtag'])->asArray()->all();
+
+        $newFlag = false;
+
+        foreach( $knownHashtag as $knownHashtag )
+        {
+            if ( $knownHashtag['name'] === $value ) {
+                $newFlag = true;
+                break;
+            };   
+        } 
+
+        if (!$newFlag) {
+            $sd = new Service_data();
+            $sd->name = $value;
+            $sd->tab = 'hashtag';
+            $sd->save(false);
+        }
+
+        $stock  = Stock::find()->select(['id',$name])->where(['id' => $id])->one();
+
+        $hashtags = $stock->$name;
+        $stock->$name = $hashtags.'#'.$value;  
+
+        return $stock->save(false);
+    }
+
+    public function deleteHashtags( int $id, array $post ) : bool
+    {
+        $name = $post['name'];
+        $value = $post['value'];
+        $value = trim(strip_tags($post['value']));
+        if (empty($value)) return false;
+
+        $stock  = Stock::find()->select(['id',$name])->where(['id' => $id])->one();
+        $hashtags = explode('#',$stock->$name);
+        
+        foreach( $hashtags as $key => $hashtag )
+        {
+            if ( $hashtag === '' ) unset($hashtags[$key]);   
+            if ( $hashtag === $value ) unset($hashtags[$key]);
+        } 
+
+        $newHashtags = '';
+        foreach( $hashtags as $hashtag ) 
+            $newHashtags .= '#'.$hashtag;
+        $stock->hashtags = $newHashtags;  
+        
+        return $stock->save(false);
+    }
+
+    public function editLinkedRow( array $post ) : int
+    {
+        //debug($post,1,1);
+
+        $table = null;
+        $rowID = $post['id'];
+        $name = $post['name'];
+        $tableName = $post['tableName'];
+
+        $value = trim(strip_tags($post['value']));
+        if (empty($value)) return false;
+
+        switch ( $tableName )
+        {
+            case 'tableMats':
+                $table = Materials::find()->select(['id',$name])->where(['id' => $rowID])->one();
+            break;
+
+            case 'tableGems':
+                $table = Gems::find()->select(['id',$name])->where(['id' => $rowID])->one();
+            break;
+        }
+
+        if ($table) {
+            $table->$name = $value;
+            return $table->save(false);
+        }
+
+        return false;
+    }
+
+    public function addNewLinkedRow( $tableName ) : int
+    {
+        //debug($tableName,1,1);
+
+        $table = null;
+
+        switch ( $tableName )
+        {
+            case 'materials':
+                $table = new Materials();
+                $table->part = '';
+                $table->metal = '';
+                $table->probe = '';
+                $table->color = '';
+            break;
+
+            case 'gems':
+                $table = new Gems();
+                $table->name = '';
+                $table->cut = '';
+                $table->value = 1;
+                $table->size = '';
+                $table->color = '';
+            break;
+        }
+
+        if ( $table ) {
+            $table->pos_id = $this->modelID;
+            $table->save(false);
+            return $table->getPrimaryKey();
+        }
+
+        return false;
+    }
+
+    public function duplicateRowLinked( array $post )
+    {
+        //debug($post,1,1);
+        $table = null;
+        $duplRow = [];
+
+        $rowID = $post['rowID'];
+        $pos_id = $post['modelID'];
+        $tableName = $post['tableName'];
+
+        switch ( $tableName )
+        {
+            case 'tableMats':
+                $duplRow = Materials::find()
+                ->select(['part','metal','probe','color','pos_id'])
+                ->where(['id' => $rowID])
+                ->andWhere(['pos_id' => $pos_id])
+                ->asArray()
+                ->limit(1)
+                ->one();
+                $table = new Materials();
+                $table->part = $duplRow['part'];
+                $table->metal = $duplRow['metal'];
+                $table->probe = $duplRow['probe'];
+                $table->color = $duplRow['color'];
+                $table->pos_id = $duplRow['pos_id'];
+            break;
+            case 'tableGems':
+                $duplRow = Gems::find()
+                ->select(['name','cut','value','size','color','pos_id'])
+                ->where(['id' => $rowID])
+                ->andWhere(['pos_id' => $pos_id])
+                ->asArray()
+                ->limit(1)
+                ->one();
+                $table = new Gems();
+                $table->name = $duplRow['name'];
+                $table->cut = $duplRow['cut'];
+                $table->value = $duplRow['value'];
+                $table->size = $duplRow['size'];
+                $table->color = $duplRow['color'];
+                $table->pos_id = $duplRow['pos_id'];
+            break;
+        }
+
+        if ( $table )
+        {
+            $table->save(false);
+            return $table->getPrimaryKey();
+        }
+
+        return false;
+    }
+
+    public function dellRowLinked( array $post )
+    {
+        //debug($post,1,1);
+        $table = null;
+        $rowID = (int)$post['rowID'];
+        $pos_id = (int)$post['modelID'];
+        $tableName = $post['tableName'];
+
+        switch ( $tableName )
+        {
+            case 'tableMats':
+                $table = Materials::find()
+                ->where(['id' => $rowID])
+                ->andWhere(['pos_id' => $pos_id])
+                ->limit(1)
+                ->one();
+            break;
+            case 'tableGems':
+                $table = Gems::find()
+                ->where(['id' => $rowID])
+                ->andWhere(['pos_id' => $pos_id])
+                ->limit(1)
+                ->one();
+            break;
+        }
+
+        if ( $table )
+            return $table->delete();
+
+        return false;
+    }
+
+    public function setMainImg(int $imgRowID) : bool
+    {
+        $mID = $this->modelID;
+    
+        $imageToUnset = Images::find()->where(['status'=>1])->andWhere(['pos_id' => $mID])->one();
+        if ( $imageToUnset ) 
+        {
+            $imageToUnset->status = 0;
+            $imageToUnset->save(false);
+        }
+
+        //$imageToSet = Images::find()->where(['id'=>$imgRowID])->one();
+        //$imageToSet->status = 1;
+        //return $imageToSet->save(false);
+        
+        $imageToSet = Images::findOne($imgRowID);
+        return $imageToSet->updateCounters(['status' => 1]);
+    }
+
+    //добавляем новые картинки, и вносим данные в Images
+    public function addNewFile( $modelID ) : array
+    {
+        $files = Files::instance();
+        //debug( $files->get(),1,1);
+
+        if ( $files->has('UploadImage') )
+            return $this->uploadImageFile($files);
+        if ( $files->has('Upload3DFile') )
+            return $this->uploadDataFile($files);
+    }
+
+    protected function uploadImageFile( Files $files ) : array
+    {
+        $uplImg = $files->get('UploadImage');
+        $newImgName = '';
+        $images = new Images();
+
+        $images->name = $newImgName = $this->modelID."-".randomStringChars( 20, 'en', 'symbols').'.'.$files->getExtension($uplImg['name']);
+        $images->status = 0;
+        $images->size = $uplImg['size'];
+        $images->pos_id = $this->modelID;
+
+        $images->save(false);
+        $imgID = $images->getPrimaryKey();
+
+        $destPath = _stockDIR_ . $this->modelID .'/images/'; 
+
+        if ( !file_exists($destPath) ) 
+            mkdir($destPath, 0777, true);
+        $res = false;
+        $res = $files->upload($uplImg['tmp_name'], $destPath.$newImgName, ['png','gif','jpg','jpeg','webp']);
+
+        return ['id'=>$imgID,'upload'=>$res,'type'=>'picture'];
+    }
+
+    protected function uploadDataFile( Files $files ) : array
+    {
+        $uplFile = $files->get('Upload3DFile');
+        $fileExtension = $files->getExtension($uplFile['name']);
+        //$newFileName = $this->modelID."_".randomStringChars( 10, 'en', 'symbols').'.'.$fileExtension;
+        $vl = new Validator();
+        $newFileName = $vl->validateFileName( $files->getFileName( $uplFile['name'] ) );
+        $newFileName = $newFileName ."_".randomStringChars( 7, 'en', 'symbols').'.'.$fileExtension;
+      
+        $destPath = _stockDIR_ . $this->modelID .'/3dfiles/'; 
+        if ( !file_exists($destPath) ) 
+            mkdir($destPath, 0777, true);
+        $uploadRes = false;
+        $uploadRes = $files->upload($uplFile['tmp_name'], $destPath.$newFileName, ['3dm','stl','mgx','ai','dxf','obj']);
+
+        $rowID = 0;
+        if ( $uploadRes )
+        {
+            $newFileNameZip = $this->modelID."_zip_".randomStringChars( 10, 'en', 'symbols');
+            $zipArch = $this->openZip( $destPath , $newFileNameZip );
+            //debug($zipArch,'$zipArch');
+            //debug($destPath,'$destPath',1);
+            $zipArch['inst']->addFile( $destPath.$newFileName, $newFileName );
+            $this->closeZip($zipArch['inst']);
+            $files->delete($destPath.$newFileName);
+
+            $zipFileSize = $files->getFileSize($destPath.$zipArch['zipName']);
+
+            $d3_files = new D3_files();
+            $d3_files->name    = $newFileName;
+            $d3_files->zipname = $zipArch['zipName'];
+            $d3_files->type    = $fileExtension;
+            $d3_files->size    = $uplFile['size'];
+            $d3_files->zipsize = $zipFileSize;
+            $d3_files->pos_id  = $this->modelID;
+
+            $d3_files->save(false);
+            $rowID = $d3_files->getPrimaryKey();
+        }
+
+        return ['id'=>$rowID,'upload'=>$uploadRes,'type'=>'data'];
+    }
+
+    public function dellFile( array $post ) : array
+    {
+        $res = ['file'=>false,'row'=>false,'type'=>'']; 
+
+        switch( $post['fileType'] )
+        {
+            case "picture":
+                $res['type'] = "picture";
+                $rowID = $post['rowID'];
+                $images = Images::find()->where(['id'=>$rowID])->limit(1)->one();
+
+                $destPath = _stockDIR_ . $this->modelID .'/images/' . $images->name; 
+
+                $files = Files::instance();
+                
+                if ( $res['file'] = $files->delete($destPath) )
+                $res['row'] = (bool)$images->delete();
+            break;
+            case "data":
+                $res['type'] = "data";
+                $rowID = $post['rowID'];
+                $d3files = D3_files::find()->where(['id'=>$rowID])->limit(1)->one();
+
+                $destPath = _stockDIR_ . $this->modelID .'/3dfiles/' . $d3files->zipname; 
+
+                $files = Files::instance();
+                
+                if ( $res['file'] = $files->delete($destPath) )
+                $res['row'] = (bool)$d3files->delete();
+            break;
+        }
+        
+        return $res;
+    }
+
+    public function openZip( string $zip_path, string $zip_name ) : array
+    {
+        $zip = new \ZipArchive();
+        //$zip_name = $this->number_3d."-".$this->model_typeEn.".zip";
+        $zip_name = $zip_name . ".zip";
+        $zip->open($zip_path.$zip_name, \ZIPARCHIVE::CREATE);
+
+        return ['inst'=>$zip, 'zipName' => $zip_name];
+    }
+    public function closeZip( \ZipArchive $zip ) : bool
+    {
+        if ( method_exists($zip,'close') )
+        {
+            $zip->close();
+            return true;
+        }
+        return false;
+    }
+
+    public function publishModel()
+    {
+        //debug(__METHOD__, '__METHOD__::name');
+        //debug($this->modelID, 'modelIDID', 1);
+
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 1;
+
+        if ( $stock->save(false) )
+            return 'publish';
+        return '';
+    }
+
+    public function excludeModel()
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 0;
+
+        if ( $stock->save(false) )
+            return 'exclude';
+        return '';
+    }
+    public function deleteModel()
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 2;
+
+        if ( $stock->save(false) )
+            return 'delete';
+        return '';
+    }
+
+    public function accessControl() : bool
+    {
+        if ( User::hasPermission('edit_all_models') ) 
+            return true;
+
+        if ( User::hasPermission('edit_own_models') ) 
+        {
+            $stock = Stock::find()
+                ->select(['id','creator_id','model_status'])
+                ->where(['id'=>$this->modelID])
+                ->andWhere([ 'creator_id' => User::getID() ]);
+
+           if ( $stock->exists() ) return true;
+        }
+        return false;
+    }
+
+    public function isEditable() : bool
+    {
+        $stock = Stock::find()
+            ->select(['id','model_status'])
+            ->where(['id'=>$this->modelID])
+            ->andWhere(['model_status'=>2]);
+
+        if ( $stock->exists() ) return false;
+
+        return true;
+    }
+}
