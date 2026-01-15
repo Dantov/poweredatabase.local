@@ -81,40 +81,55 @@ class UsersAll extends Common
         $v = new Validator();
         $udata = [];
         $udata['firstName'] = $v->validateString($post['firstName']);
-        $udata['lastName'] = $v->validateString($post['lastName']);
+        $udata['lastName']  = $v->validateString($post['lastName']);
         $udata['thirdName'] = $v->validateString($post['thridName']);
-        $udata['logname'] = $v->validateString($post['logname']);
-        $udata['email'] = $v->validateEmail($post['email']);
+        $udata['logname']   = $v->validateString($post['logname']);
+        $udata['email']     = $v->validateEmail($post['email']);
+
+        $isAllValid = true;
+        foreach( $udata as $field => $value )
+        {
+            if ( !$value ) {
+                $session->setFlash($field, 'Заполнено не верено!');
+                $isAllValid = false;
+            };
+        }
+
+        if ( !$isAllValid ) return false;
 
         $usernote = $v->sanitarizePost('usernote');
-
         $password = password_hash($post['bypass'], PASSWORD_DEFAULT);
-
-        //Role
-        switch ( (int)$post['role'] )
-        {
-            case 2:
-            $role = "3D Modeller";
-            break;
-            case 3:
-            break;
-            case 4:
-            break;
-        }
 
         $thisuser->name = $post['firstName']; 
         $thisuser->lastname = $post['lastName']; 
         $thisuser->thirdname = $post['thridName']; 
+        $thisuser->fio = $post['firstName'] . " " . $post['lastName']; 
+        $thisuser->fullFio = $post['firstName']. " " .$post['thridName']. " " .$post['lastName']; 
         $thisuser->email = $post['email']; 
         $thisuser->about = $post['usernote'];
-        $thisuser->role = (int)$post['role'];
+        $thisuser->role = $this->applyRoles($post['role']);
 
         $thisuser->login = $post['logname']; 
         $thisuser->pass = $password; 
 
         $thisuser->save(false);
 
-        return "right was applied";
+        return $res;
+    }
+    
+    protected function applyRoles( array $roles ) : string
+    {
+        $allRoles = Service_data::find()->where(['tab'=>'role'])->asArray()->all();
+
+        $validRoles = [];
+        foreach( $roles as $roleID )
+        {
+            foreach( $allRoles as $singRole )
+                if ( (int)$singRole['id'] === (int)$roleID ) 
+                    $validRoles[] = $singRole['id'];
+        }
+        
+        return json_encode($validRoles);
     }
 
     public function applyRight( array $post ) : string //bool

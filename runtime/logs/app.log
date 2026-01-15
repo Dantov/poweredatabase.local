@@ -44670,3 +44670,199 @@ $_SERVER = [
     'argv' => []
     'argc' => 0
 ]
+2026-01-15 23:20:57 [127.0.0.1][-][5713d2b9c605cfd7162cb46abeccf593][error][yii\web\HttpException:404] yii\base\InvalidRouteException: Unable to resolve the request "favicon.ico". in C:\OSPanel\home\newpoweredb.local\public\vendor\yiisoft\yii2\base\Module.php:561
+Stack trace:
+#0 C:\OSPanel\home\newpoweredb.local\public\vendor\yiisoft\yii2\web\Application.php(103): yii\base\Module->runAction('favicon.ico', Array)
+#1 C:\OSPanel\home\newpoweredb.local\public\vendor\yiisoft\yii2\base\Application.php(384): yii\web\Application->handleRequest(Object(yii\web\Request))
+#2 C:\OSPanel\home\newpoweredb.local\public\web\index.php(24): yii\base\Application->run()
+#3 {main}
+
+Next yii\web\NotFoundHttpException: Page not found. in C:\OSPanel\home\newpoweredb.local\public\vendor\yiisoft\yii2\web\Application.php:115
+Stack trace:
+#0 C:\OSPanel\home\newpoweredb.local\public\vendor\yiisoft\yii2\base\Application.php(384): yii\web\Application->handleRequest(Object(yii\web\Request))
+#1 C:\OSPanel\home\newpoweredb.local\public\web\index.php(24): yii\base\Application->run()
+#2 {main}
+2026-01-15 23:20:57 [127.0.0.1][-][5713d2b9c605cfd7162cb46abeccf593][info][application] $_GET = []
+
+$_POST = []
+
+$_FILES = []
+
+$_COOKIE = [
+    'PHPSESSID' => '5713d2b9c605cfd7162cb46abeccf593'
+    '_csrf' => 'dba389a1d7d3d6d4edb6c439b6e233ff87dede427457b721fd86b51fda4d8809a:2:{i:0;s:5:\"_csrf\";i:1;s:32:\"IuVZTJUSG9v_18jnsXCfigD9MTlK_XkT\";}'
+]
+
+$_SESSION = [
+    '__flash' => []
+    'sitepage' => 'main'
+    'access' => 1
+    'user' => [
+        'id' => 64
+        'fio' => 'Vadym Dantov'
+        'fullFio' => 'Vadym Dantov BVA'
+        'access' => 0
+    ]
+    'positionsCount' => 27
+    'SelectByClient' => 'Все'
+    'searchFor' => ''
+    'selectByHashtag' => ''
+    'selectFromDate' => ''
+    'selectToDate' => ''
+    'tilesControlSize' => '12'
+]
+
+$_SERVER = [
+    'ALLUSERSPROFILE' => 'C:\\ProgramData'
+    'APPDATA' => 'C:\\Users\\User\\AppData\\Roaming'
+    'COMMONPROGRAMFILES' => 'C:\\Program Files\\Common Files'
+    'COMMONPROGRAMFILES(X86)' => 'C:\\Program Files (x86)\\Common Files'
+    'COMMONPROGRAMW6432' => 'C:\\Program Files\\Common Files'
+    'COMPOSER_ALLOW_SUPERUSER' => '1'
+    'COMPOSER_CACHE_DIR' => 'C:\\OSPanel\\data\\PHP-8.4\\default\\composer\\cache'
+    'COMPOSER_CAFILE' => 'C:\\OSPanel\\data\\ssl\\cacert.pem'
+    'COMPOSER_DISABLE_XDEBUG_WARN' => '0'
+    'COMPOSER_HOME' => 'C:\\OSPanel\\data\\PHP-8.4\\default\\composer'
+    'COMPOSER_HTACCESS_PROTECT' => '1'
+    'COMPUTERNAME' => 'DESKTOP-5KGPCFO'
+    'COMSPEC' => 'C:\\WINDOWS\\system32\\cmd.exe'
+    'CURL_CA_BUNDLE' => 'C:\\OSPanel\\data\\ssl\\cacert.pem'
+    'DB2_CLI_DRIVER_INSTALL_PATH' => 'C:\\OSPanel\\addons\\DB2-ODBC'
+    'DRIVERDATA' => 'C:\\Windows\\System32\\Drivers\\DriverData'
+    'GS' => 'gswin64.exe'
+    'GS_FONTPATH' => 'C:\\WINDOWS\\Fonts'
+    'GS_LIB' => 'C:\\OSPanel\\addons\\Ghostscript\\lib'
+    'GSC' => 'gswin64c.exe'
+    'HOME' => 'C:\\OSPanel\\user'
+    'HOMEDRIVE' => 'C:'
+    'HOMEPATH' => '\\OSPanel\\user'
+    'IBM_DB_HOME' => 'C:\\OSPanel\\addons\\DB2-ODBC'
+    'LOCALAPPDATA' => 'C:\\Users\\User\\AppData\\Local'
+    'LOGONSERVER' => '\\\\DESKTOP-5KGPCFO'
+    'MAGICK_CODER_FILTER_PATH' => 'C:\\OSPanel\\addons\\ImageMagick-vs17\\filters'
+    'MAGICK_CODER_MODULE_PATH' => 'C:\\OSPanel\\addons\\ImageMagick-vs17\\coders'
+    'MAGICK_CONFIGURE_PATH' => 'C:\\OSPanel\\addons\\ImageMagick-vs17\\config'
+    'MAGICK_ERRORMODE' => '1'
+    'MAGICK_FONT_PATH' => 'C:\\WINDOWS\\Fonts'
+    'MAGICK_HOME' => 'C:\\OSPanel\\addons\\ImageMagick-vs17'
+    'MAGICK_TEMPORARY_PATH' => 'C:\\OSPanel\\temp'
+    'MIBDIRS' => 'C:\\OSPanel\\modules\\PHP-8.4\\extras\\mibs'
+    'NLS_DATE_FORMAT' => 'DD-MON-YYYY HH24:MI:SS'
+    'NLS_LANG' => 'AMERICAN_AMERICA.AL32UTF8'
+    'NLS_NUMERIC_CHARACTERS' => '.,'
+    'NUMBER_OF_PROCESSORS' => '8'
+    'OPENSSL_CONF' => 'C:\\OSPanel\\modules\\PHP-8.4\\extras\\ssl\\openssl.cnf'
+    'OPENSSL_WIN32_UTF8' => '1'
+    'ORACLE_HOME' => 'C:\\OSPanel\\addons\\InstantClient'
+    'OS' => 'Windows_NT'
+    'PATH' => 'C:\\OSPanel\\bin;C:\\OSPanel\\addons\\DB2-ODBC\\bin;C:\\OSPanel\\addons\\DB2-ODBC\\adm;C:\\OSPanel\\addons\\FFMpeg\\bin;C:\\OSPanel\\addons\\Ghostscript\\bin;C:\\OSPanel\\addons\\ImageMagick-vs17;C:\\OSPanel\\addons\\InstantClient;C:\\OSPanel\\addons\\Libwebp\\bin;C:\\OSPanel\\modules\\PHP-8.4;C:\\OSPanel\\data\\PHP-8.4\\default\\composer\\vendor\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0'
+    'PATHEXT' => '.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC'
+    'PHP_FCGI_CHILDREN' => '16'
+    'PHP_FCGI_MAX_REQUESTS' => '1000'
+    'PHPRC' => 'C:\\OSPanel\\modules\\PHP-8.4'
+    'PROCESSOR_ARCHITECTURE' => 'AMD64'
+    'PROCESSOR_IDENTIFIER' => 'Intel64 Family 6 Model 158 Stepping 10, GenuineIntel'
+    'PROCESSOR_LEVEL' => '6'
+    'PROCESSOR_REVISION' => '9e0a'
+    'PROGRAMDATA' => 'C:\\ProgramData'
+    'PROGRAMFILES' => 'C:\\Program Files'
+    'PROGRAMFILES(X86)' => 'C:\\Program Files (x86)'
+    'PROGRAMW6432' => 'C:\\Program Files'
+    'PSMODULEPATH' => 'C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules'
+    'PUBLIC' => 'C:\\Users\\Public'
+    'SESSIONNAME' => 'Console'
+    'SNMP_PERSISTENT_DIR' => 'C:\\OSPanel\\temp\\PHP-8.4\\default\\snmp'
+    'SYSTEMDRIVE' => 'C:'
+    'SYSTEMROOT' => 'C:\\WINDOWS'
+    'TEMP' => 'C:\\OSPanel\\temp\\PHP-8.4\\default'
+    'TMP' => 'C:\\OSPanel\\temp\\PHP-8.4\\default'
+    'TNS_ADMIN' => 'C:\\OSPanel\\addons\\InstantClient\\network\\admin'
+    'USERDOMAIN' => 'DESKTOP-5KGPCFO'
+    'USERDOMAIN_ROAMINGPROFILE' => 'DESKTOP-5KGPCFO'
+    'USERNAME' => 'User'
+    'USERPROFILE' => 'C:\\Users\\User'
+    'WINDIR' => 'C:\\WINDOWS'
+    'PHP_VALUE' => 'error_log=C:/OSPanel/logs/domains/newpoweredb.local_php_error.log'
+    'SCRIPT_NAME' => '/web/index.php'
+    'REQUEST_URI' => '/favicon.ico'
+    'QUERY_STRING' => ''
+    'REQUEST_METHOD' => 'GET'
+    'SERVER_PROTOCOL' => 'HTTP/1.1'
+    'GATEWAY_INTERFACE' => 'CGI/1.1'
+    'REDIRECT_URL' => '/web/favicon.ico'
+    'REMOTE_PORT' => '60275'
+    'SCRIPT_FILENAME' => 'C:/OSPanel/home/newpoweredb.local/public/web/index.php'
+    'SERVER_ADMIN' => '[no address given]'
+    'CONTEXT_DOCUMENT_ROOT' => 'C:/OSPanel/home/newpoweredb.local/public'
+    'CONTEXT_PREFIX' => ''
+    'REQUEST_SCHEME' => 'https'
+    'DOCUMENT_ROOT' => 'C:/OSPanel/home/newpoweredb.local/public'
+    'REMOTE_ADDR' => '127.0.0.1'
+    'SERVER_PORT' => '443'
+    'SERVER_ADDR' => '127.0.1.11'
+    'SERVER_NAME' => 'newpoweredb.local'
+    'SERVER_SOFTWARE' => 'Apache'
+    'SERVER_SIGNATURE' => ''
+    'SystemRoot' => 'C:\\WINDOWS'
+    'HTTP_COOKIE' => 'PHPSESSID=5713d2b9c605cfd7162cb46abeccf593; _csrf=dba389a1d7d3d6d4edb6c439b6e233ff87dede427457b721fd86b51fda4d8809a%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%22IuVZTJUSG9v_18jnsXCfigD9MTlK_XkT%22%3B%7D'
+    'HTTP_ACCEPT_LANGUAGE' => 'ru,en-US;q=0.9,en;q=0.8,uk;q=0.7,sk;q=0.6'
+    'HTTP_ACCEPT_ENCODING' => 'gzip, deflate, br, zstd'
+    'HTTP_REFERER' => 'https://newpoweredb.local/users/add'
+    'HTTP_SEC_FETCH_DEST' => 'image'
+    'HTTP_SEC_FETCH_MODE' => 'no-cors'
+    'HTTP_SEC_FETCH_SITE' => 'same-origin'
+    'HTTP_ACCEPT' => 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+    'HTTP_SEC_CH_UA_MOBILE' => '?0'
+    'HTTP_SEC_CH_UA' => '\"Opera\";v=\"125\", \"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"141\"'
+    'HTTP_USER_AGENT' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 OPR/125.0.0.0'
+    'HTTP_SEC_CH_UA_PLATFORM' => '\"Windows\"'
+    'HTTP_CONNECTION' => 'keep-alive'
+    'HTTP_HOST' => 'newpoweredb.local'
+    'proxy-nokeepalive' => '1'
+    'SSL_SESSION_RESUMED' => 'Resumed'
+    'SSL_SESSION_ID' => '4ef6f61cb69e58c0741bef3684e92a1d5e8271fb03ff4b336ad162d252fdc681'
+    'SSL_SERVER_A_SIG' => 'ecdsa-with-SHA256'
+    'SSL_SERVER_A_KEY' => 'id-ecPublicKey'
+    'SSL_SERVER_I_DN' => 'CN=Open Server Panel,O=Open Server Panel,ST=Local Network,C=EU,emailAddress=root@ospanel.local'
+    'SSL_SERVER_S_DN' => 'CN=newpoweredb.local'
+    'SSL_SERVER_V_END' => 'Dec 28 16:14:26 2035 GMT'
+    'SSL_SERVER_V_START' => 'Dec 30 16:14:26 2025 GMT'
+    'SSL_SERVER_M_SERIAL' => '301D534B5E74FAD3CDD0F848E3B718761D2CE2DE'
+    'SSL_SERVER_M_VERSION' => '3'
+    'SSL_CLIENT_VERIFY' => 'NONE'
+    'SSL_CIPHER_ALGKEYSIZE' => '128'
+    'SSL_CIPHER_USEKEYSIZE' => '128'
+    'SSL_CIPHER_EXPORT' => 'false'
+    'SSL_CIPHER' => 'TLS_AES_128_GCM_SHA256'
+    'SSL_COMPRESS_METHOD' => 'NULL'
+    'SSL_SECURE_RENEG' => 'false'
+    'SSL_PROTOCOL' => 'TLSv1.3'
+    'SSL_VERSION_LIBRARY' => 'OpenSSL/3.5.1'
+    'SSL_VERSION_INTERFACE' => 'mod_ssl/2.4.65'
+    'SSL_SERVER_SAN_DNS_2' => 'alias-example.local'
+    'SSL_SERVER_SAN_DNS_1' => 'www.newpoweredb.local'
+    'SSL_SERVER_SAN_DNS_0' => 'newpoweredb.local'
+    'SSL_SERVER_I_DN_CN' => 'Open Server Panel'
+    'SSL_SERVER_I_DN_O' => 'Open Server Panel'
+    'SSL_SERVER_I_DN_ST' => 'Local Network'
+    'SSL_SERVER_I_DN_C' => 'EU'
+    'SSL_SERVER_I_DN_Email' => 'root@ospanel.local'
+    'SSL_SERVER_S_DN_CN' => 'newpoweredb.local'
+    'SSL_TLS_SNI' => 'newpoweredb.local'
+    'HTTPS' => 'on'
+    'UNIQUE_ID' => 'aWloSQWVqlDPdSRyA-UjoQAAAH8'
+    'REDIRECT_STATUS' => '200'
+    'REDIRECT_SSL_TLS_SNI' => 'newpoweredb.local'
+    'REDIRECT_HTTPS' => 'on'
+    'REDIRECT_UNIQUE_ID' => 'aWloSQWVqlDPdSRyA-UjoQAAAH8'
+    'REDIRECT_REDIRECT_STATUS' => '200'
+    'REDIRECT_REDIRECT_SSL_TLS_SNI' => 'newpoweredb.local'
+    'REDIRECT_REDIRECT_HTTPS' => 'on'
+    'REDIRECT_REDIRECT_UNIQUE_ID' => 'aWloSQWVqlDPdSRyA-UjoQAAAH8'
+    'FCGI_ROLE' => 'RESPONDER'
+    'PHP_SELF' => '/web/index.php'
+    'REQUEST_TIME_FLOAT' => 1768515657.4413
+    'REQUEST_TIME' => 1768515657
+    'argv' => []
+    'argc' => 0
+]

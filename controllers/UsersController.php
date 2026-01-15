@@ -124,7 +124,7 @@ class UsersController extends GeneralController
             //if (!$users->accessControl()) 
             //    throw new Exception("no permission to edit",500);
 
-            if ($users->saveUserData( $post ))
+            if ( $users->saveUserData( $post ) )
             {
                 $struid = Crypt::strEncode($id);
                 return $response->redirect(['/users/edit', 'id' => $struid]); 
