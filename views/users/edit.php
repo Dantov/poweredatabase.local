@@ -35,14 +35,14 @@ let appliedRights = [];
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label for="firstName">Name</label>
-                            <input type="text" class="form-control" id="firstName" placeholder="" value="<?= $single['name'] ?>" required="">
+                            <input type="text" class="form-control" name="firstName" id="firstName" placeholder="" value="<?= $single['name'] ?>" required="">
                             <div class="invalid-feedback">
                                 Valid first name is required.
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="lastName">Last name</label>
-                            <input type="text" class="form-control" id="lastName" placeholder="" value="<?= $single['lastname'] ?>" required="">
+                            <input type="text" class="form-control" name="lastName" id="lastName" placeholder="" value="<?= $single['lastname'] ?>" required="">
                             <div class="invalid-feedback">
                                 Valid last name is required.
                             </div>
@@ -50,7 +50,7 @@ let appliedRights = [];
                         <div class="col-md-4 mb-3">
                             <label for="thirdName">Third name</label>
                             <div class="input-group">
-                                <input type="text" value="<?= $single['thirdname'] ?>" class="form-control" id="thirdName" placeholder="">
+                                <input type="text" value="<?= $single['thirdname'] ?>" name="thridName" class="form-control" id="thirdName" placeholder="">
                                 <div class="invalid-feedback">
                                     Your username is required.
                                 </div>
@@ -62,7 +62,7 @@ let appliedRights = [];
                             <label for="email">Email
                                 <span class="text-muted">(Optional)</span>
                             </label>
-                            <input type="email" class="form-control" id="email" value="<?= $single['email'] ?>" placeholder="you@example.com">
+                            <input type="email" class="form-control" name="email" id="email" value="<?= $single['email'] ?>" placeholder="you@example.com">
                             <div class="invalid-feedback">
                                 Please enter a valid email address for shipping updates.
                             </div>
@@ -82,28 +82,28 @@ let appliedRights = [];
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="address">Login</label>
-                            <input type="text" class="form-control" id="login" placeholder="">
+                            <input type="text" class="form-control" min="6" name="logname" id="address" placeholder="">
                             <div class="invalid-feedback">
                                 Please enter your Login.
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="address">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="">
+                            <label for="address2">Password</label>
+                            <input type="password" class="form-control" min="8" name="bypass" id="address2" placeholder="">
                             <div class="invalid-feedback">
                                 Please enter your password.
                             </div>
                         </div>
                         <div class="form-group col-md-12">
-                            <label for="aboutControlTextarea1">About</label>
-                            <textarea class="form-control" id="aboutControlTextarea1" rows="3"><?=$single['about']?></textarea>
+                            <label for="aboutControlTextarea1">Note</label>
+                            <textarea class="form-control" name="usernote" id="aboutControlTextarea1" rows="3"><?=$single['about']?></textarea>
                         </div>
                     </div>
                     <hr>
                     <div class="row">
                         <div class="col-md-12 mb-3 form-group">
                             <label for="ClientsControlSelect">All Clients:</label>
-                            <select multiple number="7" style="height: 8rem !important;" name="Clients[]" class="form-control" id="ClientsControlSelect">
+                            <select multiple number="7" style="height: 8rem !important;" class="form-control" id="ClientsControlSelect">
                                 <?php foreach( $clients as $client ): ?>
                                     <option value="<?=$client['id']?>"><?=$client['name']?></option>
                                 <?php endforeach; ?>
@@ -124,7 +124,7 @@ let appliedRights = [];
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label for="allrights">All Righs:</label>
-                            <select multiple="10" name="perms[]" class="custom-select d-block w-100 cursorPointer"  style="height: 15rem !important;" id="allrights">
+                            <select multiple="10" class="custom-select d-block w-100 cursorPointer"  style="height: 15rem !important;" id="allrights">
                                 <?php foreach( $permissions as $permission ): ?>
                                     <option class="rightOpt" data-applied="<?=$permission['applied']?>" data-permid="<?=$permission['id']?>" value="<?=$permission['name']?>"><?=$permission['description']?><?=$permission['applied']?'<span class="right-in-use"> - &#10094;&#10094;applied&#10095;&#10095;':"" ?></option>
                                 <?php endforeach; ?>

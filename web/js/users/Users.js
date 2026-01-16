@@ -47,7 +47,7 @@ Users.prototype.selectRights = function(option, event)
 			description : option.innerHTML,
 			permid : option.getAttribute('data-permid'),
 			name  : option.getAttribute('value'),
-			id : this.userid,
+			uid : this.userid,
 	};
 
 	if ( this.hasRight(rightData) )

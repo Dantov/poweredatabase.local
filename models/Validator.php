@@ -22,6 +22,8 @@ class Validator
      */
     private $tnbc = ['\'','"', ',', '\\','/', '|', '<', '>','+','?','&','*','(',')','{','}',':',';','^','`'];
 
+    protected string $pattern = "/^[_a-z0-9-+]+(\.[_a-z0-9-+]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+
     /**
      * Validator constructor.
      * @throws \Exception
@@ -87,7 +89,6 @@ class Validator
     {
         $str = trim($str);
         $str = strip_tags($str);
-        //return mysqli_real_escape_string($this->connection, $str);
         return $str;
     }
 
@@ -152,6 +153,31 @@ class Validator
                 } break;
         }
 
+        return true;
+    }
+    public function sanitarizePost( string $postname) : string
+    {
+        return filter_input(INPUT_POST, $postname, FILTER_SANITIZE_SPECIAL_CHARS);
+    }
+    public function validateEmail( string $string) : bool
+    {
+        //$string = filter_input(INPUT_POST, $string, FILTER_SANITIZE_SPECIAL_CHARS);
+        
+        if ( !preg_match($this->pattern, $string) )
+            return false;
+        
+        return true;
+    }
+    public function validateString( string $string) : bool
+    {
+        //[-a-zA-Z0-9_
+        //$string = filter_input(INPUT_POST, $string, FILTER_SANITIZE_SPECIAL_CHARS);
+        $symbols = preg_split('//u',$string,-1,PREG_SPLIT_NO_EMPTY);
+        foreach ( $symbols as $key => $symbol )
+        {
+            if ( in_array($symbol, $this->badChars) )
+                return false;
+        }
         return true;
     }
     public function validateLogin( string $loginName) : string

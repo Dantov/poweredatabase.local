@@ -79,8 +79,8 @@ class UsersController extends GeneralController
     {
         $session = Yii::$app->session;
         $session->set('sitepage','edituser');
-
-        $id = Crypt::strDecode($id);
+        //debug($id, 1,1);
+        $id = (int)Crypt::strDecode($id);
         $users = new UsersAll($id);
 
         //if ( !$users->accessControl() ) 
@@ -100,16 +100,18 @@ class UsersController extends GeneralController
     {
         $session = Yii::$app->session;
         $request = Yii::$app->request;
-        
+        $response = Yii::$app->response;
+
+        $post = $request->post();
+        $id = Crypt::strDecode($post['uid']);
+
+        $users = new UsersAll($id);
+        //if (!$users->accessControl()) exit( json_encode("no permission to edit") ); 
+
+
         // for update user permittion and clients
         if ( $request->isAjax && $request->isPost )
         {
-            $post = $request->post();
-            $id = (int)Crypt::strDecode($post['id']);
-
-            $users = new UsersAll($id);
-            $users->accessControl();
-
             if ( $request->get('applyright') )
                 exit( json_encode($users->applyRight($post)) );
             if ( $request->get('removeright') )
@@ -119,14 +121,17 @@ class UsersController extends GeneralController
         // for rest user data
         if ( $request->isPost )
         {
-            $post = $request->post();
-            $id = Crypt::strDecode($post['id']);
+            //if (!$users->accessControl()) 
+            //    throw new Exception("no permission to edit",500);
 
-            $users = new UsersAll($id);
-            $users->accessControl();
-
+            if ($users->saveUserData( $post ))
+            {
+                $struid = Crypt::strEncode($id);
+                return $response->redirect(['/users/edit', 'id' => $struid]); 
+            }
             //debug($id,'id');
             //debug($post,'post',1);
+
         }
     }
 
