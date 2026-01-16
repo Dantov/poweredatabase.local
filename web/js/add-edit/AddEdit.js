@@ -65,32 +65,49 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 		success:function(resp) {
 			console.log(resp);
 
-			let span = document.createElement('span');
-					span.setAttribute('style','font-size:1rem; top: 45%; right: 2%;');
-					
-					if ( resp )
-					{
-						span.setAttribute('class','badge badge-success ok-check p-2 absolute');
-						span.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
-					} else {
-						span.setAttribute('class','badge badge-danger ok-check p-2 absolute');
-						span.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
-					}
+			let bg = input.previousElementSibling.children[0];
+			let svg = input.previousElementSibling.children[0].children[0];
 
-			let inpP = input.parentElement;
-			let okCheck;
-			if ( inpP.classList.contains('input-group') )
+			function okToggle( back )
 			{
-					span.setAttribute('style','font-size:1rem; top: 45%; right: 45px;');
-					okCheck = input.parentElement.parentElement.appendChild(span);
-			} else {
-					okCheck = input.parentElement.appendChild(span);	
+				if ( back ) {
+					bg.classList.replace('badge-success','badge-light');
+					svg.remove();
+					bg.innerHTML = '<i class="fa-regular fa-square-full"></i>';
+		
+				} else {
+					bg.classList.replace('badge-light','badge-success');
+					bg.innerHTML = '<i class="fa-regular fa-square-check"></i>';
+				}
 			}
 
-			setTimeout(function(){
-					okCheck.remove();
+			function errToggle( back )
+			{
+				if ( back ) {
+					bg.classList.replace('badge-danger','badge-light');
+					svg.remove();
+					bg.innerHTML = '<i class="fa-regular fa-square-full"></i>';
+				} else {
+					bg.classList.replace('badge-light','badge-danger');
+					bg.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+				}
+			}
+
+			if ( resp ) 
+			{
+				okToggle();
+				setTimeout(function() {
+					okToggle( true );
 				}, 1500);
+			} else {
+				errToggle();
+				setTimeout(function() {
+					errToggle( true );
+				}, 2500);
+			}
+		
 		}
+		
 	});
 	
 }

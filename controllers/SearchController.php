@@ -67,7 +67,7 @@ class SearchController extends GeneralController
         $order = $request->get('order');
 
         if ( $matpurge ) $this->materialsPurge();
-        if ( $client ) $this->SelectBy( $client, 'SelectByClient', $this->clients );
+        if ( $client ) $this->SelectByClient( $client );
         //if ( $hashtag )  $this->SelectBy( $hashtag, 'selectByHashtag', $this->hashtags );
         if ( $hashtag )  $this->SelectByHashtags( $hashtag );
         if ( $modeltype )  $this->SelectBy( $modeltype,'selectByModelType', $this->modelTypes );
@@ -104,8 +104,6 @@ class SearchController extends GeneralController
         $session->set('selectByMatMetal', '');
         $session->set('selectByMatProbe', '');
     }
-    protected function SelectByMaterialProbe( string $mcolor )
-    {}
     protected function SelectByMaterialColor( string $mcolor )
     {
         $session = Yii::$app->session;

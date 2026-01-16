@@ -11,6 +11,10 @@ class AddEdit extends ModelView
 { 
     public array $stock = []; 
 
+    public int $zipSize = 0;
+    public int $originSize = 0;
+    public array $datafileSizes = [];
+
 	function __construct( $general, $id=false )
     {
         parent::__construct($general, $id);
@@ -207,8 +211,13 @@ class AddEdit extends ModelView
         
         foreach ( $this->stock['d3_files'] as &$dfile )
         {
+            $this->originSize += $dfile['size'];
+            $this->zipSize += $dfile['zipsize'];
             $dfile['size'] = round($dfile['size'] / $measureTypes[$measure], $precision ) . $measure;    
         }
+
+        $this->datafileSizes['zip'] = round($this->zipSize / $measureTypes[$measure], $precision ) . $measure; 
+        $this->datafileSizes['origin'] = round($this->originSize / $measureTypes[$measure], $precision ) . $measure; 
 
         //debug($this->stock['d3_files'], 1,1  );
     }

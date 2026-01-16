@@ -118,18 +118,18 @@ class SiteController extends GeneralController
         $addEdit = new AddEdit($this, $modelID);
         $sevData = $addEdit->getDataTables();
         $stockData = $addEdit->getStockData();
+        $datafileSizes = $addEdit->datafileSizes;
 
         if ( !$addEdit->accessControl('edit') )
             return $response->redirect(['/site'])->send();
 
         $addEdit->setHashtagsActiv($stockData['hashtags'], $sevData['hashtag']);
 
-        $comp = compact(['modelID','sevData','stockData']);
+        $comp = compact(['modelID','sevData','stockData','datafileSizes']);
         return $this->render('add',$comp);
     }
 
     /**
-     * Displays View Page.
      *
      * @return string
      */

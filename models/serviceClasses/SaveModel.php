@@ -290,18 +290,12 @@ class SaveModel extends Common
 
     public function setMainImg(int $imgRowID) : bool
     {
-        $mID = $this->modelID;
-    
-        $imageToUnset = Images::find()->where(['status'=>1])->andWhere(['pos_id' => $mID])->one();
+        $imageToUnset = Images::find()->where(['status'=>1])->andWhere(['pos_id' => $this->modelID])->one();
         if ( $imageToUnset ) 
         {
             $imageToUnset->status = 0;
             $imageToUnset->save(false);
         }
-
-        //$imageToSet = Images::find()->where(['id'=>$imgRowID])->one();
-        //$imageToSet->status = 1;
-        //return $imageToSet->save(false);
         
         $imageToSet = Images::findOne($imgRowID);
         return $imageToSet->updateCounters(['status' => 1]);
@@ -316,7 +310,14 @@ class SaveModel extends Common
         if ( $files->has('UploadImage') )
             return $this->uploadImageFile($files);
         if ( $files->has('Upload3DFile') )
-            return $this->uploadDataFile($files);
+        {
+            $res = $this->checkOveralFilesize( $files->get('Upload3DFile') );
+            if ( $res === true ) {
+                return $this->uploadDataFile($files);
+            } else {
+                return $res;
+            }
+        }
     }
 
     protected function uploadImageFile( Files $files ) : array
@@ -342,7 +343,21 @@ class SaveModel extends Common
 
         return ['id'=>$imgID,'upload'=>$res,'type'=>'picture'];
     }
+    protected function checkOveralFilesize( array $fileData ) : mixed
+    {
+        $sql  = "SELECT SUM(size) as s, SUM(zipsize) as z FROM d3_files WHERE pos_id={$this->modelID}";
+        $data = D3_files::findBySql($sql)->asArray()->one();
+        
+        $haveSize = (int)$data['s'];
+        $currentFileSize = (int)$fileData['size'];
+        $total = $currentFileSize + $haveSize;
+        $overallAllowedSize = 40100000; // 40.1 mb
 
+        if ( $total > $overallAllowedSize )
+            return ['id'=>0,'upload'=>false,'type'=>'data','txt'=>'Your files got too much size. Max allowed is 40mb total.'];
+        
+        return true;      
+    }
     protected function uploadDataFile( Files $files ) : array
     {
         $uplFile = $files->get('Upload3DFile');
@@ -358,30 +373,52 @@ class SaveModel extends Common
         $uploadRes = false;
         $uploadRes = $files->upload($uplFile['tmp_name'], $destPath.$newFileName, ['3dm','stl','mgx','ai','dxf','obj']);
 
-        $rowID = 0;
+        //$rowID = 0;
         if ( $uploadRes )
         {
-            $newFileNameZip = $this->modelID."_zip_".randomStringChars( 10, 'en', 'symbols');
-            $zipArch = $this->openZip( $destPath , $newFileNameZip );
-            //debug($zipArch,'$zipArch');
-            //debug($destPath,'$destPath',1);
-            $zipArch['inst']->addFile( $destPath.$newFileName, $newFileName );
-            $this->closeZip($zipArch['inst']);
-            $files->delete($destPath.$newFileName);
-
-            $zipFileSize = $files->getFileSize($destPath.$zipArch['zipName']);
-
-            $d3_files = new D3_files();
-            $d3_files->name    = $newFileName;
-            $d3_files->zipname = $zipArch['zipName'];
-            $d3_files->type    = $fileExtension;
-            $d3_files->size    = $uplFile['size'];
-            $d3_files->zipsize = $zipFileSize;
-            $d3_files->pos_id  = $this->modelID;
-
-            $d3_files->save(false);
-            $rowID = $d3_files->getPrimaryKey();
+            if ( $fileExtension == 'zip' || $fileExtension == 'rar') {
+               return $this->uploadArchive($destPath, $newFileName, $uplFile, $fileExtension, $uploadRes);
+            } else {
+               return $this->uploadNonArchive($files, $destPath, $newFileName, $fileExtension, $uplFile, $uploadRes);
+            }
         }
+        return ['id'=>0,'upload'=>false,'type'=>'data','txt'=>'Some error ocured while saving file!'];
+    }
+    protected function uploadArchive( $newFileName, $uplFile, $fileExtension, $uploadRes)
+    {
+        // DB Record
+        $d3_files = new D3_files();
+        $d3_files->name    = $newFileName;
+        $d3_files->zipname = $newFileName;
+        $d3_files->type    = $fileExtension;
+        $d3_files->size    = $uplFile['size'];
+        $d3_files->zipsize = $uplFile['size'];
+        $d3_files->pos_id  = $this->modelID;
+        $d3_files->save(false);
+        $rowID = 0;
+        $rowID = $d3_files->getPrimaryKey();
+
+        return ['id'=>$rowID,'upload'=>$uploadRes,'type'=>'data'];
+    }
+    protected function uploadNonArchive( Files $files, $destPath, $newFileName, $fileExtension, $uplFile, $uploadRes)
+    {
+        $newFileNameZip = $this->modelID."_zip_".randomStringChars( 10, 'en', 'symbols');
+        $zipArch = $this->openZip( $destPath , $newFileNameZip );
+        $zipArch['inst']->addFile( $destPath.$newFileName, $newFileName );
+        $this->closeZip($zipArch['inst']);
+        $files->delete($destPath.$newFileName);
+        
+        // DB Record
+        $d3_files = new D3_files();
+        $d3_files->name    = $newFileName;
+        $d3_files->zipname = $zipArch['zipName'];
+        $d3_files->type    = $fileExtension;
+        $d3_files->size    = $uplFile['size'];
+        $d3_files->zipsize = $files->getFileSize($destPath.$zipArch['zipName']);
+        $d3_files->pos_id  = $this->modelID;
+        $d3_files->save(false);
+        $rowID = 0;
+        $rowID = $d3_files->getPrimaryKey();
 
         return ['id'=>$rowID,'upload'=>$uploadRes,'type'=>'data'];
     }

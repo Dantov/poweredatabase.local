@@ -29,7 +29,7 @@ class Main extends Common
         foreach ( self::$clients as $cl )
             $clients[] = $cl['name'];
 
-        if ( User::hasPermission('clientonly') ) {
+        if ( User::hasPermission('clientonly') && !User::hasPermission('clientall')) {
             return $this->stockQuery->andWhere(['in', 'client', $clients]);
         }
 

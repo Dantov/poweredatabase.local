@@ -2,9 +2,8 @@
 use yii\helpers\Url;
 ?>
 <div class="card bg-light mb-1 mainCard" style="width: <?=$session->get('tilesControlSize')?>rem;">
-    <div class="card-header p-1 cursorPointer text-truncate bg-secondary text-white">
-        <small onclick = "copyValueToClipBoard(this)" class="float-left text-truncate" data-toggle="tooltip" data-placement="top" title="№3D"><?=$model['number_3d']?></small>
-        <small onclick = "copyValueToClipBoard(this)" class="float-right text-truncate" data-toggle="tooltip" data-placement="top" title="Дата создания"><?=$main->dateConvert($model['create_date'])?></small>
+    <div class="card-header p-1 cursorPointer text-truncate bg-secondary text-white text-center">
+        <small data-toggle="tooltip" title="<?=htmlentities($model['client'])?>" data-placement="top"><?=htmlentities($model['client'])?></small>
         <div class="clearfix"></div>
     </div>
     <a href="<?=Url::to(['site/view','id'=>$model['id']])?>">
@@ -13,15 +12,16 @@ use yii\helpers\Url;
                 <div class="ratio-content">
                     <img src="web/stock/<?=$model['id']?>/images/<?=$model['mainimage']?>" class="card-img-top" alt="...">
                 </div>
-                <a class="btn btn-info btn-sm editBtnMain" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
+                <a class="btn btn-outline-secondary btn-sm editBtnMain" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
             </div>
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item p-1" style="font-size: small;">
-                <small class="float-left">Тип:</small>
+                <small onclick="copyValueToClipBoard(this)" class="float-left text-truncate" data-toggle="tooltip" data-placement="top" title="Дата создания"><?=$main->dateConvert($model['create_date'])?></small>
                 <small class="float-right"><b><?=$model['model_type']?></b></small>
+                <small onclick = "copyValueToClipBoard(this)" class="float-right text-truncate" data-toggle="tooltip" data-placement="top" title="№3D"><?=$model['number_3d']?> |&nbsp;</small>
                 <div class="clearfix"></div>
             </li>
         </ul>

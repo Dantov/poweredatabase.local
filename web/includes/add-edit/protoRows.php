@@ -6,6 +6,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-3">
         <label for="gems_names">Сырье</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="name" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -20,6 +23,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-2">
         <label for="gems_cut">Огранка</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="cut" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -34,6 +40,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-2">
         <label for="gems_sizes">Ø Размеры мм</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="size" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -48,6 +57,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-3">
         <label for="gems_color">Цвет</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="color" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -62,6 +74,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-1">
         <label for="gems_value">Кол-во</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="number" editable class="form-control" data-table="" data-rowID="" name="value" aria-label="">
         </div>
     </div>
@@ -81,6 +96,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-3">
         <label for="part">Деталь</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" name="part" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -95,6 +113,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-3">
         <label for="metal">Металл</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" name="metal" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -109,6 +130,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-3">
         <label for="color">Цвет</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" name="color" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -123,6 +147,9 @@ use yii\helpers\Url;
     <div class="form-group col-md-2">
         <label for="probe">Проба</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" name="probe" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>

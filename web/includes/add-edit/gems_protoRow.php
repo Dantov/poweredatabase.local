@@ -2,6 +2,9 @@
     <div class="form-group col-md-3">
         <label for="gems_names">Сырье</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="tableGems" value="<?=$gem['name']?>" data-rowID="<?=$gem['id']?>" name="name" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -16,6 +19,9 @@
     <div class="form-group col-md-2">
         <label for="gems_cut">Огранка</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="tableGems" value="<?=$gem['cut']?>" data-rowID="<?=$gem['id']?>" name="cut" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -30,6 +36,9 @@
     <div class="form-group col-md-2">
         <label for="gems_sizes">Ø Размеры мм</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" data-table="tableGems" value="<?=$gem['size']?>" data-rowID="<?=$gem['id']?>" name="size" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -44,6 +53,9 @@
     <div class="form-group col-md-3">
         <label for="gems_color">Цвет</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" class="form-control" editable data-table="tableGems" value="<?=$gem['color']?>" data-rowID="<?=$gem['id']?>" name="color" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -58,6 +70,9 @@
     <div class="form-group col-md-1">
         <label for="gems_value">Кол-во</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="number" editable class="form-control" value="<?=$gem['value']?>" data-table="tableGems" data-rowID="<?=$gem['id']?>" name="value" aria-label="">
         </div>
     </div>

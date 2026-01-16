@@ -9,7 +9,7 @@ $this->registerJsFile("@web/js/add-edit/Validator.js?v=$tt",['depends' => [\app\
 $this->registerJsFile("@web/js/add-edit/AddEdit.js?v=$tt",['depends' => [\app\assets\AppAsset::class]]);
 $this->registerJsFile("@web/js/add-edit/HandlerFiles.js?v=$tt",['depends' => [\app\assets\AppAsset::class]]);
 //$this->registerCssFile("@web/css/view/view.css?v=$tt");
-//debug($stockData,'stockData',1);
+//debug($datafileSizes,'datafileSizes',1);
 //debug($sevData,'stockData',1);
 
 $modelStatus = (int)$stockData['model_status']; 
@@ -24,7 +24,7 @@ $modelStatus = (int)$stockData['model_status'];
                 <label for="number_3d">№3Д</label>
                 <div class="input-group mb-2">
                     <div class="input-group-prepend">
-                        <div class="input-group-text "><i class="fa-regular fa-square-full"></i></div>
+                        <div class="input-group-text text-light badge-light"><i class="fa-regular fa-square-full"></i></div>
                     </div>
                     <input type="text" editable class="form-control" name="number_3d" id="number_3d" value="<?=$stockData['number_3d']?>" placeholder="">
                 </div>
@@ -33,8 +33,8 @@ $modelStatus = (int)$stockData['model_status'];
                 <label for="modeller3d">3Д модельер</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <div class="input-group-text badge-success">
-                            <i class="fa-regular fa-square-check"></i>
+                        <div class="input-group-text badge-light ">
+                            <i class="fa-regular fa-square-full"></i>
                         </div>
                     </div>
                     <input type="text" editable class="form-control" name="modeller3d" id="modeller3d" value="<?=$stockData['modeller3d']?>" placeholder="" >
@@ -53,6 +53,9 @@ $modelStatus = (int)$stockData['model_status'];
             <div class="form-group col-md-3">
                 <label for="model_type">Вид модели</label>
                 <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+                    </div>
                     <input type="text" editable class="form-control" name="model_type" id="model_type" value="<?=$stockData['model_type']?>"placeholder="" >
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -66,20 +69,38 @@ $modelStatus = (int)$stockData['model_status'];
             </div>
             <div class="form-group col-md-3">
                 <label for="size_range">Размеры</label>
-                <input type="text" editable class="form-control" name="size_range" id="size_range" value="<?=$stockData['size_range']?>" placeholder="">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+                    </div>
+                    <input type="text" editable class="form-control" name="size_range" id="size_range" value="<?=$stockData['size_range']?>" placeholder="">
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="model_weight">Общий вес 3д модели</label>
-                <input type="text" editable class="form-control" value="<?=$stockData['model_weight']?>" name="model_weight" id="model_weight" placeholder="">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+                    </div>
+                    <input type="text" editable class="form-control" value="<?=$stockData['model_weight']?>" name="model_weight" id="model_weight" placeholder="">
+                </div>
             </div>
             <div class="form-group col-md-3">
                 <label for="model_price">Цена 3д</label>
-                <input type="text" editable class="form-control" value="<?=$stockData['model_cost']?>" name="model_cost" id="model_cost" placeholder="">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+                    </div>
+                    <input type="text" editable class="form-control" value="<?=$stockData['model_cost']?>" name="model_cost" id="model_cost" placeholder="">
+                </div>
             </div>
         </div>
         <div class="form-group">
             <label for="customers">Заказчики</label>
             <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+                </div>
                 <input type="text" editable class="form-control" value="<?=htmlspecialchars($stockData['client'])?>" name="client" id="client" aria-label="" >
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -114,7 +135,7 @@ $modelStatus = (int)$stockData['model_status'];
         <div class="card box-shadow col-xl-12 col-md-12">
             <div class="card-header p-5 border border-secondary rounded" id="drop-area"  title="Загрузить Файлы">
                 <p>Загрузить файлы можно перетащив их в эту область.</p>
-                <p> Форматы: .jpg .jpeg .png .gif .webp .stl .mgx .3dm .ai .dxf</p></br>
+                <p> Форматы: .jpg .jpeg .png .gif .webp .stl .mgx .3dm .ai .dxf .obj</p></br>
                 <button type="button" id="addImageFiles" class="btn btn-outline-secondary btn-block"><i class="far fa-images"></i> Выбрать файлы</button>
             </div>
         </div>
@@ -136,7 +157,10 @@ $modelStatus = (int)$stockData['model_status'];
 
         <!-- 3D Files -->
         <div class="outer-w3-agile col-xl mt-3 mr-xl-3 p-2">
-            <h4 class="tittle-w3-agileits">3Д Файлы</h4>
+            <h4 class="tittle-w3-agileits">
+                3Д Файлы: 
+                <small>(Origin: <?=$datafileSizes['origin']?>) (Zipped: <?=$datafileSizes['zip']?>)</small>
+            </h4>
             <hr>
             <div class="card-body p-1 pt-0">
                 <div class="list-group" id="d3-files-area">

@@ -2,9 +2,12 @@
 /** array $material */
 ?>
 <div class="form-row material_row">
-    <div class="form-group col-md-3">
+    <div class="form-group col-xs-12 col-md-3">
         <label for="part">Деталь</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" value="<?=$material['part']?>" name="part" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -16,9 +19,12 @@
             </div>
         </div>
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-xs-12 col-md-3">
         <label for="metal">Металл</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" value="<?=$material['metal']?>" name="metal" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -30,9 +36,12 @@
             </div>
         </div>
     </div>
-    <div class="form-group col-md-3">
+    <div class="form-group col-xs-12 col-md-3">
         <label for="color">Цвет</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" value="<?=$material['color']?>" name="color" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -44,9 +53,12 @@
             </div>
         </div>
     </div>
-    <div class="form-group col-md-2">
+    <div class="form-group col-xs-12 col-md-2">
         <label for="probe">Проба</label>
         <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
             <input type="text" editable class="form-control" value="<?=$material['probe']?>" name="probe" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -59,7 +71,7 @@
             </div>
         </div>
     </div>
-    <div class="form-group col-md-1">
+    <div class="form-group col-xs-12 col-md-1">
         <label for="probe"></label>
         <div class="input-group">
             <div class="input-group-append">

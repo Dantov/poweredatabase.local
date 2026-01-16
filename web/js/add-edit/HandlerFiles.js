@@ -220,6 +220,11 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
         success:function( resp )
         {
             resp = JSON.parse(resp);
+            if ( !resp['upload'] ) {
+                AR.warning( resp['txt'], 505 );
+                tempRow.remove();
+                return;
+            }
 
             if ( resp['type'] === 'picture' ) {
                 //self.imageFilesBuffer.push(file);
