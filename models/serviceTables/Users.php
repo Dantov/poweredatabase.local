@@ -15,23 +15,22 @@ class Users extends ActiveRecord
             [
                 [
                     'login',
-                    'pass',
                     'name',
-                    'firstname',
                     'lastname',
                     'thirdname',
                     'fio',
                     'fullFio',
-                    'role',
-                    'clients',
-                    'permissions',
                     'locations',
-                    'email',
                     'about',
                     'access',
                 ],
                 'trim',
             ],
+            [['email'], 'email' ],
+            [['pass'], 'string', 'max' => 256],
+            [['login'], 'string', 'min' => 6, 'max' => 60],
+            [['clients','role','permissions'], 'safe'],
         ];
     }
+
 }

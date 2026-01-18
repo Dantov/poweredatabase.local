@@ -9,7 +9,7 @@ $tt=time();
 $this->registerJsFile("@web/js/add-edit/Validator.js?v=$tt",['depends' => [\app\assets\AppAsset::class]]);
 
 //$this->registerCssFile("@web/css/view/view.css?v=$tt");
-//debug($stockData,'stockData',1);
+//debug($users->getRoles($single['role']),'getRoles',1);
 //debug($all,'all');
 
 ?>
@@ -23,7 +23,7 @@ $this->registerJsFile("@web/js/add-edit/Validator.js?v=$tt",['depends' => [\app\
                 <div class="profile-pic wthree">
                     <img src="/images/defaultUser2.png" class="img-fluid" alt="Responsive image">
                     <h3><?=$single['fio']?></h3>
-                    <p><?=$single['role']; //Creative Designer?></p>
+                    <p><?=$users->getRoleNames($single['role'])?></p>
                 </div>
                 <div class="w3-message">
                     <h5>About Me</h5>

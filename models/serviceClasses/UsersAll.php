@@ -21,18 +21,50 @@ class UsersAll extends Common
             'id','name','lastname','thirdname','fio','fullFio','role','clients','permissions',
             'location','about','email','access'];
         $this->getAllUsers();
-        $this->getAllPermissions();
         
-
         if ($id > 0 && $id < PHP_INT_MAX)
         {
             $this->uid = $id;
             $this->getUserByID($this->uid);
-            
+            $this->getAllPermissions();    
         }
 
         parent::__construct();
 	}
+    public function getBasicData( string $stab='' ) : array
+    {
+        $res = ['clients'=>[],'roles'=>[],'perm'=>[]];
+        $res['clients'] = Service_data::find()->where(['tab'=>'client'])->asArray()->orderBy('name')->all();
+        $res['roles'] = Service_data::find()->where(['tab'=>'role'])->asArray()->orderBy('name')->all();
+        $res['perm'] = Permissions::find()->select(['id','name','description'])->asArray()->all();
+
+        foreach( $res as &$tab )
+        {
+            foreach( $tab as &$single )
+            {
+                $single['active'] = '';
+                $single['applied'] = '';
+            }
+        }
+
+        switch( $stab )
+        {
+            case "clients":
+                return $res['clients'];
+            break;
+            case "roles":
+                return $res['roles'];
+            break;
+            case "perm":
+                return $res['perm'];
+            break;
+            default:
+                return $res;    
+            break;
+        }
+        debug($res,'$res',1);
+        return $res;
+    }
     protected function getUserByID(int $id) : array
     {
         $this->user = Users::find()
@@ -57,7 +89,7 @@ class UsersAll extends Common
         if ( isset( $this->permissions ) ) return $this->permissions;
 
 		$this->permissions = Permissions::find()->select(['id','name','description'])->asArray()->all();
-        $uPermissions = User::permissions();
+        $uPermissions = json_decode($this->user['permissions'],true); //User::permissions();
 
         foreach ( $this->permissions as &$perm )
         {
@@ -68,10 +100,82 @@ class UsersAll extends Common
 
         return $this->permissions;
 	}
+    public function getPermissions() : array
+    {
+        if ( !isset($this->user['permissions']) ) 
+            return [];
+
+        $userPermissions = json_decode($this->user['permissions'],true);
+        $permissions = Permissions::find()->select(['id','name','description'])->asArray()->all();  
+        //debug($uperms ,1,1 );
+        $permittedFieldAll = [];
+        foreach ( $permissions as $permission )
+        {
+            $pID = $permission['id'];
+            if ( in_array( $pID, $userPermissions ) )
+                $permittedFieldAll[$pID] = $permission;
+        }
+
+        return $permittedFieldAll;
+    }
+    public function getClients() : array
+    {
+        $clients = Service_data::find()->where(['tab'=>'client'])->asArray()->orderBy('name')->all();
+        $userClients = json_decode($this->user['clients'],true);
+        foreach( $clients as &$sClient )
+            $sClient['active'] = 0;
+
+        foreach( $userClients as $userClientID )
+        {
+            foreach( $clients as &$client )
+                if ( (int)$client['id'] === (int)$userClientID ) 
+                    $client['active'] = 1;
+        }
+
+        return $clients;
+    }
+    public function getRoleNames( string $roles = '' ) : string
+    {
+        if ( empty($roles) )
+            $roles = $this->user['role'];
+
+        $userRoles = json_decode($roles, true);
+        $allRoles = $this->getAllRoles();
+        $names = '';
+        foreach( $userRoles as $roleID )
+        {
+            foreach( $allRoles as $sRole )
+            {
+                if ( (int)$sRole['id'] === (int)$roleID ) {
+                    $names .= $sRole['name'] . ", ";
+                }
+            }
+        }
+        return trim($names,', ');
+    }
+    public function getRoles( string $roles = '' )
+    {
+        if ( empty($roles) )
+            $roles = $this->user['role'];
+
+        $userRoles = json_decode($roles, true);
+        $allRoles = $this->getAllRoles();
+        
+        foreach( $allRoles as &$singRole )
+            $singRole['active'] = 0;
+        
+        foreach( $userRoles as $roleID )
+        {
+            foreach( $allRoles as &$sRole )
+                if ( (int)$sRole['id'] === (int)$roleID ) 
+                    $sRole['active'] = 1;
+        }
+        return $allRoles;
+    }
 
     public function saveUserData( array $post ) : bool
     {
-        //$thisuser = Users::find($this->uid);
+        $session = Yii::$app->session;
         $thisuser = Users::find()->where(['id'=>$this->uid]);
         if ( !$thisuser->exists() )
             return false;
@@ -94,7 +198,6 @@ class UsersAll extends Common
                 $isAllValid = false;
             };
         }
-
         if ( !$isAllValid ) return false;
 
         $usernote = $v->sanitarizePost('usernote');
@@ -106,39 +209,143 @@ class UsersAll extends Common
         $thisuser->fio = $post['firstName'] . " " . $post['lastName']; 
         $thisuser->fullFio = $post['firstName']. " " .$post['thridName']. " " .$post['lastName']; 
         $thisuser->email = $post['email']; 
-        $thisuser->about = $post['usernote'];
-        $thisuser->role = $this->applyRoles($post['role']);
-
+        $thisuser->about = $usernote;
         $thisuser->login = $post['logname']; 
         $thisuser->pass = $password; 
 
-        $thisuser->save(false);
+        $uRoles = [];
+        $uClients = [];
+        if ( isset($post['role']) ) 
+            $uRoles = $this->applyUser("role", $post['role'] );
+            //$uRoles = $this->applyUser("role", json_decode( $post['role'] ));
+        
+        if ( isset($post['clients']) )
+            $uClients = $this->applyUser("client", $post['clients']);
 
-        return $res;
+        $thisuser->role = json_encode($uRoles);
+        $thisuser->clients = json_encode($uClients);
+
+        return $thisuser->save(false);
     }
-    
-    protected function applyRoles( array $roles ) : string
+    protected function applyUser( string $tab, array $data ) : array
     {
-        $allRoles = Service_data::find()->where(['tab'=>'role'])->asArray()->all();
+        $all = Service_data::find()->where(['tab'=>$tab])->asArray()->all();
 
-        $validRoles = [];
-        foreach( $roles as $roleID )
+        $valid = [];
+        foreach( $data as $dataID )
         {
-            foreach( $allRoles as $singRole )
-                if ( (int)$singRole['id'] === (int)$roleID ) 
-                    $validRoles[] = $singRole['id'];
+            foreach( $all as $single )
+                if ( (int)$single['id'] === (int)$dataID ) 
+                    $valid[] = $single['id'];
         }
         
-        return json_encode($validRoles);
+        return $valid;
     }
 
-    public function applyRight( array $post ) : string //bool
-    {
-        return "right was applied";
+    public function applyRight( int $permid ) : bool
+    { 
+        $thisuser = $this->applyRightPrepare( $permid );
+        if ( $thisuser === false ) return false;
+
+        if ( User::hasPermission($permid) ) return false;
+        //debug($thisuser->permissions,'$thisuser->permissions',1);
+        $oldUP = json_decode($thisuser->permissions,true);
+        $oldUP = $thisuser->permissions;
+        $oldUP[] = $permid;
+
+        $thisuser->permissions = $oldUP;
+        //$thisuser->permissions = json_encode($oldUP);
+        return $thisuser->save(false);
     }
-    public function removeRight( array $post ) : string //bool
+    public function removeRight( int $permid ) : bool
     {
-        return "right was removed";
+        $thisuser = $this->applyRightPrepare( $permid );
+        if ( $thisuser === false ) return false;
+
+        if ( !User::hasPermission($permid) ) return false;
+        
+        //$oldUP = json_decode($thisuser->permissions);
+        $oldUP = $thisuser->permissions;
+        foreach ( $oldUP as $key => $upID )
+        {
+            if ( $upID === $permid )
+                unset($oldUP[$key]);
+        }
+
+        //$thisuser->permissions = json_encode($oldUP);
+        $thisuser->permissions = $oldUP;
+        return $thisuser->save(false);
+    }
+    protected function applyRightPrepare( int $permid ) : mixed
+    {
+        if ( !($permid > 0 && $permid < PHP_INT_MAX) ) return false;
+
+        $thisuser = Users::find()->where(['id'=>$this->uid]);
+
+        if ( !$thisuser->exists() )
+            return false;
+
+        $allPerms = $this->getAllPermissions();
+
+        //Search for valid permission
+        $valid = false;
+        foreach( $allPerms as $perm )
+        {
+            if ( (int)$perm['id'] === $permid ) {
+                $valid = true;
+                break;
+            }
+        }
+        if (!$valid) return false;
+
+        return $thisuser->select(['id','permissions'])->one();
+    }
+
+    public function addNewUser( array $post )
+    {
+        $session = Yii::$app->session;
+        $v = new Validator();
+        $udata = [];
+        $udata['firstName'] = $v->validateString($post['firstName']);
+        $udata['lastName']  = $v->validateString($post['lastName']);
+        $udata['thirdName'] = $v->validateString($post['thridName']);
+        $udata['logname']   = $v->validateString($post['logname']);
+        $udata['email']     = $v->validateEmail($post['email']);
+
+        $isAllValid = true;
+        foreach( $udata as $field => $value )
+        {
+            if ( !$value ) {
+                $session->setFlash($field, 'Заполнено не верено!');
+                $isAllValid = false;
+            };
+        }
+        if ( !$isAllValid ) return false;
+
+        $newUser = new Users();
+
+        $usernote = $v->sanitarizePost('usernote');
+        $password = password_hash($post['bypass'], PASSWORD_DEFAULT);
+
+        $newUser->name = $post['firstName']; 
+        $newUser->lastname = $post['lastName']; 
+        $newUser->thirdname = $post['thridName']; 
+        $newUser->fio = $post['firstName'] . " " . $post['lastName']; 
+        $newUser->fullFio = $post['firstName']. " " .$post['thridName']. " " .$post['lastName']; 
+        $newUser->email = $post['email']; 
+        $newUser->about = $usernote;
+        $newUser->login = $post['logname']; 
+        $newUser->pass = $password;
+        $newUser->role = json_encode([]);
+        $newUser->clients = json_encode([]);
+        $newUser->permissions = [];
+        $newUser->location = '';
+        $newUser->access = 0;
+
+        $res = $newUser->save(false);
+        $this->uid = $newUser->getPrimaryKey();
+
+        return $this->uid;
     }
 
 

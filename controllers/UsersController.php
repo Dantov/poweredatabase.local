@@ -2,11 +2,11 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
+use yii\filters\{AccessControl,VerbFilter};
 use yii\web\Response;
 use app\models\User;
 use app\models\serviceClasses\{UsersAll,Crypt};
+use app\models\serviceTables\{Service_data,Permissions};
 
 class UsersController extends GeneralController
 {
@@ -61,17 +61,37 @@ class UsersController extends GeneralController
         $users = new UsersAll();
 
         $all = $users->getAllUsers();
-        $compact = compact(['all']);
+        $compact = compact(['all','users']);
         return $this->render('showall',$compact);
     }
     public function actionAdd()
     {
+        $session = Yii::$app->session;
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+
+        $session->set('sitepage','adduser');
         $users = new UsersAll();
 
-        debug('im here',1,1);
+        if ( !$users->accessControl() ) 
+            throw new \Exception('you have no rights!',500);
 
-        $all = $users->getAllUsers();
-        $compact = compact(['all']);
+        if ( $request->isPost )
+        {
+            $post = $request->post();
+            if ( $uid = $users->addNewUser($post) )
+            {
+                $struid = Crypt::strEncode($uid);
+                return $response->redirect(['/users/edit', 'id' => $struid]); 
+            }
+
+        }
+
+        $clients = $users->getBasicData('clients');
+        $allroles = $users->getBasicData('roles');
+        $permissions = $users->getBasicData('perm');
+        
+        $compact = compact(['clients','allroles','permissions']);
         return $this->render('add',$compact);
     }
 
@@ -79,20 +99,20 @@ class UsersController extends GeneralController
     {
         $session = Yii::$app->session;
         $session->set('sitepage','edituser');
-        //debug($id, 1,1);
+    
         $id = (int)Crypt::strDecode($id);
         $users = new UsersAll($id);
 
-        //if ( !$users->accessControl() ) 
-            //throw new \Exception('you have no rights!',500);
+        if ( !$users->accessControl() ) 
+            throw new \Exception('you have no rights!',500);
 
-        $all = $users->getAllUsers();
         $single = $users->user;
         $clients = $users->getClients();
+        $allroles = $users->getRoles();
         $permissions = $users->getAllPermissions();
-        $uPermissions = User::permissions();
+        $uPermissions = $users->getPermissions();
 
-        $compact = compact(['all','single','clients','permissions','uPermissions']);
+        $compact = compact(['single','clients','allroles','permissions','uPermissions']);
         return $this->render('edit',$compact);
     }
 
@@ -106,16 +126,18 @@ class UsersController extends GeneralController
         $id = Crypt::strDecode($post['uid']);
 
         $users = new UsersAll($id);
-        //if (!$users->accessControl()) exit( json_encode("no permission to edit") ); 
-
+        if (!$users->accessControl()) exit( json_encode("no permission to edit") ); 
 
         // for update user permittion and clients
         if ( $request->isAjax && $request->isPost )
         {
+            if ( !isset($post['permid']) ) exit( json_encode(false) );
+            $permid = (int)$post['permid'];
+
             if ( $request->get('applyright') )
-                exit( json_encode($users->applyRight($post)) );
+                exit( json_encode($users->applyRight($permid)));
             if ( $request->get('removeright') )
-                exit( json_encode($users->removeRight($post)) );
+                exit( json_encode($users->removeRight($permid)));
         }
 
         // for rest user data
@@ -129,9 +151,6 @@ class UsersController extends GeneralController
                 $struid = Crypt::strEncode($id);
                 return $response->redirect(['/users/edit', 'id' => $struid]); 
             }
-            //debug($id,'id');
-            //debug($post,'post',1);
-
         }
     }
 

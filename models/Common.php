@@ -6,6 +6,7 @@ use app\models\User;
 class Common
 {
 	public static array $clients;
+	public static array $roles;
 
 	public function __construct()
     {
@@ -46,6 +47,12 @@ class Common
 			return self::$clients = Service_data::find()->where(['tab'=>'client'])->andWhere(['in','id',$ids])->asArray()->orderBy('name')->all();
 		}
 		return [];
+	}
+
+	public function getAllRoles()
+	{
+		if ( isset(self::$roles) ) return self::$roles;
+		return self::$roles = Service_data::find()->where(['tab'=>'role'])->asArray()->orderBy('name')->all();
 	}
 
 	public function getAllHashtags() : array

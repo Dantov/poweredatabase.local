@@ -108,7 +108,7 @@ class User
 
         $user = self::userInstance();
         $permissions = Permissions::find()->select(['id','name','description'])->asArray()->all();  
-        $userPermissions = json_decode($user['permissions']);
+        $userPermissions = json_decode($user['permissions'],true);
 
         $permittedFieldAll = [];
         foreach ( $permissions as $permission )
@@ -174,12 +174,12 @@ class User
     }
     public static function getClientsID() : array
     {
-        return json_decode(self::$userInstance['clients']);
+        return json_decode(self::$userInstance['clients'],true);
     }
     public static function getClients() : array
     {
         $permissions = self::permissions();
-        $uClientsID = json_decode(self::$userInstance['clients']);
+        $uClientsID = json_decode(self::$userInstance['clients'],true);
 
         $clientPerm = [];
         foreach ( $permissions as $permission ) 
