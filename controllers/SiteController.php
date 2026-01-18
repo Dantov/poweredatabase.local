@@ -8,8 +8,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\Main;
-use app\models\User;
+use app\models\{Main,User,Nom};
 use app\models\serviceClasses\{SaveModel,AddEdit,ModelView};
 
 class SiteController extends GeneralController
@@ -212,8 +211,15 @@ class SiteController extends GeneralController
         if (!User::hasPermission(35)) 
             Yii::$app->response->redirect('/site')->send();
 
+        $nom = new Nom();
+        $modelTypes = $nom->getModelTypes();
+        $gemsNames = $nom->getGems('names');
+        $gemsColors = $nom->getGems('color');
+        $gemsCuts = $nom->getGems('cut');
+        $gemsSizes = $nom->getGems('sizes');
 
-        return $this->render('nomenclature');
+        $comp = compact(['modelTypes','gemsNames','gemsColors','gemsCuts','gemsSizes']);
+        return $this->render('nomenclature',$comp);
     }
     /**
      * Displays user profile page.
@@ -263,7 +269,7 @@ class SiteController extends GeneralController
     public function actionError()
     {
         $get = Yii::$app->request->get();
-        debug($get,1,1);
+        
         $comp = compact(['get']);
         return $this->render('error',$comp);
     }

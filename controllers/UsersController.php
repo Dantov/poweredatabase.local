@@ -61,9 +61,13 @@ class UsersController extends GeneralController
         $users = new UsersAll();
 
         $all = $users->getAllUsers();
+        if ( !$users->accessControl() ) 
+            throw new \Exception('you have no rights!',500);
+
         $compact = compact(['all','users']);
         return $this->render('showall',$compact);
     }
+
     public function actionAdd()
     {
         $session = Yii::$app->session;
@@ -82,9 +86,11 @@ class UsersController extends GeneralController
             if ( $uid = $users->addNewUser($post) )
             {
                 $struid = Crypt::strEncode($uid);
-                return $response->redirect(['/users/edit', 'id' => $struid]); 
+                $session->setFlash('allgood','You are added new user successfully!');
+                return $response->redirect(['/users/edit', 'id' => $struid]);     
+            } else {
+                $session->setFlash('saveErrors','Error was happening while saving data!');
             }
-
         }
 
         $clients = $users->getBasicData('clients');
@@ -109,8 +115,8 @@ class UsersController extends GeneralController
         $single = $users->user;
         $clients = $users->getClients();
         $allroles = $users->getRoles();
-        $permissions = $users->getAllPermissions();
-        $uPermissions = $users->getPermissions();
+        $permissions = $users->permissionsApplyed();
+        $uPermissions = $users->hisPermissions();
 
         $compact = compact(['single','clients','allroles','permissions','uPermissions']);
         return $this->render('edit',$compact);
@@ -126,11 +132,11 @@ class UsersController extends GeneralController
         $id = Crypt::strDecode($post['uid']);
 
         $users = new UsersAll($id);
-        if (!$users->accessControl()) exit( json_encode("no permission to edit") ); 
 
         // for update user permittion and clients
         if ( $request->isAjax && $request->isPost )
         {
+            if (!$users->accessControl()) exit( json_encode("no permission to edit") ); 
             if ( !isset($post['permid']) ) exit( json_encode(false) );
             $permid = (int)$post['permid'];
 
@@ -143,16 +149,45 @@ class UsersController extends GeneralController
         // for rest user data
         if ( $request->isPost )
         {
-            //if (!$users->accessControl()) 
-            //    throw new Exception("no permission to edit",500);
+            if (!$users->accessControl()) 
+                throw new \Exception("no permission to edit",500);
 
+            $struid = Crypt::strEncode($id);
             if ( $users->saveUserData( $post ) )
             {
-                $struid = Crypt::strEncode($id);
-                return $response->redirect(['/users/edit', 'id' => $struid]); 
+                $session->setFlash('allgood','User data saved success!');
+            } else {
+                $session->setFlash('saveErrors','Error was happening while saving data!');    
             }
+            
+            return $response->redirect(['/users/edit', 'id' => $struid]); 
         }
     }
+    public function actionDelete()
+    {
+        $session = Yii::$app->session;
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
 
+        $post = $request->post();
+        $id = (int)Crypt::strDecode( $request->get('id') );
+
+        $users = new UsersAll($id);
+        if (!$users->accessControl()) 
+                throw new \Exception("no permission to edit",500);
+
+        if ( $id )
+        {
+            if ($users->deleteUser($id)){
+                $session->setFlash('dellgood','User was deleted!');
+            } else {
+                $session->setFlash('dellError','Error was happening while deleting user!');    
+            }
+
+            return $response->redirect(['/users/show-all']); 
+        }
+
+        return $response->redirect(['/']); 
+    }
 
 }

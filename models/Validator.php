@@ -5,6 +5,7 @@
  */
 namespace app\models;
 
+use Yii;
 
 class Validator
 {
@@ -14,7 +15,7 @@ class Validator
 
     protected $fieldRules = [];
 
-    protected $badChars = ['\'', '.', ',', '\\', '/', '"', '%','&','?','*','|','^', '<', '>', ':',';','`','+',' '];
+    protected $badChars = ['\'', '.', ',', '\\', '/', '"', '%','&','?','*','|','^', '<', '>', ':',';','`','+','='];
 
     /**
      * Table name bad chars
@@ -157,12 +158,11 @@ class Validator
     }
     public function sanitarizePost( string $postname) : string
     {
+        $postname = trim($postname);
         return filter_input(INPUT_POST, $postname, FILTER_SANITIZE_SPECIAL_CHARS);
     }
     public function validateEmail( string $string) : bool
-    {
-        //$string = filter_input(INPUT_POST, $string, FILTER_SANITIZE_SPECIAL_CHARS);
-        
+    {   
         if ( !preg_match($this->pattern, $string) )
             return false;
         
@@ -171,13 +171,44 @@ class Validator
     public function validateString( string $string) : bool
     {
         //[-a-zA-Z0-9_
-        //$string = filter_input(INPUT_POST, $string, FILTER_SANITIZE_SPECIAL_CHARS);
+        if ( empty(trim($string)) ) return false;
+
         $symbols = preg_split('//u',$string,-1,PREG_SPLIT_NO_EMPTY);
         foreach ( $symbols as $key => $symbol )
         {
             if ( in_array($symbol, $this->badChars) )
                 return false;
         }
+        return true;
+    }
+    public function validateLogInput( string $log, array $usersAll ) : bool
+    {
+        if ( empty(trim($log)) ) return false;
+
+        $symbols = preg_split('//u',$log,-1,PREG_SPLIT_NO_EMPTY);
+        $len = count($symbols);
+        if ( $len < 6 || $len > 25 ) return false;
+        foreach ( $symbols as $key => $symbol )
+        {
+            if ( in_array($symbol, $this->badChars) )
+                return false;
+        }
+
+        foreach( $usersAll as $singleUser )
+        {
+            if ( $singleUser['login'] == $log ) {
+               Yii::$app->session->setFlash('logexist','User with this login already exist!');
+                return false;
+            }
+        }
+
+        return true;
+    }
+    public function validatePassInput( string $pass) : bool
+    {
+        $symbols = preg_split('//u',$pass,-1,PREG_SPLIT_NO_EMPTY);
+        $len = count($symbols);
+        if ( $len < 8 || $len > 60 ) return false;
         return true;
     }
     public function validateLogin( string $loginName) : string

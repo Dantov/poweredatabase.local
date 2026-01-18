@@ -5,7 +5,7 @@ use yii\helpers\Url;
 use yii\helpers\Html;
 use app\models\User;
 use app\models\serviceClasses\Crypt;
-
+$session = Yii::$app->session;
 $this->params['breadcrumbs'][] = $this->title;
 $tt=time();
 $this->registerJsFile("@web/js/users/Users.js?v=$tt");
@@ -29,43 +29,50 @@ description: '<?=$uPermission['description']?>'
     <div class="col-md-8 order-md-1 validform2">
     <div class="outer-w3-agile mt-3"> 
         <h4 class="tittle-w3-agileits mb-4"><?= $this->title = 'Edit User:' . $single['fio'] ?></h4> 
+        <?php if( $session->hasFlash('allgood') ):?>
+            <div class="alert alert-success" role="alert"><?=$session->getFlash('allgood')?></div>
+        <?php endif;?>
+        <?php if( $session->hasFlash('saveErrors') ):?>
+            <div class="alert alert-danger" role="alert"><?=$session->getFlash('saveErrors')?></div>
+        <?php endif;?>
             <div class="col-md-12 order-md-1 validform2">
                 <form action="<?=Url::to(['users/edit-user/'])?>" method="post" class="needs-validation" novalidate="">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="address">Login</label>
-                            <input type="text" class="form-control" min="6" name="logname" id="address" placeholder="">
-                            <div class="invalid-feedback">
-                                Please enter your Login.
+                            <input type="text" class="form-control" min="6" max="25" value="<?=$single['login']?>" name="logname" id="address" placeholder="">
+                            <div class="invalid-feedback d-block">
+                                <?= $session->getFlash('logname')?>
+                                <?= $session->getFlash('logexist')?>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="address2">Password</label>
                             <input type="password" class="form-control" min="8" name="bypass" id="address2" placeholder="">
-                            <div class="invalid-feedback">
-                                Please enter your password.
+                            <div class="invalid-feedback d-block">
+                                <?= $session->getFlash('bypass')?>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="firstName">Name</label>
                             <input type="text" class="form-control" name="firstName" id="firstName" placeholder="" value="<?= $single['name'] ?>" required="">
-                            <div class="invalid-feedback">
-                                Valid first name is required.
+                            <div class="invalid-feedback d-block">
+                                <?= $session->getFlash('firstName')?>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="lastName">Last name</label>
                             <input type="text" class="form-control" name="lastName" id="lastName" placeholder="" value="<?= $single['lastname'] ?>" required="">
-                            <div class="invalid-feedback">
-                                Valid last name is required.
+                            <div class="invalid-feedback d-block">
+                                <?= $session->getFlash('lastName')?>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="thirdName">Third name</label>
+                            <label for="thirdname">Third name</label>
                             <div class="input-group">
-                                <input type="text" value="<?= $single['thirdname'] ?>" name="thridName" class="form-control" id="thirdName" placeholder="">
-                                <div class="invalid-feedback">
-                                    Your username is required.
+                                <input type="text" value="<?= $single['thirdname'] ?>" name="thirdname" class="form-control" id="thirdname" placeholder="">
+                                <div class="invalid-feedback d-block">
+                                    <?= $session->getFlash('thirdname')?>
                                 </div>
                             </div>
                         </div>
@@ -76,8 +83,8 @@ description: '<?=$uPermission['description']?>'
                                 <span class="text-muted">(Optional)</span>
                             </label>
                             <input type="email" class="form-control" name="email" id="email" value="<?= $single['email'] ?>" placeholder="you@example.com">
-                            <div class="invalid-feedback">
-                                Please enter a valid email address for shipping updates.
+                            <div class="invalid-feedback d-block">
+                                <?= $session->getFlash('email')?>
                             </div>
                         </div>
                         <div class="col-md-5 mb-3">
@@ -88,9 +95,6 @@ description: '<?=$uPermission['description']?>'
                                   <label class="form-check-label cursorPointer" for="<?=$srole['name']?>"><?=$srole['name']?></label>
                                 </div>
                             <?php endforeach;?>
-                            <div class="invalid-feedback">
-                                Please select a valid Role.
-                            </div>
                         </div>
                     </div>
                     <div class="row">

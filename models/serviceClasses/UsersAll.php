@@ -18,7 +18,7 @@ class UsersAll extends Common
 	function __construct( int $id = null)
     {
         $this->userfields = [
-            'id','name','lastname','thirdname','fio','fullFio','role','clients','permissions',
+            'id','login','name','lastname','thirdname','fio','fullFio','role','clients','permissions',
             'location','about','email','access'];
         $this->getAllUsers();
         
@@ -84,30 +84,38 @@ class UsersAll extends Common
         return $this->all;
     }
 
-	public function getAllPermissions()
+	protected function getAllPermissions()
     {
         if ( isset( $this->permissions ) ) return $this->permissions;
-
 		$this->permissions = Permissions::find()->select(['id','name','description'])->asArray()->all();
-        $uPermissions = json_decode($this->user['permissions'],true); //User::permissions();
+	}
+    public function hasPermission( int $permID ) : bool
+    {
+        return array_key_exists($permID, $this->hisPermissions());
+    }
+    public function permissionsApplyed()
+    {
+        $permissions = $this->getAllPermissions();
+        foreach ( $permissions as &$permA )
+            $permA['applied'] = 0;
 
-        foreach ( $this->permissions as &$perm )
+        $uPermissions = json_decode($this->user['permissions'],true);
+        foreach ( $permissions as &$perm )
         {
-            $perm['applied'] = 0;
-            if ( array_key_exists($perm['id'], $uPermissions) )
+            if ( in_array($perm['id'], $uPermissions) )
                 $perm['applied'] = 1;
         }
 
-        return $this->permissions;
-	}
-    public function getPermissions() : array
+        return $permissions;
+    }
+    public function hisPermissions() : array
     {
         if ( !isset($this->user['permissions']) ) 
             return [];
 
-        $userPermissions = json_decode($this->user['permissions'],true);
-        $permissions = Permissions::find()->select(['id','name','description'])->asArray()->all();  
-        //debug($uperms ,1,1 );
+        $userPermissions = json_decode($this->user['permissions'],true); 
+        $permissions = $this->getAllPermissions();
+        
         $permittedFieldAll = [];
         foreach ( $permissions as $permission )
         {
@@ -172,53 +180,74 @@ class UsersAll extends Common
         }
         return $allRoles;
     }
-
-    public function saveUserData( array $post ) : bool
+    protected function localFieldsValidate( array $validatedData ) : bool
     {
         $session = Yii::$app->session;
-        $thisuser = Users::find()->where(['id'=>$this->uid]);
-        if ( !$thisuser->exists() )
-            return false;
-
-        $thisuser = $thisuser->one();
-
-        $v = new Validator();
-        $udata = [];
-        $udata['firstName'] = $v->validateString($post['firstName']);
-        $udata['lastName']  = $v->validateString($post['lastName']);
-        $udata['thirdName'] = $v->validateString($post['thridName']);
-        $udata['logname']   = $v->validateString($post['logname']);
-        $udata['email']     = $v->validateEmail($post['email']);
-
         $isAllValid = true;
-        foreach( $udata as $field => $value )
+        foreach( $validatedData as $field => $value )
         {
             if ( !$value ) {
                 $session->setFlash($field, 'Заполнено не верено!');
                 $isAllValid = false;
             };
         }
-        if ( !$isAllValid ) return false;
+        return $isAllValid;
+    }
+    public function saveUserData( array $post ) : bool
+    {
+        $thisuser = Users::find()->where(['id'=>$this->uid]);
+        if ( !$thisuser->exists() )
+            return false;
 
-        $usernote = $v->sanitarizePost('usernote');
-        $password = password_hash($post['bypass'], PASSWORD_DEFAULT);
+        $v = new Validator();
+        $udata = [];
+
+        $udata['logname'] = true;
+        if ( !empty(trim($post['logname'])) )
+            $udata['logname'] = $v->validateLogInput($post['logname'], $this->getAllUsers());
+
+        $udata['bypass'] = true;
+        if ( !empty(trim($post['bypass'])) )
+            $udata['bypass'] = $v->validatePassInput($post['bypass']);
+
+        $udata['firstName'] = true;
+        if ( !empty(trim($post['firstName'])) )
+            $udata['firstName'] = $v->validateString($post['firstName']);
+
+        $udata['lastName'] = true;
+        if ( !empty(trim($post['lastName'])) )
+            $udata['lastName'] = $v->validateString($post['lastName']);
+
+        $udata['thirdname'] = true;
+        if ( !empty(trim($post['thirdname'])) )
+            $udata['thirdname'] = $v->validateString($post['thirdname']);
+
+        $udata['email'] = true;
+        if ( !empty(trim($post['email'])) )
+            $udata['email'] = $v->validateEmail($post['email']);
+
+        if ( !$this->localFieldsValidate($udata) ) return false;
+        
+        $thisuser = $thisuser->one();
+
+        if ( !empty(trim($post['logname'])) )
+            $thisuser->login = $post['logname'];
+        if ( !empty(trim($post['bypass'])) )
+            $thisuser->pass = password_hash($post['bypass'], PASSWORD_DEFAULT); 
+        if ( !empty(trim($post['email'])) )
+            $thisuser->email = $post['email'];
 
         $thisuser->name = $post['firstName']; 
         $thisuser->lastname = $post['lastName']; 
-        $thisuser->thirdname = $post['thridName']; 
+        $thisuser->thirdname = $post['thirdname']; 
         $thisuser->fio = $post['firstName'] . " " . $post['lastName']; 
-        $thisuser->fullFio = $post['firstName']. " " .$post['thridName']. " " .$post['lastName']; 
-        $thisuser->email = $post['email']; 
-        $thisuser->about = $usernote;
-        $thisuser->login = $post['logname']; 
-        $thisuser->pass = $password; 
+        $thisuser->fullFio = $post['firstName']. " " .$post['thirdname']. " " .$post['lastName']; 
+        $thisuser->about = $v->sanitarizePost('usernote');
 
         $uRoles = [];
         $uClients = [];
         if ( isset($post['role']) ) 
             $uRoles = $this->applyUser("role", $post['role'] );
-            //$uRoles = $this->applyUser("role", json_decode( $post['role'] ));
-        
         if ( isset($post['clients']) )
             $uClients = $this->applyUser("client", $post['clients']);
 
@@ -230,7 +259,6 @@ class UsersAll extends Common
     protected function applyUser( string $tab, array $data ) : array
     {
         $all = Service_data::find()->where(['tab'=>$tab])->asArray()->all();
-
         $valid = [];
         foreach( $data as $dataID )
         {
@@ -238,7 +266,6 @@ class UsersAll extends Common
                 if ( (int)$single['id'] === (int)$dataID ) 
                     $valid[] = $single['id'];
         }
-        
         return $valid;
     }
 
@@ -247,33 +274,27 @@ class UsersAll extends Common
         $thisuser = $this->applyRightPrepare( $permid );
         if ( $thisuser === false ) return false;
 
-        if ( User::hasPermission($permid) ) return false;
-        //debug($thisuser->permissions,'$thisuser->permissions',1);
+        if ( $this->hasPermission($permid) ) return false;
+
         $oldUP = json_decode($thisuser->permissions,true);
-        $oldUP = $thisuser->permissions;
         $oldUP[] = $permid;
 
-        $thisuser->permissions = $oldUP;
-        //$thisuser->permissions = json_encode($oldUP);
+        $thisuser->permissions = json_encode($oldUP);
         return $thisuser->save(false);
     }
     public function removeRight( int $permid ) : bool
     {
         $thisuser = $this->applyRightPrepare( $permid );
         if ( $thisuser === false ) return false;
-
-        if ( !User::hasPermission($permid) ) return false;
-        
-        //$oldUP = json_decode($thisuser->permissions);
-        $oldUP = $thisuser->permissions;
+        if ( !$this->hasPermission($permid) ) return false;
+        $oldUP = json_decode($thisuser->permissions);
         foreach ( $oldUP as $key => $upID )
         {
             if ( $upID === $permid )
                 unset($oldUP[$key]);
         }
 
-        //$thisuser->permissions = json_encode($oldUP);
-        $thisuser->permissions = $oldUP;
+        $thisuser->permissions = json_encode($oldUP);
         return $thisuser->save(false);
     }
     protected function applyRightPrepare( int $permid ) : mixed
@@ -303,42 +324,46 @@ class UsersAll extends Common
 
     public function addNewUser( array $post )
     {
-        $session = Yii::$app->session;
         $v = new Validator();
         $udata = [];
+        $udata['logname'] = $v->validateLogInput($post['logname'], $this->getAllUsers() );
+        $udata['bypass'] = $v->validatePassInput($post['bypass']);
+
         $udata['firstName'] = $v->validateString($post['firstName']);
         $udata['lastName']  = $v->validateString($post['lastName']);
-        $udata['thirdName'] = $v->validateString($post['thridName']);
-        $udata['logname']   = $v->validateString($post['logname']);
-        $udata['email']     = $v->validateEmail($post['email']);
 
-        $isAllValid = true;
-        foreach( $udata as $field => $value )
-        {
-            if ( !$value ) {
-                $session->setFlash($field, 'Заполнено не верено!');
-                $isAllValid = false;
-            };
-        }
-        if ( !$isAllValid ) return false;
+        $udata['thirdname'] = true;
+        if ( !empty(trim($post['thirdname'])) )
+            $udata['thirdname'] = $v->validateString($post['thirdname']);
+
+        $udata['email'] = true;
+        if ( !empty(trim($post['email'])) )
+            $udata['email'] = $v->validateEmail($post['email']);
+
+        if ( !$this->localFieldsValidate( $udata ) ) return false;
 
         $newUser = new Users();
-
-        $usernote = $v->sanitarizePost('usernote');
-        $password = password_hash($post['bypass'], PASSWORD_DEFAULT);
-
+        $newUser->login = $post['logname']; 
+        $newUser->pass = password_hash($post['bypass'], PASSWORD_DEFAULT);
         $newUser->name = $post['firstName']; 
         $newUser->lastname = $post['lastName']; 
-        $newUser->thirdname = $post['thridName']; 
         $newUser->fio = $post['firstName'] . " " . $post['lastName']; 
-        $newUser->fullFio = $post['firstName']. " " .$post['thridName']. " " .$post['lastName']; 
+        $newUser->thirdname = $post['thirdname']; 
+        $newUser->fullFio = $post['firstName']. " " .$post['thirdname']. " " .$post['lastName']; 
+        $newUser->about = $v->sanitarizePost('usernote');
         $newUser->email = $post['email']; 
-        $newUser->about = $usernote;
-        $newUser->login = $post['logname']; 
-        $newUser->pass = $password;
-        $newUser->role = json_encode([]);
-        $newUser->clients = json_encode([]);
-        $newUser->permissions = [];
+
+        $uRoles  = [];
+        $uClients = [];
+        if ( isset($post['role']) ) 
+            $uRoles = $this->applyUser("role", $post['role'] );
+        if ( isset($post['clients']) )
+            $uClients = $this->applyUser("client", $post['clients']);
+
+        $newUser->role = json_encode($uRoles);
+        $newUser->clients = json_encode($uClients);
+
+        $newUser->permissions = json_encode([]);
         $newUser->location = '';
         $newUser->access = 0;
 
@@ -348,7 +373,16 @@ class UsersAll extends Common
         return $this->uid;
     }
 
-
+    public function deleteUser( int $id ) : bool
+    {
+        $usr = Users::find()->where(['id'=>$id]);
+        if ( $usr->count() )
+        {
+            $usr = $usr->limit(1)->one();
+            return $usr->delete();
+        }
+        return false;
+    }
     public function accessControl() : bool
     {
         if ( User::hasPermission('Users') ) 

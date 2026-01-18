@@ -23,43 +23,47 @@ let appliedRights = [];
     <div class="col-md-8 order-md-1 validform2">
     <div class="outer-w3-agile mt-3"> 
         <h4 class="tittle-w3-agileits mb-4"><?= $this->title = 'Add New User' ?></h4> 
+        <?php if( $session->hasFlash('saveErrors') ):?>
+            <div class="alert alert-danger" role="alert"><?=$session->getFlash('saveErrors')?></div>
+        <?php endif;?>
             <div class="col-md-12 order-md-1 validform2">
                 <form action="<?=Url::to(['users/add/'])?>" method="post" class="needs-validation" novalidate="">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="address">Login</label>
                             <input type="text" class="form-control" min="6" name="logname" id="address" placeholder="">
-                            <div class="invalid-feedback">
+                            <div class="invalid-feedback d-block">
                                 <?= $session->getFlash('logname')?>
+                                <?= $session->getFlash('logexist')?>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="address2">Password</label>
                             <input type="password" class="form-control" min="8" name="bypass" id="address2" placeholder="">
-                            <div class="invalid-feedback">
-                                <?= $session->getFlash('pass')?>
+                            <div class="invalid-feedback d-block">
+                                <?= $session->getFlash('bypass')?>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="firstName">Name</label>
                             <input type="text" class="form-control" name="firstName" id="firstName" placeholder="" value="" required="">
-                            <div class="invalid-feedback">
+                            <div class="invalid-feedback d-block">
                                <?= $session->getFlash('firstName')?>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="lastName">Last name</label>
                             <input type="text" class="form-control" name="lastName" id="lastName" placeholder="" value="" required="">
-                            <div class="invalid-feedback">
+                            <div class="invalid-feedback d-block">
                                 <?= $session->getFlash('lastName')?>
                             </div>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="thirdName">Third name</label>
+                            <label for="thirdname">Third name</label>
                             <div class="input-group">
-                                <input type="text" value="" name="thridName" class="form-control" id="thirdName" placeholder="">
-                                <div class="invalid-feedback">
-                                     <?= $session->getFlash('thridName')?>
+                                <input type="text" value="" name="thirdname" class="form-control" id="thirdname" placeholder="">
+                                <div class="invalid-feedback d-block">
+                                     <?= $session->getFlash('thirdname')?>
                                 </div>
                             </div>
                         </div>
@@ -70,7 +74,7 @@ let appliedRights = [];
                                 <span class="text-muted">(Optional)</span>
                             </label>
                             <input type="email" class="form-control" name="email" id="email" value="" placeholder="you@example.com">
-                            <div class="invalid-feedback">
+                            <div class="invalid-feedback d-block">
                                 <?= $session->getFlash('email')?>
                             </div>
                         </div>

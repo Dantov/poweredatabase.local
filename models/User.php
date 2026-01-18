@@ -154,24 +154,6 @@ class User
         }
         return false;
     }
-
-    public static function getClientsID_OLD( array $allClients ) : array
-    {
-        $permissions = self::permissions();
-
-        $clientPermIds = [];
-        foreach ( $permissions as $permission ) 
-        {
-            if ( stripos($permission['name'],'client_') !== false )
-            {
-                $cID = explode('_',$permission['name']);
-                if ( !isset($cID[1]) ) throw new Exception('Wrong permission found!',500);
-
-                $clientPermIds[] = $cID[1];  
-            } 
-        }
-        return $clientPermIds;
-    }
     public static function getClientsID() : array
     {
         return json_decode(self::$userInstance['clients'],true);
