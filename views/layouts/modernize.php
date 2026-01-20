@@ -4,22 +4,34 @@ use app\assets\AppAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
+use app\models\User;
 
 AppAsset::register($this);
 
 $this->registerCsrfMetaTags();
 
 $session = Yii::$app->session;
-$controller = $this->context;
-$jsCONSTANTS = $controller->jsCONSTANTS;
-$clients = $controller->clients;
-$nonPublished = $controller->nonPublished;
-$allHashtags = $controller->hashtags;
+$controller    = $this->context;
+$clients       = $controller->clients;
+$nonPublished  = $controller->nonPublished;
+$allHashtags   = $controller->hashtags;
+$allModelTypes = $controller->modelTypes;
+$metalColors   = $controller->modelMaterials['metal_color'];
+$metalProbes   = $controller->modelMaterials['metal_probe'];
+$metalNames    = $controller->modelMaterials['model_material'];
+
+$matSelectedCheck = (bool)($session->get('selectByMatMetal') || $session->get('selectByMatColor') || $session->get('selectByMatProbe'));
 
 $searchFor = $session->has('searchFor')?$session->get('searchFor') : '';
 
-//debug($nonPublished,'$nonPublished',1);
-$this->registerJs($jsCONSTANTS,View::POS_HEAD);
+$hashtags = $session->get('selectByHashtags');
+foreach( $allHashtags as &$singlehashtag ){
+    if ( in_array($singlehashtag['name'], $hashtags) ){
+        $singlehashtag['active'] = true;
+    }
+}
+
+$this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
 ?>
 <!doctype html>
 <?php $this->beginPage() ?>
@@ -96,15 +108,109 @@ $this->registerJs($jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
+                        <a href="#modeltypeSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                            <i class="fa-solid fa-swatchbook"></i>
+                            По Типу: <?=$session->get('selectByModelType')?$session->get('selectByModelType'):"Нет" ?>
+                            <i class="fas fa-angle-left fa-pull-right"></i>
+                        </a>
+                        <ul class="collapse list-unstyled" id="modeltypeSubmenu1">
+                            <li><a href="<?= Url::to(['/search/select-by','modeltype'=>123])?>">Нет</a></li>
+                            <?php foreach( $allModelTypes as $singleType ): ?>
+                                <li>
+                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','modeltype'=>$singleType['name']])?>">
+                                        &nbsp;&nbsp;<i class="fa-solid fa-ellipsis"></i><?=$singleType['name']?>
+                                        <?php if ( $session->get('selectByModelType') == $singleType['name'] ): ?>
+                                            &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
+                                        <?php endif; ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#materialsSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                            <i class="fa-solid fa-ring"></i>
+                            По Материалам: <?=$matSelectedCheck?' <i class="fa-solid fa-check"></i>':"Нет" ?>
+                            <i class="fas fa-angle-left fa-pull-right"></i>
+                        </a>
+                        <ul class="collapse list-unstyled" id="materialsSubmenu1">
+                            <li><a href="<?= Url::to(['/search/select-by','materials'=>123])?>">Нет</a></li>
+                            <li>
+                                <a href="#materialsMetalSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                                    &nbsp;&nbsp;<i class="fa-solid fa-boxes-stacked"></i>
+                                    По Металу: <?=$session->get('selectByMatMetal')?$session->get('selectByMatMetal'):"Нет" ?>
+                                    <i class="fas fa-angle-left fa-pull-right"></i>
+                                </a>
+                                <ul class="collapse list-unstyled" id="materialsMetalSubmenu1">
+                                    <?php foreach( $metalNames as $metalName ): ?>
+                                        <li>
+                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','matname'=>$metalName['name']])?>">
+                                                &nbsp;&nbsp;&nbsp;<?=$metalName['name']?>
+                                                <?php if ( $session->get('selectByMatMetal') == $metalName['name'] ): ?>
+                                                    &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
+                                                <?php endif; ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#materialsColorSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                                    &nbsp;&nbsp;<i class="fa-solid fa-palette"></i>
+                                    По Цвету: <?=$session->get('selectByMatColor')?$session->get('selectByMatColor'):"Нет" ?>
+                                    <i class="fas fa-angle-left fa-pull-right"></i>
+                                </a>
+                                <ul class="collapse list-unstyled" id="materialsColorSubmenu1">
+                                    <?php foreach( $metalColors as $metalColor ): ?>
+                                        <li>
+                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','matcolor'=>$metalColor['name']])?>">
+                                                &nbsp;&nbsp;&nbsp;<?=$metalColor['name']?>
+                                                <?php if ( $session->get('selectByMatColor') == $metalColor['name'] ): ?>
+                                                    &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
+                                                <?php endif; ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#materialsProbeSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                                    &nbsp;&nbsp;<i class="fa-solid fa-eye-dropper"></i>
+                                    По Пробе: <?=$session->get('selectByMatProbe')?$session->get('selectByMatProbe'):"Нет" ?>
+                                    <i class="fas fa-angle-left fa-pull-right"></i>
+                                </a>
+                                <ul class="collapse list-unstyled" id="materialsProbeSubmenu1">
+                                    <?php foreach( $metalProbes as $metalProbe ): ?>
+                                        <li>
+                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','matprobe'=>$metalProbe['name']])?>">
+                                                &nbsp;&nbsp;&nbsp;<?=$metalProbe['name']?>
+                                                <?php if ( $session->get('selectByMatProbe') == $metalProbe['name'] ): ?>
+                                                    &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
+                                                <?php endif; ?>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
                         <a href="#hashtagSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
                             <i class="fa-solid fa-tags"></i>
-                            По Хештегу: <?=$session->get('selectByHashtag')?$session->get('selectByHashtag'):"Нет" ?>
+                            По Хештегу: <?=$session->get('selectByHashtags')?' <i class="fa-solid fa-check"></i>':"Нет" ?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
                         <ul class="collapse list-unstyled" id="hashtagSubmenu1">
                             <li><a href="<?= Url::to(['/search/select-by','hashtag'=>123])?>">Нет</a></li>
                             <?php foreach( $allHashtags as $singlehashtag ): ?>
-                                <li><a href="<?= Url::to(['/search/select-by','hashtag'=>$singlehashtag['name']])?>"><?=$singlehashtag['name']?></a></li>
+                                <li>
+                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','hashtag'=>$singlehashtag['name']])?>">
+                                        &nbsp;&nbsp;<i class="fa-solid fa-ellipsis"></i><?=$singlehashtag['name']?>
+                                        <?php if (isset($singlehashtag['active'])): ?>
+                                            &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
+                                        <?php endif;?>
+                                    </a>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     </li>
@@ -129,15 +235,15 @@ $this->registerJs($jsCONSTANTS,View::POS_HEAD);
                     <li>
                         <a href="#growingSubmenu" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
                             <i class="fas fa-sort-amount-up-alt"></i>
-                            По: <?=($session->get('selectByOrder')===SORT_ASC)?"Возрастанию":"Убыванию"?>
+                            По: <?=($session->get('selectByOrder')===SORT_ASC)?"Самые новые":"Самые старые"?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
                         <ul class="collapse list-unstyled" id="growingSubmenu">
                             <li>
-                                <a href="<?=Url::to(['/search/select-by','order'=>'ASC'])?>">Возрастанию</a>
+                                <a href="<?=Url::to(['/search/select-by','order'=>'ASC'])?>">Самые новые</a>
                             </li>
                             <li>
-                                <a href="<?=Url::to(['/search/select-by','order'=>'DESC'])?>">Убыванию</a>
+                                <a href="<?=Url::to(['/search/select-by','order'=>'DESC'])?>">Самые старые</a>
                             </li>
                         </ul>
                     </li>
@@ -173,7 +279,7 @@ $this->registerJs($jsCONSTANTS,View::POS_HEAD);
                                 <img src="/stock/<?=$npModel['id']?>/images/<?=$npModel['mainimage']?>" width="50px" class="mr-2">
                             <?php endif; ?>
                             <span><?=$npModel['number_3d']?></span><br>
-                            <span>Добавил: <?=$npModel['creator_name'] . " - " . $npModel['date']?></span>
+                            <span>Добавил: <?=User::getUsernameByID($npModel['creator_id']) . " - " . $npModel['date']?></span>
                         </a>
                     </li>
                     <?php endforeach; ?>
@@ -337,6 +443,25 @@ $this->registerJs($jsCONSTANTS,View::POS_HEAD);
         $('#sidebarCollapse').on('click', function () {
             $('#sidebar').toggleClass('active');
         });
+
+        let sidemenu = document.querySelector('.components');
+        let allA = sidemenu.querySelectorAll('a[data-toggle="collapse"]');
+
+        sidemenu.addEventListener('click',function(e){
+            e.preventDefault();
+            let click = e.target;
+            let b;
+            b = (click.hasAttribute('data-toggle') || click.classList.contains('fa-angle-down') || click.classList.contains('fa-angle-left'));
+            if ( !b ) return;
+            if ( click.hasAttribute('data-toggle') ){
+                click.lastElementChild.classList.toggle('fa-angle-down');
+                click.lastElementChild.classList.toggle('fa-angle-left');    
+            } else {
+                click.classList.toggle('fa-angle-down');
+                click.classList.toggle('fa-angle-left');
+            }
+            
+        },false);
     });
 </script>
 <!--// Sidebar-nav Js -->

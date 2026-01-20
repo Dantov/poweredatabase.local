@@ -143,10 +143,17 @@ class Auth extends Common
         $session->set('SelectByClient','Все');
         $session->set('searchFor', '');
         $session->set('selectByHashtag', '');
+        $session->set('selectByHashtags', []);
+        $session->set('selectByModelType', '');
+        
         $session->set('selectFromDate','');
         $session->set('selectToDate','');
         $session->get('selectByOrder', SORT_ASC);
         $session->set('tilesControlSize', 12);
+
+        $session->set('selectByMatColor', '');
+        $session->set('selectByMatMetal', '');
+        $session->set('selectByMatProbe', '');
 
         /****  OLD VARIABLES 
         $assist['maxPos'] = 48;        // кол-во выводимых позиций по дефолту

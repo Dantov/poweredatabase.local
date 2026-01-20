@@ -108,5 +108,4 @@ Search.prototype.tilesControlSize = function( obj )
     });
 };
 
-
 let search_for = new Search();

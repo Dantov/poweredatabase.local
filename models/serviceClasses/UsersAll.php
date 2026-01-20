@@ -224,7 +224,7 @@ class UsersAll extends Common
 
         $udata['email'] = true;
         if ( !empty(trim($post['email'])) )
-            $udata['email'] = $v->validateEmail($post['email']);
+            $udata['email'] = $v->validateEmail($post['email'], $this->getAllUsers());
 
         if ( !$this->localFieldsValidate($udata) ) return false;
         
@@ -338,7 +338,7 @@ class UsersAll extends Common
 
         $udata['email'] = true;
         if ( !empty(trim($post['email'])) )
-            $udata['email'] = $v->validateEmail($post['email']);
+            $udata['email'] = $v->validateEmail($post['email'], $this->getAllUsers());
 
         if ( !$this->localFieldsValidate( $udata ) ) return false;
 

@@ -31,9 +31,11 @@ class GeneralController extends Controller
     protected $stockDir;
 
     public array $user;
-    public array $clients = [];
-    public array $hashtags = [];
-    public array $nonPublished = [];
+    public array $clients;
+    public array $hashtags;
+    public array $modelTypes;
+    public array $modelMaterials;
+    public array $nonPublished;
     public $status_arr = [];
     public $labels_arr = [];
     public $img_arr = [];
@@ -41,12 +43,8 @@ class GeneralController extends Controller
     public function beforeAction($action)
     {
         if ( !$this->accessControl() ) 
-		{
-			//debug('accessControl',1,1);
-			return $this->redirect(['/auth'])->send();
-		}
-
-        //if ( empty( $this->user ) ) $this->user = Yii::$app->session['user'];
+		  return $this->redirect(['/auth'])->send();
+		
         $this->IP_visiter = $_SERVER['SERVER_ADDR'];
 
         $this->isMobile  = $this->isMobileCheck();
@@ -61,6 +59,8 @@ JS;
         $m = new Main();
         $this->clients = $m->getClients();
         $this->hashtags = $m->getAllHashtags();
+        $this->modelTypes = $m->getAllModelTypes();
+        $this->modelMaterials = $m->getAllMaterials();
         $this->nonPublished = $m->getNonPublished();
 
         return parent::beforeAction($action);
@@ -70,26 +70,6 @@ JS;
     {
         $auth = new Auth();
         return $auth->accessControl();
-    }
-
-    /*
-     * Удаление не нужных сессий
-     * и файлов
-     */
-    public function unsetData($path=false)
-    {
-        $session = Yii::$app->session;
-        // удаляем автозаполнение при возврате на главную
-        if ( $session->has('general_data') ) $session->remove('general_data');
-
-        //удаляем инфу из ворд файла и сами файлы
-        if ( $session->has('fromWord_data') )
-        {
-            //rrmdir( _rootDIR_ .$session['fromWord_data']['tempDirName']);
-            $session->remove('fromWord_data');
-        }
-        //сессия id пдф прогресс бара
-        if ( $session->has('id_progr') ) $session->remove('id_progr');
     }
 
     public function isMobileCheck()

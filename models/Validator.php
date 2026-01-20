@@ -42,6 +42,7 @@ class Validator
     {
         return self::$lastError;
     }
+
     /**
      * Удаляем всю инф. об ошибках
      * что бы валидировать новые поля
@@ -56,35 +57,6 @@ class Validator
 
         return false;
     }
-    /**
-     * Описаны возможные правила
-     * @param string $ruleName
-     * @param string $field
-     * @param string $value
-     * @return array
-     */
-    protected function rulesErrorText(  string $ruleName, string $field, string $value )
-    {
-        $rules = [
-            'min' => "Значение поля '" . $field . "' не должно быть меньше " . $value . ". ",
-            'max' => "Значение поля '" . $field . "' не должно быть больше " . $value . ". ",
-            'minLength' => "Кол-во символов в поле '" . $field . "' не должно быть меньше " . $value . ". ",
-            'maxLength' => "Кол-во символов в поле '" . $field . "' не должно быть больше " . $value . ". ",
-            'required' => "Поле '" . $field . "' обязательно к заполнению. ",
-            'readonly' => "Поле '" . $field . "' нельзя изменять. ",
-            'int' => "Значение поля '" . $field . "' должно быть целое число. ",
-            'unsigned' => "Значение поля '" . $field . "' не может быть отрицательным. ",
-            'double' => "Значение поля '" . $field . "' должно быть дробное число. ",
-            'forbiddenChars' => "Значение поля '" . $field . "' содержит не допустимые символы. ",
-            'acceptedChars' => "Значение поля '" . $field . "' содержит не . ",
-        ];
-
-        if ( array_key_exists($ruleName, $rules) )
-            return $rules[$ruleName];
-
-        return $rules;
-    }
-
 
     protected function baseValidate( string $str ) : string
     {
@@ -93,81 +65,31 @@ class Validator
         return $str;
     }
 
-    public function validate( $fieldValue, array $rules ) : bool
-    {
-        foreach( $rules as $rule )
-        {
-
-        }
-        switch ($rule)
-        {
-            case "required":
-                {
-                    if ( empty($fieldValue) )
-                    $this->setErrorText($rule, $rules['name'], $value);
-                } break;
-            case "double":
-                {
-                    $fieldValue = (double)$fieldValue;
-                } break;
-            case "int":
-                {
-                    $fieldValue = (int)$fieldValue;
-                } break;
-            case "unsigned":
-                {
-                    if ( $fieldValue < 0 )
-                        $this->setErrorText($rule, $rules['name'], $value);
-                } break;
-            case "min":
-                {
-                    if ( $fieldValue < $value )
-                        $this->setErrorText($rule, $rules['name'], $value);
-                } break;
-            case "max":
-                {
-                    if ( $fieldValue > $value )
-                        $this->setErrorText($rule, $rules['name'], $value);
-                } break;
-            case "minLength":
-                {
-                    if ( mb_strlen($fieldValue) < $value )
-                        $this->setErrorText($rule, $rules['name'], $value);
-                } break;
-            case "maxLength":
-                {
-                    if ( mb_strlen($fieldValue) > $value )
-                        $this->setErrorText($rule, $rules['name'], $value);
-                } break;
-            case "forbiddenChars":
-                {
-                    // проверить каждый символ поля
-                    $symbols = $arrChars = preg_split('//u',$fieldValue,-1,PREG_SPLIT_NO_EMPTY);
-                    foreach ( $symbols as $symbol )
-                    {
-                        if ( in_array($symbol, $this->badChars) )
-                        {
-                            $this->setErrorText($rule, $rules['name'], $value);
-                            break;
-                        }
-                    }
-                } break;
-        }
-
-        return true;
-    }
     public function sanitarizePost( string $postname) : string
     {
         $postname = trim($postname);
         return filter_input(INPUT_POST, $postname, FILTER_SANITIZE_SPECIAL_CHARS);
     }
-    public function validateEmail( string $string) : bool
+
+
+    public function validateEmail( string $email, array $usersAll ) : bool
     {   
-        if ( !preg_match($this->pattern, $string) )
-            return false;
+        if ( preg_match($this->pattern, $email) ) 
+        {
+            foreach( $usersAll as $singleUser )
+            {
+                if ( $singleUser['email'] == $email ) {
+                   Yii::$app->session->setFlash('emailexist','User with this email already exist!');
+                   return false;
+                }
+            }
+            return true;
+        }
         
-        return true;
+        return false;
     }
+
+
     public function validateString( string $string) : bool
     {
         //[-a-zA-Z0-9_
@@ -222,7 +144,7 @@ class Validator
         return filter_input(INPUT_POST, $passwordName, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-    public function validateFileName($name)
+    public function validateFileName($name) : string
     {
         $name = $this->baseValidate($name);
         $symbols = preg_split('//u',$name,-1,PREG_SPLIT_NO_EMPTY);
@@ -266,7 +188,6 @@ class Validator
 
     /** Search Input Trusted Chars */
     protected array $sitc = [];
-
     public function searchInputTrustedChars() : array
     {
         

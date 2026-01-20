@@ -60,6 +60,24 @@ class Common
 		return Service_data::find()->where(['tab'=>'hashtag'])->asArray()->orderBy('name')->all();
 	}
 
+	public function getAllModelTypes() : array
+	{
+		return Service_data::find()->where(['tab'=>'model_type'])->asArray()->orderBy('name')->all();
+	}
+
+	public function getAllMaterials() : array
+	{
+		$mats = Service_data::find()->where(['in','tab',['metal_color','model_material','metal_probe']])->asArray()->orderBy('name')->all();
+		$res = [ 'metal_color'=>[], 'model_material'=>[],'metal_probe'=>[] ];
+		foreach ($mats as $mat)
+		{
+			if ( $mat['tab'] == 'metal_color' ) $res['metal_color'][] = $mat;
+			if ( $mat['tab'] == 'model_material' ) $res['model_material'][] = $mat;
+			if ( $mat['tab'] == 'metal_probe' ) $res['metal_probe'][] = $mat;
+		}
+		return $res;
+	}
+
 	public function getNonPublished()
 	{
 		$stock = Stock::find()->where(['model_status' => 0])->with(['images'])->asArray()->all();

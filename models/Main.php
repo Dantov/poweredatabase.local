@@ -48,6 +48,17 @@ class Main extends Common
             ->addParams([':search' => "%$searchFor%"]);
     }
 
+    protected function addModelType()
+    {
+        $session = Yii::$app->session;
+        $selectByModelType = $session->get('selectByModelType');
+        if ( empty($selectByModelType) ) return;
+
+            $this->stockQuery
+                ->andWhere('model_type LIKE :modeltype')
+                ->addParams([':modeltype' => "%$selectByModelType%"]);
+    }
+
     protected function addByHashtag()
     {
         $session = Yii::$app->session;
@@ -57,6 +68,22 @@ class Main extends Common
             $this->stockQuery
                 ->andWhere('hashtags LIKE :hashtag')
                 ->addParams([':hashtag' => "%$selectByHashtag%"]);
+    }
+    protected function addByHashtags()
+    {
+        $session = Yii::$app->session;
+        $hashtags = $session->get('selectByHashtags');
+        if ( empty($hashtags) ) return;
+        $str = '';
+        foreach ( $hashtags as $htag )
+        {
+            $str.= "hashtags LIKE '%$htag%' OR ";
+        }
+        $str = trim($str,' OR ');
+        $this->stockQuery->andWhere($str);
+                //->andWhere('hashtags LIKE :hashtag');
+                //->addParams([':hashtag' => "%$htag%"]);
+        //debug($str,'$$str',1);
     }
 
     protected function addFromDate()
@@ -75,6 +102,32 @@ class Main extends Common
         if ( empty($toDate) ) return;
 
         $this->stockQuery->andFilterWhere(['<=', 'create_date',$toDate]);
+    }
+
+    protected function addMaterials()
+    {
+        $session = Yii::$app->session;
+        
+        $mat[] = $matcolor = $session->get('selectByMatColor');
+        $mat[] = $matName  = $session->get('selectByMatMetal');
+        $mat[] = $matProbe = $session->get('selectByMatProbe');
+        $go = false;
+        foreach( $mat as $v ) {
+            if ( !empty($v) ) {
+                $this->stockQuery->joinWith('materials');
+                $go = true;
+                break;
+            }
+        }
+
+        if ( !$go ) return;
+
+        if ( !empty($matcolor) ) 
+            $this->stockQuery->andFilterWhere(['=','materials.color',$matcolor]);
+        if ( !empty($matName) ) 
+            $this->stockQuery->andFilterWhere(['=','materials.metal',$matName]);
+        if ( !empty($matProbe) ) 
+            $this->stockQuery->andFilterWhere(['=','materials.probe',$matProbe]);
     }
 
     protected function addOrderBy()
@@ -99,9 +152,11 @@ class Main extends Common
        
         $this->addByClient();
         if ( $session->has('searchFor') ) $this->addSearch();
-        if ( $session->has('selectByHashtag') ) $this->addByHashtag();
+        $this->addByHashtags();
+        $this->addModelType();
         $this->addFromDate();
         $this->addToDate();
+        $this->addMaterials();
         $this->addOrderBy();
 
         $this->stockQuery->with(['images']);
