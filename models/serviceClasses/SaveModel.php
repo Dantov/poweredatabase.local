@@ -318,6 +318,7 @@ class SaveModel extends Common
                 return $res;
             }
         }
+        return [];
     }
 
     protected function uploadImageFile( Files $files ) : array
@@ -364,25 +365,26 @@ class SaveModel extends Common
         $fileExtension = $files->getExtension($uplFile['name']);
         //$newFileName = $this->modelID."_".randomStringChars( 10, 'en', 'symbols').'.'.$fileExtension;
         $vl = new Validator();
-        $newFileName = $vl->validateFileName( $files->getFileName( $uplFile['name'] ) );
+        $newFileName = $vl->sanitizeFileName( $files->getFileName( $uplFile['name'] ) );
         $newFileName = $newFileName ."_".randomStringChars( 7, 'en', 'symbols').'.'.$fileExtension;
       
         $destPath = _stockDIR_ . $this->modelID .'/3dfiles/'; 
         if ( !file_exists($destPath) ) 
             mkdir($destPath, 0777, true);
         $uploadRes = false;
-        $uploadRes = $files->upload($uplFile['tmp_name'], $destPath.$newFileName, ['3dm','stl','mgx','ai','dxf','obj']);
+        //debug($uplFile['tmp_name']." - ". $destPath.$newFileName, 1,1 );
+        $uploadRes = $files->upload($uplFile['tmp_name'], $destPath.$newFileName, ['3dm','stl','mgx','ai','dxf','obj','zip','rar']);
 
         //$rowID = 0;
         if ( $uploadRes )
         {
             if ( $fileExtension == 'zip' || $fileExtension == 'rar') {
-               return $this->uploadArchive($destPath, $newFileName, $uplFile, $fileExtension, $uploadRes);
+               return $this->uploadArchive($newFileName, $uplFile, $fileExtension, $uploadRes);
             } else {
                return $this->uploadNonArchive($files, $destPath, $newFileName, $fileExtension, $uplFile, $uploadRes);
             }
         }
-        return ['id'=>0,'upload'=>false,'type'=>'data','txt'=>'Some error ocured while saving file!'];
+        return ['id'=>0,'upload'=>false,'type'=>'data','txt'=>'Some error occurred while saving file!'];
     }
     protected function uploadArchive( $newFileName, $uplFile, $fileExtension, $uploadRes)
     {

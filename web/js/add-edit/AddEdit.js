@@ -43,6 +43,7 @@ AddEdit.prototype.changeInpt = function(input, self, event)
   	event.preventDefault();	
 	}
 
+
 	let name = input.getAttribute('name');
 	let value = input.value;//this.getAttribute('value');
 	let rowID = input.getAttribute('data-rowID');
@@ -65,52 +66,64 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 		success:function(resp) {
 			console.log(resp);
 
-			let bg = input.previousElementSibling.children[0];
-			let svg = input.previousElementSibling.children[0].children[0];
-
-			function okToggle( back )
-			{
-				if ( back ) {
-					bg.classList.replace('badge-success','badge-light');
-					svg.remove();
-					bg.innerHTML = '<i class="fa-regular fa-square-full"></i>';
-		
-				} else {
-					bg.classList.replace('badge-light','badge-success');
-					bg.innerHTML = '<i class="fa-regular fa-square-check"></i>';
-				}
-			}
-
-			function errToggle( back )
-			{
-				if ( back ) {
-					bg.classList.replace('badge-danger','badge-light');
-					svg.remove();
-					bg.innerHTML = '<i class="fa-regular fa-square-full"></i>';
-				} else {
-					bg.classList.replace('badge-light','badge-danger');
-					bg.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
-				}
-			}
-
-			if ( resp ) 
-			{
-				okToggle();
+			if ( resp ) {
+				self.checkToggler(input, 'ok');
 				setTimeout(function() {
-					okToggle( true );
+					self.checkToggler(input, 'ok', true);
 				}, 1500);
 			} else {
-				errToggle();
+				self.checkToggler(input, 'err');
 				setTimeout(function() {
-					errToggle( true );
+					self.checkToggler(input, 'err', true);
 				}, 2500);
 			}
-		
 		}
 		
 	});
 	
-}
+};
+
+AddEdit.prototype.checkToggler = function( input, togg, back )
+{
+
+		let bg = input.previousElementSibling.children[0];
+		let svg = input.previousElementSibling.children[0].children[0];
+
+		function okToggle( back )
+		{
+			if ( back ) {
+				bg.classList.replace('badge-success','badge-light');
+				svg.remove();
+				bg.innerHTML = '<i class="fa-regular fa-square-full"></i>';
+	
+			} else {
+				bg.classList.replace('badge-light','badge-success');
+				bg.innerHTML = '<i class="fa-regular fa-square-check"></i>';
+			}
+		}
+
+		function errToggle( back )
+		{
+			if ( back ) {
+				bg.classList.replace('badge-danger','badge-light');
+				svg.remove();
+				bg.innerHTML = '<i class="fa-regular fa-square-full"></i>';
+			} else {
+				bg.classList.replace('badge-light','badge-danger');
+				bg.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+			}
+		}
+
+		switch ( togg )
+		{
+			case "ok":
+				return okToggle( back );
+			break;
+			case "err":
+				return errToggle( back );
+			break;
+		}
+};
 
 AddEdit.prototype.clickHandler = function()
 {
@@ -348,7 +361,20 @@ AddEdit.prototype.hashtagByText = function(textarea)
 						newtag.firstElementChild.nextElementSibling.innerHTML = textarea.value;
 						that.singleHashtagCheck(newtag.firstElementChild);
 						
-				hashtags.appendChild(newtag);
+				if (hashtags.appendChild(newtag)) 
+				{
+					textarea.value = '';
+					that.checkToggler(textarea, 'ok');
+					setTimeout(function() {
+						that.checkToggler( textarea, 'ok', true );
+					}, 1500);
+				}
+
+			} else {
+				that.checkToggler(textarea, 'err');
+				setTimeout(function() {
+					that.checkToggler(textarea, 'err', true);
+				}, 2500);
 			}
 		}
 	});

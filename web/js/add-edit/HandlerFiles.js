@@ -422,7 +422,7 @@ HandlerFiles.prototype.setMainImgTag = function(self, imgRowID)
     });
 }
 
-let fileTypes = ["image/jpeg", "image/png", "image/gif","image/webp",'.3dm','.stl','.mgx','.ai','.dxf','.obj'];
+let fileTypes = ["image/jpeg", "image/png", "image/gif","image/webp",'.3dm','.stl','.mgx','.ai','.dxf','.obj','.rar','.zip'];
 window.addEventListener('load',function() {
   handlerFiles = new HandlerFiles( document.getElementById('drop-area'), document.getElementById('addImageFiles'),fileTypes);
 },false);

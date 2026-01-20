@@ -144,11 +144,13 @@ class Validator
         return filter_input(INPUT_POST, $passwordName, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-    public function validateFileName($name) : string
+    //public function validateFileName($name) : string
+    public function sanitizeFileName($name) : string
     {
         $name = $this->baseValidate($name);
+        $name = cyrillicToLatin($name);
+        /*
         $symbols = preg_split('//u',$name,-1,PREG_SPLIT_NO_EMPTY);
-
         foreach ( $symbols as $key => $symbol )
         {
             if ( in_array($symbol, $this->badChars) )
@@ -156,12 +158,12 @@ class Validator
                 unset($symbols[$key]);
             }
         }
-
         $str = implode('',$symbols);
-        if (mb_strlen($str) > 25) {
-            $str = mb_substr($str,0,24);
+        */
+        if (mb_strlen($name) > 25) {
+            $name = mb_substr($name,0,24);
         }
-        return $str;
+        return $name;
     }
 
     private function setErrorText( string $rule, string $ruleName, $value )

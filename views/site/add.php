@@ -18,7 +18,7 @@ $modelStatus = (int)$stockData['model_status'];
 
 <!-- TEXT DATA -->
 <div class="outer-w3-agile mt-3">
-    <h4 class="tittle-w3-agileits mb-4">Общие данные</h4>
+    <h4 class="tittle-w3-agileits mb-4"><i class="fa-regular fa-file-lines"></i> Общие данные</h4>
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="number_3d">№3Д</label>
@@ -116,7 +116,7 @@ $modelStatus = (int)$stockData['model_status'];
 
 <!--// MATERIALS -->
 <div class="outer-w3-agile mt-3 tableMats" id="tableAllMats">
-    <h4 class="tittle-w3-agileits mb-4">Материалы <button type="button" class="btn btn-info" id="addMats"><i class="fa-solid fa-plus"></i></button></h4>
+    <h4 class="tittle-w3-agileits mb-4"><i class="fa-solid fa-ring"></i> Материалы <button type="button" class="btn btn-info" id="addMats"><i class="fa-solid fa-plus"></i></button></h4>
     <?php foreach ($stockData['materials'] as $material): ?>
     <?php require _webDIR_ . 'includes/add-edit/mats_protoRow.php'; ?>
     <?php endforeach; ?>
@@ -124,7 +124,7 @@ $modelStatus = (int)$stockData['model_status'];
 
 <!--// GEMS -->
 <div class="outer-w3-agile mt-3 tableGems">
-    <h4 class="tittle-w3-agileits mb-4">Камни <button type="button" class="btn btn-info" id="addGems"><i class="fa-solid fa-plus"></i></button></h4>
+    <h4 class="tittle-w3-agileits mb-4"><i class="fa-solid fa-gem"></i> Камни <button type="button" class="btn btn-info" id="addGems"><i class="fa-solid fa-plus"></i></button></h4>
     <?php foreach ($stockData['gems'] as $gem): ?>
     <?php require _webDIR_ . 'includes/add-edit/gems_protoRow.php'; ?>
     <?php endforeach; ?>
@@ -175,7 +175,7 @@ $modelStatus = (int)$stockData['model_status'];
 </div>
 <div class="outer-w3-agile mt-3">
     <div class="form-group">
-        <label for="tags">Теги</label>
+        <label for="tags"><i class="fa-solid fa-tags"></i> Готовые Теги:</label>
         <div class="btn-group-toggle" data-toggle="buttons" id="hashtags">
             <?php foreach ($sevData['hashtag'] as $key => $value): ?>
                 <label class="btn btn-outline-info shadow-sm mb-1 <?php if ($value['checked'] == 1) echo "active"?>">
@@ -183,17 +183,27 @@ $modelStatus = (int)$stockData['model_status'];
                 </label>
             <?php endforeach; ?>
         </div>
-        <label for="tags"> </label>
-        <textarea class="form-control" onchange="hashtagByText(this)" name="hashtags" id="hashtags" rows="1" required=""></textarea>
+        <label for="mytags"><i class="fa-solid fa-tag"></i> Свой Тег:</label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+            </div>
+            <input class="form-control" type="text" onchange="hashtagByText(this)" name="hashtags" id="hashtags" rows="1" value="">
+        </div>
     </div>
     <div class="form-group">
-        <label for="description">Примечания</label>
+        <label for="description"><i class="fa-regular fa-message"></i> Примечания</label>
         <textarea class="form-control" editable name="description" id="description" rows="2"><?=$stockData['description'] ?></textarea>
     </div>
     <div class="form-group row">
         <div class="col-sm-5">
             <span>Дата создания 3д модели: </span>
-            <input class="form-control" style="width: 13rem;" type="date" name="create_date" editable value="<?=$stockData['create_date'] ?>" />
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text text-light badge-light"><i class="fa-regular fa-square-full"></i></div>
+                </div>
+                <input class="form-control" style="width: 13rem;" type="date" name="create_date" editable value="<?=$stockData['create_date'] ?>" />
+            </div>
         </div>
         <div class="col-sm-2">
             <br/>
