@@ -448,7 +448,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         let allA = sidemenu.querySelectorAll('a[data-toggle="collapse"]');
 
         sidemenu.addEventListener('click',function(e){
-            e.preventDefault();
+            //e.preventDefault();
             let click = e.target;
             let b;
             b = (click.hasAttribute('data-toggle') || click.classList.contains('fa-angle-down') || click.classList.contains('fa-angle-left'));

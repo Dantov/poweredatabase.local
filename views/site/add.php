@@ -22,11 +22,21 @@ $modelStatus = (int)$stockData['model_status'];
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="number_3d">№3Д</label>
-                <input type="text" editable class="form-control" name="number_3d" id="number_3d" value="<?=$stockData['number_3d']?>" placeholder="">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text "><i class="fa-regular fa-square-full"></i></div>
+                    </div>
+                    <input type="text" editable class="form-control" name="number_3d" id="number_3d" value="<?=$stockData['number_3d']?>" placeholder="">
+                </div>
             </div>
             <div class="form-group col-md-6">
                 <label for="modeller3d">3Д модельер</label>
                 <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text badge-success">
+                            <i class="fa-regular fa-square-check"></i>
+                        </div>
+                    </div>
                     <input type="text" editable class="form-control" name="modeller3d" id="modeller3d" value="<?=$stockData['modeller3d']?>" placeholder="" >
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
@@ -99,7 +109,7 @@ $modelStatus = (int)$stockData['model_status'];
     <?php endforeach; ?>
 </div>
 
-<div class="outer-w3-agile mt-3 pt-3 pb-3">
+<div class="outer-w3-agile mt-3 pt-3 pb-3 <?=($modelStatus === 2)?"d-none":"" ?>">
     <div class="card-deck text-center row">
         <div class="card box-shadow col-xl-12 col-md-12">
             <div class="card-header p-5 border border-secondary rounded" id="drop-area"  title="Загрузить Файлы">

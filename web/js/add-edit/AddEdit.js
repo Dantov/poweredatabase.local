@@ -64,10 +64,19 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 		dataType:"json",
 		success:function(resp) {
 			console.log(resp);
+
 			let span = document.createElement('span');
-					span.setAttribute('class','badge badge-success ok-check p-2 absolute');
 					span.setAttribute('style','font-size:1rem; top: 45%; right: 2%;');
-					span.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+					
+					if ( resp )
+					{
+						span.setAttribute('class','badge badge-success ok-check p-2 absolute');
+						span.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+					} else {
+						span.setAttribute('class','badge badge-danger ok-check p-2 absolute');
+						span.innerHTML = '<i class="fa-regular fa-circle-xmark"></i>';
+					}
+
 			let inpP = input.parentElement;
 			let okCheck;
 			if ( inpP.classList.contains('input-group') )
@@ -77,8 +86,6 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 			} else {
 					okCheck = input.parentElement.appendChild(span);	
 			}
-			
-			
 
 			setTimeout(function(){
 					okCheck.remove();
