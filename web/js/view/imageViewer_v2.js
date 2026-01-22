@@ -2,7 +2,6 @@
 function ImageViewer(images)
 {
     if ( images ) this.images = images;
-
     /**
      *      В Открытом состоянии
      */
@@ -40,6 +39,7 @@ function ImageViewer(images)
      */
     this.mainImage = document.querySelector(".mainImage");
     this.bottomDopImages = document.querySelector(".dopImages").querySelectorAll(".imageSmall");
+    this.modelID = document.getElementById('imageViewer').getAttribute('data-id');
 }
 
 ImageViewer.prototype.init = function()
@@ -156,17 +156,15 @@ ImageViewer.prototype.init = function()
     debug('Image Viewer Init(ok)');
 };
 
-
 /**
  * запускаем просмотр картинок при клике на главную
  */
 ImageViewer.prototype.start = function()
 {
-
     let mainImageID = this.mainImage.getAttribute('data-id');
     //let imgSrc = this.images[imgID]['imgPath'];//['img_name'];
     let imgSrc = '';
-    this.images.forEach(imgObj => {
+    $.each(this.images, function(id, imgObj) {
         if ( +imgObj.id === +mainImageID )
             imgSrc = "/web/stock/" + imgObj.pos_id + "/images/" + imgObj.name;
     });
@@ -325,7 +323,8 @@ ImageViewer.prototype.smallImagesRow = function()
     $.each(this.images, function(id, image) {
 
         //let src = image.imgPrevPath ? image.imgPrevPath : image.imgPath;//img_name;
-        let src = "/web/stock/" + image.pos_id + "/images/" + image.name;
+        let src = "/web/stock/" + image.pos_id + "/images/";
+        let fullsrc = src + (image.previmg??image.name);
         let div = document.createElement('div');
             //div.classList.add('col-xs-2', 'col-sm-3', 'p-0', 'imageSmall','border'); 
             div.classList.add('col-12','col-sm-6', 'col-md-3', 'p-0', 'imageSmall','border'); //col-12 col-sm-6 col-md-3
@@ -338,7 +337,7 @@ ImageViewer.prototype.smallImagesRow = function()
             div.classList.add('border-secondary');
         }
         div.setAttribute('data-id',image.id);
-        div.style.backgroundImage = "url("+ src  +")";
+        div.style.backgroundImage = "url("+ fullsrc  +")";
         div.style.width = 6+"em";
         div.style.height = 5+"em";
 
@@ -354,7 +353,7 @@ ImageViewer.prototype.smallImagesRow = function()
             that.stop();
             //that.setBackgroundImage(this.style.backgroundImage.split("\"")[1]);
             //that.setBackgroundImage(image.name); // Оригин. размер
-            that.setBackgroundImage(src); // Оригин. размер
+            that.setBackgroundImage(src + image.name); // Оригин. размер
 
             that.activeImage.classList.remove('activeImage','border-primary');
             that.activeImage.classList.add('border-secondary');
@@ -602,12 +601,13 @@ ImageViewer.prototype.mainImageSetter = function()
 
         dopImage.addEventListener('click', function () {
             let dataID = this.getAttribute('data-id');
-            //console.log( dataID );
-            //let src = that.images[dataID]['imgPath'];
-            let src = this.getAttribute('src');
+            let src = that.images[dataID]['name'];
 
-            // debug(src,'SRC');
-            that.mainImage.style.backgroundImage = "url("+ src +")";
+            //let src = this.getAttribute('src');
+
+             debug(src,'SRC');
+            that.mainImage.style.backgroundImage = "url(/web/stock/"+ that.modelID +"/images/"+ src +")";
+            //that.mainImage.style.backgroundImage = "url("+ src +")";
             that.mainImage.setAttribute('data-id',dataID);
 
             activeImage.parentElement.parentElement.parentElement.classList.remove('activeImage','border-primary');

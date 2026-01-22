@@ -10,7 +10,7 @@ $this->registerJsFile("@web/js/add-edit/AddEdit.js?v=$tt",['depends' => [\app\as
 $this->registerJsFile("@web/js/add-edit/HandlerFiles.js?v=$tt",['depends' => [\app\assets\AppAsset::class]]);
 //$this->registerCssFile("@web/css/view/view.css?v=$tt");
 //debug($datafileSizes,'datafileSizes',1);
-//debug($sevData,'stockData',1);
+//debug($stockData,'stockData',1);
 
 $modelStatus = (int)$stockData['model_status']; 
 ?>

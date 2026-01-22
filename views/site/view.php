@@ -49,7 +49,8 @@ $this->registerJs($imgJs);
                         <div class="ratio border border-<?=$image['status']?"primary":"light"?> cursorPointer">
                             <div class="ratio-inner ratio-4-3">
                                 <div class="ratio-content">
-                                    <img class="imageSmall<?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/web/stock/<?=$image['pos_id']?>/images/<?=$image['name']?>" width="100%">
+                                    <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
+                                    <img class="imageSmall<?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/web/stock/<?=$image['pos_id']?>/images/<?=$imgname?>" width="100%">
                                 </div>
                             </div>
                         </div>
@@ -204,7 +205,7 @@ $this->registerJs($imgJs);
 </div>
 <?php require 'includes/view/imageWrapper.php'; ?>
 
-<div class="modal fade" id="imageViewer" style="height: 100%; width: 100%;" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+<div class="modal fade" id="imageViewer" data-id="<?=$model['id']?>" style="height: 100%; width: 100%;" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered m-auto" style="height: 100%; max-width: 100%">
         <div class="modal-content p-0 m-0 imageViewer bg-transparent rounded-0">
             <div class="d-flex flex-row-reverse flex-row">

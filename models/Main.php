@@ -2,7 +2,7 @@
 namespace app\models;
 
 use app\models\serviceTables\Stock;
-use app\models\User;
+use app\models\{User,Files};
 
 use Yii;
 use yii\helpers\Url;
@@ -168,6 +168,20 @@ class Main extends Common
         return $this->stock;
     }
 
+    protected function addPreviewImages( $mainimgname, $id ) : string
+    {
+        $files = Files::instance();
+        $prevSuff = '_prev';
+        
+        $imgname = $files->getFileName($mainimgname);
+        $imgExt = $files->getExtension($mainimgname);
+        $previmg = $imgname.$prevSuff.".".$imgExt;
+        $path = _stockDIR_ . $id . "/images/".$previmg;
+        if ( file_exists($path) ){
+            return $previmg;
+        }
+        return "";
+    }
 
     protected function setMainImgforStock()
     {
@@ -189,6 +203,8 @@ class Main extends Common
                 $randomimg = $model['images'][ random_int( 0, (count( $model['images']))-1) ];
                 $model['mainimage'] = $randomimg['name'];
             }
+            if ( $prevImgName = $this->addPreviewImages( $model['mainimage'], $model['id'] ) )
+                $model['mainimgprev'] = $prevImgName;
         }
     }
 

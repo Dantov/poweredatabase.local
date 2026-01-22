@@ -9,7 +9,10 @@
     </div>
     <div class="ratio">
         <div class="ratio-inner ratio-4-3">
-            <div class="ratio-content"><img src="/web/stock/<?=$modelID?>/images/<?=$image['name']?>" class="card-img-top" alt="..."></div>
+            <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
+            <div class="ratio-content">
+                <img src="/web/stock/<?=$modelID?>/images/<?=$imgname?>" class="card-img-top" alt="...">
+            </div>
             <a class="btn btn-info btn-sm editBtnMain img_dell" role="button" data-table="tableIMG" data-rowID="<?=$image['id']?>" data-toggle="tooltip" data-placement="bottom" title="Delete image"><i class="fa-solid fa-trash-can"></i></a>
         </div>
     </div>

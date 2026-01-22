@@ -51,6 +51,7 @@ class AddEdit extends ModelView
             ->one();
 
         $this->dataFilesPrepare();
+        $this->addPreviewImages();
         return $this->stock;
     }
 

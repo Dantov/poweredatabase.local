@@ -3,6 +3,7 @@ namespace app\models\serviceClasses;
 
 use app\models\serviceTables\{Stock,Service_data,Gems,Materials,Images,D3_files};
 use app\models\{UploadImages,Common,Files,Validator,User};
+use app\models\serviceClasses\ImageConverter;
 
 use Yii;
 use yii\base\Model;
@@ -341,6 +342,15 @@ class SaveModel extends Common
             mkdir($destPath, 0777, true);
         $res = false;
         $res = $files->upload($uplImg['tmp_name'], $destPath.$newImgName, ['png','gif','jpg','jpeg','webp']);
+        if ($res)
+        {
+            /** оптимизация размера файла */
+            ImageConverter::optimizeUpload($destPath.$newImgName);
+
+            /** Сднлаем превью загруженного файла */
+            //ImageConverter::makePrev($destPath.$newImgName);
+            ImageConverter::makePrev($destPath,$newImgName);
+        }
 
         return ['id'=>$imgID,'upload'=>$res,'type'=>'picture'];
     }

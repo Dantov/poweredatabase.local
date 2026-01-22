@@ -108,4 +108,14 @@ class Common
         }
         return $stock;
 	}
+	
+	protected function setIdAsKeys( array &$array )
+    {
+        foreach ( $array as $key => $element )
+        {
+            if (!isset($element['id'])) continue;
+            $array[$element['id']] = $element;
+            unset($array[$key]);
+        }
+    }
 }

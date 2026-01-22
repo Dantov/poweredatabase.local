@@ -10,7 +10,8 @@ use yii\helpers\Url;
         <div class="ratio">
             <div class="ratio-inner ratio-4-3">
                 <div class="ratio-content">
-                    <img src="web/stock/<?=$model['id']?>/images/<?=$model['mainimage']?>" class="card-img-top" alt="...">
+                    <?php $imgname = isset($model['mainimgprev'])?$model['mainimgprev']:$model['mainimage'] ?>
+                    <img src="stock/<?=$model['id']?>/images/<?=$imgname?>" class="card-img-top" alt="...">
                 </div>
                 <a class="btn btn-outline-secondary btn-sm editBtnMain" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
                     <i class="fas fa-pencil-alt"></i>

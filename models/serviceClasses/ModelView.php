@@ -2,7 +2,7 @@
 namespace app\models\serviceClasses;
 
 use app\models\serviceTables\Stock;
-use app\models\Common;
+use app\models\{Common,Files};
 
 use Yii;
 use yii\helpers\Url;
@@ -39,6 +39,7 @@ class ModelView extends Common
 
 		$this->number_3d = $this->row['number_3d'];
         $this->setMainImg();
+        $this->addPreviewImages();
         $this->setSizesRange();
         $this->setHashtags();
         $this->setDataFiles();
@@ -46,8 +47,37 @@ class ModelView extends Common
 		return $this->row;
 	}
 
+    protected function addPreviewImages()
+    {
+        $files = Files::instance();
+        $prevSuff = '_prev';
+        $row = [];
+        if ( isset($this->row) )
+        {
+            $row = &$this->row;
+        } elseif ( isset($this->stock) ) {
+            $row = &$this->stock;
+        } else {
+            return;
+        }
+
+        foreach ( $row['images'] as &$image )
+        {
+            $imgname = $files->getFileName($image['name']);
+            $imgExt = $files->getExtension($image['name']);
+            $previmg = $imgname.$prevSuff.".".$imgExt;
+            $path = _stockDIR_ . $this->id . "/images/";
+            $fullpath = _stockDIR_ . $this->id . "/images/".$previmg;
+            $image['path'] = $path;
+            if ( file_exists($fullpath) ) {
+                $image['previmg'] = $previmg;
+            }
+        }
+    }
+
     protected function setMainImg()
     {
+        $this->setIdAsKeys($this->row['images']);
         if ( empty($this->row['images']) )
             return;
 
