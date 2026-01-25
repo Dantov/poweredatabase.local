@@ -29,7 +29,7 @@ class Main extends Common
         foreach ( self::$clients as $cl )
             $clients[] = $cl['name'];
 
-        if ( User::hasPermission('clientonly') && !User::hasPermission('clientall')) {
+        if ( User::hasPermission('clientonly') && !User::hasPermission('clientall') ) {
             return $this->stockQuery->andWhere(['in', 'client', $clients]);
         }
 
@@ -44,7 +44,7 @@ class Main extends Common
         if ( empty($searchFor) ) return;
 
         $this->stockQuery
-            ->andWhere('number_3d LIKE :search OR client LIKE :search OR modeller3d LIKE :search OR model_type LIKE :search OR creator_name LIKE :search OR description LIKE :search OR hashtags LIKE :search')
+            ->andWhere('number_3d LIKE :search OR client LIKE :search OR modeller3d LIKE :search OR model_type LIKE :search OR description LIKE :search OR hashtags LIKE :search')
             ->addParams([':search' => "%$searchFor%"]);
     }
 
@@ -164,23 +164,13 @@ class Main extends Common
         $this->stock = $this->pagination();
 
         $this->setMainImgforStock();
+        if ( User::hasPermission('hideclients') )
+            $this->hideClientsName();
+
+        foreach ($this->stock as &$model)
+            $model['isEditBtn'] = $this->drawEditBtn( $model['creator_id'] );
 
         return $this->stock;
-    }
-
-    protected function addPreviewImages( $mainimgname, $id ) : string
-    {
-        $files = Files::instance();
-        $prevSuff = '_prev';
-        
-        $imgname = $files->getFileName($mainimgname);
-        $imgExt = $files->getExtension($mainimgname);
-        $previmg = $imgname.$prevSuff.".".$imgExt;
-        $path = _stockDIR_ . $id . "/images/".$previmg;
-        if ( file_exists($path) ){
-            return $previmg;
-        }
-        return "";
     }
 
     protected function setMainImgforStock()
@@ -205,6 +195,35 @@ class Main extends Common
             }
             if ( $prevImgName = $this->addPreviewImages( $model['mainimage'], $model['id'] ) )
                 $model['mainimgprev'] = $prevImgName;
+        }
+    }
+    protected function addPreviewImages( $mainimgname, $id ) : string
+    {
+        $files = Files::instance();
+        $prevSuff = '_prev';
+        
+        $imgname = $files->getFileName($mainimgname);
+        $imgExt = $files->getExtension($mainimgname);
+        $previmg = $imgname.$prevSuff.".".$imgExt;
+        $path = _stockDIR_ . $id . "/images/".$previmg;
+        if ( file_exists($path) ){
+            return $previmg;
+        }
+        return "";
+    }
+
+    protected function hideClientsName()
+    {
+        $allClients = $this->getClients();
+        foreach ( $this->stock as &$model )
+        {
+            foreach ( $allClients as $clientTmpl )
+            {
+                if ( $model['client'] == $clientTmpl['name'] ){
+                    $model['client'] = $clientTmpl['secondname'];
+                    break;
+                }
+            }
         }
     }
 

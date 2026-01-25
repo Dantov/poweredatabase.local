@@ -15,9 +15,9 @@ class AddEdit extends ModelView
     public int $originSize = 0;
     public array $datafileSizes = [];
 
-	function __construct( $general, $id=false )
+	function __construct( int $id )
     {
-        parent::__construct($general, $id);
+        parent::__construct($id);
 	}
 
     public function accessControl( string $subtype ) : bool
@@ -58,7 +58,6 @@ class AddEdit extends ModelView
 	public function getDataTables()
     {
 		$tabs = [
-		    'client',
             'modeller3d',
             'model_type',
             'model_material',
@@ -70,6 +69,7 @@ class AddEdit extends ModelView
             'gems_cut',
             'gems_names',
             'gems_sizes',
+            'probe',
             'hashtag',
         ];
 		$tables = [];
@@ -84,15 +84,7 @@ class AddEdit extends ModelView
             }
 		}
 
-        //debug($tables,1,1);
-        foreach ( $tables['model_material'] as &$mat )
-        {
-            $expl = explode(";",$mat['name']);
-            $mat['probe'] = '';
-            if (isset($expl[1])) $mat['probe'] = $expl[1];
-        }
-        //debug($tables,1,1);
-        //$tables['vc_names'] = $this->getNum3dVCList($tables['vc_names']);
+        $tables['client'] = $this->getClients();
 
 		return $tables;
 	}
@@ -113,91 +105,6 @@ class AddEdit extends ModelView
             }    
         }
     }
-	
-	public function getImages($scetch=false)
-    {
-        $result = [];
-
-//            debug($this->general->img_arr,'ggg');
-//            debug($this->row,'row',1);
-
-        $i = 0;
-        foreach ( $this->row['images'] as $image )
-        {
-            $result[$i]['id'] = $image['id'];
-
-            $img = $this->number_3d.'/'.$this->id.'/images/'.$image['img_name'];
-
-            if ( !file_exists(_stockDIR_.$img) )
-            {
-                $result[$i]['src'] = _stockDIR_HTTP_."default.jpg";
-            } else {
-                $result[$i]['src'] = _stockDIR_HTTP_.$this->number_3d.'/'.$this->id.'/images/'.$image['img_name'];
-            }
-
-            $img_arr = $this->general->img_arr;
-
-            // верхний ходит по картинкам цепляя main onbody итд в key
-            foreach ( $image as $key => $value )
-            {
-                // нижний ходит по статусам из табл и сверяет имена с ключом из картинок
-                $flagToResetNo = false;
-                foreach ( $img_arr as &$option )
-                {
-                    if ( $key === $option['name_en'] && (int)$value === 1 )
-                    {
-                        $option['selected'] = $value;
-                        $flagToResetNo = true;
-                    }
-                    // уберем флажек с "НЕТ" если был выставлен на чем-то другом
-                    if (  (int)$option['id'] === 27 && $flagToResetNo === true ) $option['selected'] = 0;
-                }
-            }
-
-            $result[$i]['statusImg'] = $img_arr;
-
-            $i++;
-        }
-
-        //debug($result,'$result',1);
-
-		return $result;
-	}
-
-	public function getStatus(&$row = [])
-    {
-		$statuses = $this->general->status_arr;
-        $statusStock = isset($row['status']) ? trim($row['status']) : '';
-
-		if ( empty($statusStock) )
-        {
-            $statuses[0]['check'] = "checked";
-            return $statuses;
-        }
-
-        foreach ( $statuses as &$status )
-        {
-            if ( $statusStock === $status['name_ru'] ) $status['check'] = "checked";
-        }
-		return $statuses;
-	}
-
-	public function getLabels($str="")
-    {
-		$labels = $this->general->labels_arr;
-		if ( isset($str) && !empty($str) )
-		{
-			$stock_labels = explode(";",$str);
-			foreach ( $stock_labels as $stock_label )
-			{
-				foreach ( $labels as &$label )
-				{
-					if ( $stock_label == $label['name_ru'] ) $label['check'] = "checked";
-				}
-			}
-		}
-		return $labels;
-	}
 
     public function dataFilesPrepare( string $measure = 'mb', int $precision = 2)
     {

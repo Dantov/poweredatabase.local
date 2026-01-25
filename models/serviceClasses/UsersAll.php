@@ -193,13 +193,16 @@ class UsersAll extends Common
         }
         return $isAllValid;
     }
+    /*
+     * Edit user information
+     */
     public function saveUserData( array $post ) : bool
     {
         $thisuser = Users::find()->where(['id'=>$this->uid]);
         if ( !$thisuser->exists() )
             return false;
 
-        $v = new Validator();
+        $v = new Validator("edit user");
         $udata = [];
 
         $udata['logname'] = true;
@@ -324,7 +327,7 @@ class UsersAll extends Common
 
     public function addNewUser( array $post )
     {
-        $v = new Validator();
+        $v = new Validator("add user");
         $udata = [];
         $udata['logname'] = $v->validateLogInput($post['logname'], $this->getAllUsers() );
         $udata['bypass'] = $v->validatePassInput($post['bypass']);

@@ -88,6 +88,23 @@ body {
     position: relative;
     bottom: 32px;
 }
+.jewelboxBtnMain {
+    position: relative;
+    bottom: 32px;
+    left: 82%;
+}
+.jewelboxTopbar{
+    position:absolute !important;
+    right: 3.5rem;
+}
+.jewelboxTopbar .jbBadge{
+    z-index: 100;
+    position:absolute !important;
+    right: 1.5rem !important;
+    top: 50%!important;
+    font-size: 0.6rem!important;
+    font-weight: bold;
+} 
 .status_main {
     cursor: default;
     position: absolute;
@@ -148,6 +165,15 @@ body {
 .fontsView {
     font-size: 80%;
 }
+
+.card-main-image {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat!important;
+    background-size: cover!important;
+    background-position: center!important;
+}
+
 /* Small devices (landscape phones, 576px and up)*/
 @media (max-width: 450px) {
     #footer p {

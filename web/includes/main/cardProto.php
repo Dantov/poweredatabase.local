@@ -1,5 +1,6 @@
 <?php
 use yii\helpers\Url;
+use app\models\User;
 ?>
 <div class="card bg-light mb-1 mainCard" style="width: <?=$session->get('tilesControlSize')?>rem;">
     <div class="card-header p-1 cursorPointer text-truncate bg-secondary text-white text-center">
@@ -9,13 +10,18 @@ use yii\helpers\Url;
     <a href="<?=Url::to(['site/view','id'=>$model['id']])?>">
         <div class="ratio">
             <div class="ratio-inner ratio-4-3">
-                <div class="ratio-content">
-                    <?php $imgname = isset($model['mainimgprev'])?$model['mainimgprev']:$model['mainimage'] ?>
-                    <img src="stock/<?=$model['id']?>/images/<?=$imgname?>" class="card-img-top" alt="...">
-                </div>
+                <?php $imgname = isset($model['mainimgprev'])?$model['mainimgprev']:$model['mainimage'] ?>
+                <div class="ratio-content card-main-image" style="background: url('stock/<?=$model['id']?>/images/<?=$imgname?>');"></div>
+                <?php if ( $model['isEditBtn'] ): ?>
                 <a class="btn btn-outline-secondary btn-sm editBtnMain" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
+                <?php endif; ?>
+                <?php if ( User::hasPermission('jewelbox') ): ?>
+                <button class="btn btn-dark btn-sm jewelboxBtnMain" role="button" data-toggle="tooltip" data-placement="bottom" title="Добавить в Шкатулку">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </button>
+                <?php endif; ?>
             </div>
         </div>
         <ul class="list-group list-group-flush">

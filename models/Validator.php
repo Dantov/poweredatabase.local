@@ -9,7 +9,7 @@ use Yii;
 
 class Validator
 {
-
+    protected string $behavior = '';
     protected static $lastError = '';
     protected static $errors = [];
 
@@ -29,9 +29,9 @@ class Validator
      * Validator constructor.
      * @throws \Exception
      */
-    public function __construct()
+    public function __construct( string $behavior = '' )
     {
-        
+        if ( $behavior ) $this->behavior = $behavior;
     }
 
     public function getAllErrors()
@@ -71,24 +71,23 @@ class Validator
         return filter_input(INPUT_POST, $postname, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-
     public function validateEmail( string $email, array $usersAll ) : bool
-    {   
+    {
         if ( preg_match($this->pattern, $email) ) 
         {
-            foreach( $usersAll as $singleUser )
-            {
-                if ( $singleUser['email'] == $email ) {
-                   Yii::$app->session->setFlash('emailexist','User with this email already exist!');
-                   return false;
+            if ( $this->behavior === 'add user' ) {
+                foreach( $usersAll as $singleUser )
+                {
+                    if ( $singleUser['email'] == $email ) {
+                       Yii::$app->session->setFlash('emailexist','User with this email already exist!');
+                       return false;
+                    }
                 }
             }
             return true;
         }
-        
         return false;
     }
-
 
     public function validateString( string $string) : bool
     {
@@ -116,12 +115,15 @@ class Validator
                 return false;
         }
 
-        foreach( $usersAll as $singleUser )
+        if ( $this->behavior === 'add user' )
         {
-            if ( $singleUser['login'] == $log ) {
-               Yii::$app->session->setFlash('logexist','User with this login already exist!');
-                return false;
-            }
+            foreach( $usersAll as $singleUser )
+            {
+                if ( $singleUser['login'] == $log ) {
+                   Yii::$app->session->setFlash('logexist','User with this login already exist!');
+                    return false;
+                }
+            }    
         }
 
         return true;
@@ -144,7 +146,6 @@ class Validator
         return filter_input(INPUT_POST, $passwordName, FILTER_SANITIZE_SPECIAL_CHARS);
     }
 
-    //public function validateFileName($name) : string
     public function sanitizeFileName($name) : string
     {
         $name = $this->baseValidate($name);

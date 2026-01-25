@@ -53,7 +53,7 @@ class SearchController extends GeneralController
     {
         $request = Yii::$app->request;
 
-        $client = $request->get('client');
+        $client = (int)$request->get('client');
         $hashtag = $request->get('hashtag');
         $modeltype = $request->get('modeltype');
 
@@ -122,7 +122,7 @@ class SearchController extends GeneralController
         }
     }
 
-    protected function SelectByClient( string $client )
+    protected function SelectByClient( int $client )
     {
         $session = Yii::$app->session;
         if ( (int)$client === 11 )
@@ -133,7 +133,7 @@ class SearchController extends GeneralController
         foreach ( $this->clients as $singleClient )
         {
             
-            if ( $singleClient['name'] === $client )
+            if ( $singleClient['id'] === $client )
             {
                 $session->set('SelectByClient', $singleClient['name']);
                 break;

@@ -48,9 +48,9 @@ $this->registerJs($imgJs);
                     <div class="col-12 col-sm-6 col-md-3 p-0">
                         <div class="ratio border border-<?=$image['status']?"primary":"light"?> cursorPointer">
                             <div class="ratio-inner ratio-4-3">
+                                <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
                                 <div class="ratio-content">
-                                    <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
-                                    <img class="imageSmall<?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/web/stock/<?=$image['pos_id']?>/images/<?=$imgname?>" width="100%">
+                                    <img class="imageSmall <?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/web/stock/<?=$image['pos_id']?>/images/<?=$imgname?>" width="100%" height="100%" style="object-fit: cover;">
                                 </div>
                             </div>
                         </div>
@@ -59,11 +59,13 @@ $this->registerJs($imgJs);
                 </div>
             </div>
         </div>
+        <?php if ( User::hasPermission('downloadfiles') ): ?>
         <div class="row">
             <div class="col-12">
             <?php require "includes/view/datafiles.php"?>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 
     <div class="col-sm-12 col-md-6 bg-light position-relative" id="descriptions">
@@ -71,7 +73,7 @@ $this->registerJs($imgJs);
             <i class="fas fa-gem"></i>
             <span>Заказчик: </span>
             <strong>
-                <i><a class="text-primary" href="" id="collection"><?=$model['client']?></a></i>
+                <i><a class="text-primary" href="<?=Url::to(['search/select-by','client'=>$model['clientID']])?>" id="collection"><?=$model['client']?></a></i>
             </strong>
         </div>
         <div class="fontsView">
@@ -116,15 +118,17 @@ $this->registerJs($imgJs);
                 <b><?=$model['model_weight']?> гр.</b>
             </div>
         </div>
+        <?php if (User::hasPermission('model_price')): ?>
         <div class="d-flex justify-content-between bg-dots fontsView">
             <div class="p-1 bg-light">
                 <i class="fa-solid fa-hand-holding-dollar"></i>
-                <span class="d-none d-lg-inline">Стоимость 3Д + печать</span>
+                <span class="d-none d-lg-inline">Стоимость 3Д</span>
             </div>
             <div class="p-1 bg-light">
                 <b><span><?=$model['model_cost']?></span></b>
             </div>
         </div>
+        <?php endif;?>
         <div class="d-flex justify-content-between bg-dots fontsView">
             <div class="p-1 bg-light">
                 <i class="fa-solid fa-ring"></i>
@@ -132,14 +136,13 @@ $this->registerJs($imgJs);
             </div>
             <div class="p-1 bg-light">
                 <b>
-                    <?php foreach( $model['size_range'] as $sr ): ?>
-                        <button type="button" class="btn btn-sm btn-outline-secondary"><?=$sr?></button>
-                    <?php endforeach; ?>
+                <?php foreach( $model['size_range'] as $sr ): ?>
+                    <button type="button" class="btn btn-sm btn-outline-secondary"><?=$sr?></button>
+                <?php endforeach; ?>
                 </b>
             </div>
         </div>
         <hr>
-
         <div class="d-none d-lg-block">
             <?php require "includes/view/gems.php"?>
         </div>
@@ -183,12 +186,14 @@ $this->registerJs($imgJs);
                         <span>Назад</span>
                     </a>
                 </div>
+                <?php if ( $model['isEditBtn'] ): ?>
                 <div class="input-group-append">
                     <a href="<?=Url::to(["site/add", 'id'=>$model['id']])?>" role="button" class="btn btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                         <span>Редактировать</span>
                     </a>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
         <small class="float-right p-2">

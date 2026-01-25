@@ -20,6 +20,8 @@ $metalColors   = $controller->modelMaterials['metal_color'];
 $metalProbes   = $controller->modelMaterials['metal_probe'];
 $metalNames    = $controller->modelMaterials['model_material'];
 
+$showClname = isset($controller->clientHidedName)?$controller->clientHidedName:$session->get('SelectByClient');
+
 $matSelectedCheck = (bool)($session->get('selectByMatMetal') || $session->get('selectByMatColor') || $session->get('selectByMatProbe'));
 
 $searchFor = $session->has('searchFor')?$session->get('searchFor') : '';
@@ -276,20 +278,20 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <?php if ( empty($npModel['images']) ): ?>
                                 <img src="/pictAssets/web1.webp" width="50px" class="mr-2">
                             <?php else: ?>
-                                <img src="/stock/<?=$npModel['id']?>/images/<?=$npModel['mainimage']?>" width="50px" class="mr-2">
+                                <?php $imgname = isset($npModel['previmg'])?$npModel['previmg']:$npModel['mainimage'] ?>
+                                <img src="/stock/<?=$npModel['id']?>/images/<?=$imgname?>" width="50px" class="mr-2">
                             <?php endif; ?>
                             <span><?=$npModel['number_3d']?></span><br>
-                            <span>Добавил: <?=User::getUsernameByID($npModel['creator_id']) . " - " . $npModel['date']?></span>
+                            <span>Добавил: <?=User::getUsernameByID($npModel['creator_id']). " - " .formatDate($npModel['date'])?></span>
                         </a>
                     </li>
                     <?php endforeach; ?>
                 </ul>
             </li>
+
         </ul>
     </nav>
     <!-- Sidebar END -->
-
-
 
     <!-- Page Content Holder -->
     <div id="content" class="pb-0">
@@ -312,19 +314,48 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary border-0 dropdown-toggle" type="button" title="Где искать" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-gem"></i>
-                                    <span><?=$session->get('SelectByClient')?></span>
+                                    <span>
+                                        <?= $showClname ?>
+                                    </span>
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" data-clientID="11" href='/search/select-by?client=11'>Все</a>
                                     <div class="dropdown-divider"></div>
                                     <?php foreach( $clients as $client ):?>
-                                        <a class="dropdown-item" data-clientID="<?=$client['id']?>" href='/search/select-by?client=<?=htmlentities($client['name'])?>'><?=htmlentities($client['name']) ?></a>
+                                    <?php $clname = User::hasPermission('hideclients')?$client['secondname']:$client['name'] ?>
+                                        <a class="dropdown-item" data-clientID="<?=$client['id']?>" href='/search/select-by?client=<?=htmlentities($client['id'])?>'><?=htmlentities($clname) ?></a>
                                     <?php endforeach;?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <?php if(User::hasPermission('jewelbox')): ?>
+                <div class="p-1 bd-highlight jewelboxTopbar">
+                    <ul class="user-bar top-icons-agileits-w3layouts">
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-toggle" style="" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true"
+                               aria-expanded="false">
+                               <span class="p-1 border border-dark bg-secondary text-light rounded-circle jbBadge">125</span>
+                                <div class="profile-l mr-0">
+                                    <img src="pictAssets/jewels-inside.png" class="img-fluid" alt="Responsive image">
+                                </div>
+                            </a>
+                            <div class="dropdown-menu drop-3">
+                                <div class="profile-r align-self-center">
+                                    <h5 class="sub-title-w3-agileits"><small>25 models inside</small></h5>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                
+                                <a href="<?=Url::to(['site/jewelbox'])?>" class="dropdown-item mt-2">
+                                    <h4><i class="far fa-gem mr-3"></i>Показать</h4>
+                                </a>
+                            
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <?php endif;?>
                 <div class="p-1 bd-highlight">
                     <ul class="user-bar top-icons-agileits-w3layouts">
                         <li class="nav-item dropdown">
@@ -339,6 +370,11 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                     <h3 class="sub-title-w3-agileits"><?php echo $session->get('user')['fio'] ?></h3>
                                 </div>
                                 <div class="dropdown-divider"></div>
+                                <?php if(User::hasPermission('jewelbox')): ?>
+                                <a href="<?=Url::to(['site/jewelbox'])?>" class="dropdown-item mt-2">
+                                    <h4><i class="far fa-gem mr-3"></i>Шкатулка</h4>
+                                </a>
+                                <?php endif;?>
                                 <a href="<?=Url::to(['site/profile'])?>" class="dropdown-item mt-2">
                                     <h4><i class="far fa-user mr-3"></i>Профиль</h4>
                                 </a>
@@ -426,7 +462,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         <!-- Copyright -->
         <div class="copyright-w3layouts shadow pt-2 pb-2 mt-2 text-center" style="bottom: 0 !important;" id="footer">
             <p class="float-left ml-3"><small>Developed by Vadym Bykov</small></p>
-            <p class="float-right mr-3"> ver2.0.0wip</p>
+            <p class="float-right mr-3"> ver3.0.0wip</p>
             <div class="clearfix"></div>
         </div>
         <!--// Copyright -->

@@ -84,7 +84,7 @@ class SiteController extends GeneralController
         if ( $modelID < 0 || $modelID > PHP_INT_MAX )
             Yii::$app->response->redirect(['/site/']);
 
-        $mv = new ModelView( $this, $modelID );
+        $mv = new ModelView( $modelID );
         $model = $mv->getStockData();
 
         $comp = compact(['model','modelID','mv']);
@@ -115,7 +115,7 @@ class SiteController extends GeneralController
             return $response->redirect(['/site/add/','id'=>$modelID])->send();
         }
 
-        $addEdit = new AddEdit($this, $modelID);
+        $addEdit = new AddEdit($modelID);
         $sevData = $addEdit->getDataTables();
         $stockData = $addEdit->getStockData();
         $datafileSizes = $addEdit->datafileSizes;

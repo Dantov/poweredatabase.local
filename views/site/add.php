@@ -24,7 +24,7 @@ $modelStatus = (int)$stockData['model_status'];
                 <label for="number_3d">№3Д</label>
                 <div class="input-group mb-2">
                     <div class="input-group-prepend">
-                        <div class="input-group-text text-light badge-light"><i class="fa-regular fa-square-full"></i></div>
+                        <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
                     </div>
                     <input type="text" editable class="form-control" name="number_3d" id="number_3d" value="<?=$stockData['number_3d']?>" placeholder="">
                 </div>
@@ -85,6 +85,7 @@ $modelStatus = (int)$stockData['model_status'];
                     <input type="text" editable class="form-control" value="<?=$stockData['model_weight']?>" name="model_weight" id="model_weight" placeholder="">
                 </div>
             </div>
+            <?php if (User::hasPermission('model_price')): ?>
             <div class="form-group col-md-3">
                 <label for="model_price">Цена 3д</label>
                 <div class="input-group">
@@ -94,6 +95,18 @@ $modelStatus = (int)$stockData['model_status'];
                     <input type="text" editable class="form-control" value="<?=$stockData['model_cost']?>" name="model_cost" id="model_cost" placeholder="">
                 </div>
             </div>
+            <?php endif; ?>
+            <?php if (User::hasPermission('price_for_sale')): ?>
+            <div class="form-group col-md-3">
+                <label for="model_price">3D sale price: </label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
+                    </div>
+                    <input type="text" editable class="form-control" value="<?=$stockData['model_cost']?>" name="model_cost" id="model_cost" placeholder="">
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
         <div class="form-group">
             <label for="customers">Заказчики</label>
@@ -129,7 +142,7 @@ $modelStatus = (int)$stockData['model_status'];
     <?php require _webDIR_ . 'includes/add-edit/gems_protoRow.php'; ?>
     <?php endforeach; ?>
 </div>
-
+<?php if ( User::hasPermission('images') || User::hasPermission('files') ): ?>
 <div class="outer-w3-agile mt-3 pt-3 pb-3 <?=($modelStatus === 2)?"d-none":"" ?>">
     <div class="card-deck text-center row">
         <div class="card box-shadow col-xl-12 col-md-12">
@@ -141,9 +154,11 @@ $modelStatus = (int)$stockData['model_status'];
         </div>
     </div>
 </div>
+<?php endif ?>
 <div class="container-fluid">
     <div class="row">
         <!-- IMAGES -->
+        <?php if ( User::hasPermission('images') ): ?>
         <div class="outer-w3-agile col-xl mt-3 mr-xl-3 p-2">
             <h4 class="tittle-w3-agileits">Картинки</h4>
             <hr>
@@ -153,9 +168,11 @@ $modelStatus = (int)$stockData['model_status'];
                 <?php endforeach; ?>
             </div>
         </div>
+        <?php endif ?>
         <!--// IMAGES -->
 
         <!-- 3D Files -->
+        <?php if ( User::hasPermission('files') ): ?>
         <div class="outer-w3-agile col-xl mt-3 mr-xl-3 p-2">
             <h4 class="tittle-w3-agileits">
                 3Д Файлы: 
@@ -170,6 +187,7 @@ $modelStatus = (int)$stockData['model_status'];
                 </div>
             </div>
         </div>
+        <?php endif ?>
         <!--// 3D Files -->
     </div>
 </div>
@@ -200,7 +218,7 @@ $modelStatus = (int)$stockData['model_status'];
             <span>Дата создания 3д модели: </span>
             <div class="input-group">
                 <div class="input-group-prepend">
-                    <div class="input-group-text text-light badge-light"><i class="fa-regular fa-square-full"></i></div>
+                    <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
                 </div>
                 <input class="form-control" style="width: 13rem;" type="date" name="create_date" editable value="<?=$stockData['create_date'] ?>" />
             </div>

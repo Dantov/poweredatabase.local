@@ -2,7 +2,7 @@
 namespace app\models\serviceClasses;
 
 use app\models\serviceTables\Stock;
-use app\models\{Common,Files};
+use app\models\{Common,Files,User};
 
 use Yii;
 use yii\helpers\Url;
@@ -13,19 +13,13 @@ class ModelView extends Common
     public $number_3d;
 	public $row;
 
-	public $general; //Controller
-
-    function __construct( &$general, $id = 0 )
+    function __construct( $id = 0 )
     {
         $session = Yii::$app->session;
 
-        //if ( !is_object($general) ) exit('omg error general is not an OBJECT');
-        //if (empty($general->IP_visiter)) exit('omg error IP_visiter is Empty');
-
-        //$this->general = $general;
-
-        //$this->general->setAppPage('modelview');
         if ( isset($id) ) $this->id = $id;
+
+        parent::__construct();
     }
 
 	public function getStockData()
@@ -43,6 +37,10 @@ class ModelView extends Common
         $this->setSizesRange();
         $this->setHashtags();
         $this->setDataFiles();
+
+        $this->setClientID();
+        $this->row['isEditBtn'] = $this->drawEditBtn( $this->row['creator_id'] );
+
 
 		return $this->row;
 	}
@@ -110,10 +108,7 @@ class ModelView extends Common
 
         $hashtags = explode('#', $this->row['hashtags']);
         foreach ( $hashtags as $key => $hashtag )
-        {
             if ( empty($hashtag) ) unset($hashtags[$key]);
-
-        }
         
         $this->row['hashtags'] = $hashtags;
         $this->row['hashtags_colors'] = $hashtagsC;
@@ -136,11 +131,21 @@ class ModelView extends Common
         $this->row['overal_zipsize'] = $this->convertFileSize($this->row['overal_zipsize']);   
     }
 
-    public function getImages()
+    protected function setClientID()
     {
-    
+        $allClients = $this->getClients();
+        
+        foreach ( $allClients as $clientTmpl )
+        {
+            if ( $this->row['client'] == $clientTmpl['name'] )
+            {
+                if ( User::hasPermission('hideclients') )
+                    $this->row['client'] = $clientTmpl['secondname'];
+                
+                $this->row['clientID'] = $clientTmpl['id'];
+                break;
+            }
+        }
     }
-
-    
 
 }

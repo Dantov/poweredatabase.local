@@ -36,6 +36,8 @@ class GeneralController extends Controller
     public array $modelTypes;
     public array $modelMaterials;
     public array $nonPublished;
+    public string $clientHidedName;
+    
     public $status_arr = [];
     public $labels_arr = [];
     public $img_arr = [];
@@ -62,6 +64,9 @@ JS;
         $this->modelTypes = $m->getAllModelTypes();
         $this->modelMaterials = $m->getAllMaterials();
         $this->nonPublished = $m->getNonPublished();
+
+        if ( User::hasPermission('hideclients') )
+            $this->clientHidedName = $m->getClientName();
 
         return parent::beforeAction($action);
     }

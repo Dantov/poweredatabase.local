@@ -2,6 +2,7 @@
 namespace app\models;
 use app\models\serviceTables\{Service_data, Stock};
 use app\models\User;
+use Yii;
 
 class Common
 {
@@ -38,6 +39,7 @@ class Common
 	public function getClients() : array
 	{
 		self::$clients = Service_data::find()->where(['tab'=>'client'])->asArray()->orderBy('name')->all();
+
 		if ( User::hasPermission('clientall') )
 			return self::$clients;
 
@@ -47,6 +49,29 @@ class Common
 			return self::$clients = Service_data::find()->where(['tab'=>'client'])->andWhere(['in','id',$ids])->asArray()->orderBy('name')->all();
 		}
 		return [];
+	}
+
+	/*
+	 * For hide client name in top bar near search row
+	 */
+	public function getClientName() : string
+	{
+		$session = Yii::$app->session;
+		$unhidedName = $session->get('SelectByClient');
+
+		if ( $unhidedName == 'Все' )
+			return $unhidedName;
+
+		$allClients = $this->getClients();
+
+		foreach ( $allClients as $clientTmpl ) 
+		{
+			if ( $clientTmpl['name'] == $unhidedName ){
+				return $clientTmpl['secondname'];
+			}
+		}
+
+		return '';
 	}
 
 	public function getAllRoles()
@@ -80,8 +105,15 @@ class Common
 
 	public function getNonPublished()
 	{
-		$stock = Stock::find()->where(['model_status' => 0])->with(['images'])->asArray()->all();
+		$stock = Stock::find()->where(['model_status' => 0]);
 
+		if ( User::hasPermission('edit_own_models') )
+			$stock->andWhere(['creator_id' => User::getID() ]);
+
+		$stock = $stock->with(['images'])->asArray()->all();
+
+		$files = Files::instance();
+		$prevSuff = '_prev';
 		foreach ( $stock as &$model )
         {
         	if ( empty($model['images']) )
@@ -94,6 +126,18 @@ class Common
             foreach ( $model['images'] as $image )
             {
                 if ( $image['status'] === 1 ) {
+
+                	//Image preview check
+                	$imgname = $files->getFileName($image['name']);
+		            $imgExt = $files->getExtension($image['name']);
+		            $previmg = $imgname.$prevSuff.".".$imgExt;
+		            $path = _stockDIR_ . $image['pos_id'] . "/images/";
+		            $fullpath = _stockDIR_ . $image['pos_id'] . "/images/".$previmg;
+		            $model['path'] = $path;
+		            if ( file_exists($fullpath) ) {
+		                $model['previmg'] = $previmg;
+		            }
+
                     $model['mainimage'] = $image['name'];
                     $found = true;
                     break;
@@ -118,4 +162,16 @@ class Common
             unset($array[$key]);
         }
     }
+
+   public function drawEditBtn( int $creatorID ) : bool
+   {
+   		if (  User::hasPermission('edit_all_models') ) return true;
+
+   		if (  User::hasPermission('edit_own_models') )
+   			if ( $creatorID === User::getID() ) return true; 
+
+   		return false;
+   }
+
+
 }
