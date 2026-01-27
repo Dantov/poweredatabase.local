@@ -2,7 +2,7 @@
 namespace app\models\serviceClasses;
 
 use app\models\serviceTables\{Stock,Service_data,Jewelbox};
-use app\models\{Common,Files,User};
+use app\models\{Common,Files,User,Validator};
 
 use Yii;
 use yii\helpers\Url;
@@ -10,11 +10,20 @@ use yii\helpers\Url;
 class JewelStore extends Common
 { 
     protected int $modelID;
+    protected string $modelComment;
 
 	public function __construct( array $post )
     {
-        if ( isset($post['modelID']) )
-            $this->modelID = (int)$post['modelID'];
+        $v = new Validator();
+        if ( isset($post['modelID']) ) {
+            $id = (int)$post['modelID'];
+            if ( $id < 0 || $id > PHP_INT_MAX ) return false;
+            $this->modelID = $id;
+        }
+
+        if ( isset($post['comment']) )
+            $this->modelComment = trim( $v->sanitarizePost('comment') );
+
         parent::__construct();
 	}
 
@@ -32,7 +41,7 @@ class JewelStore extends Common
 
         $jbModel = [
             'id' => $this->modelID,
-            'comment' => 'abc123',
+            'comment' => $this->modelComment,
         ];
         $jbModels[] = $jbModel;
         
@@ -74,6 +83,59 @@ class JewelStore extends Common
         }
 
         return $stock;
+    }
+
+    public function edit()
+    {
+        $jb = Jewelbox::find()->where(['userid'=>User::getID()]);
+        if (!$jb->exists()) return false;
+        $jb = $jb->one();
+        $storedmodels = json_decode($jb->storedmodels,true);
+
+        $flag = false;
+        foreach( $storedmodels as $key => &$storedmodel ) {
+            if ( (int)$storedmodel['id'] === $this->modelID ) {
+                $storedmodel['comment'] = $this->modelComment;
+                $flag = true;
+                break;
+            }
+        }
+
+        if ($flag) {
+            $jb->storedmodels = json_encode($storedmodels,true);
+            $jb->lastdate = date('Y-m-d');
+            
+            return $jb->save(false);    
+        }
+        return false;
+    }
+
+    public function remove( int $id ) : bool
+    {
+        if ( $id < 0 || $id > PHP_INT_MAX ) return false;
+
+        $jb = Jewelbox::find()->where(['userid'=>User::getID()]);
+        if (!$jb->exists()) return false;
+        $jb = $jb->one();
+        $storedmodels = json_decode($jb->storedmodels,true);
+
+        $flag = false;
+        foreach( $storedmodels as $key => $storedmodel ) {
+            if ( (int)$storedmodel['id'] === $id ) {
+                unset($storedmodels[$key]);
+                $flag = true;
+                break;
+            }
+        }
+
+        if ($flag) {
+            $jb->storedmodels = json_encode($storedmodels,true);
+            $jb->lastdate = date('Y-m-d');
+            
+            return $jb->save(false);    
+        }
+
+        return false;
     }
 
     public function accessControl() : bool

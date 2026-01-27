@@ -327,7 +327,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                aria-expanded="false">
                                <span class="p-1 border border-dark bg-secondary text-light rounded-circle jbBadge">125</span>
                                 <div class="profile-l mr-0">
-                                    <img src="pictAssets/jewels-inside.png" class="img-fluid" alt="Responsive image">
+                                    <img src="/pictAssets/jewels-inside.png" class="img-fluid" alt="Responsive image">
                                 </div>
                             </a>
                             <div class="dropdown-menu drop-3">
@@ -383,64 +383,47 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         </nav>
         <!--// top-bar -->
 
-
-
-        <!-- Collections Modal -->
-        <div class="modal fade bd-example-modal-xl" id="collectionsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-header p-2">
-                        <h5 class="modal-title" id="exampleModalLabel">Список Коллекций</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body p-1">
-                        <div class="container-fluid">
-                            <div class="row justify-content-center">
-                                <div class="card border-0 rounded-0" style="width: 14rem;">
-                                    <div class="card-header bg-light">Золото</div>
-                                    <div class="list-group border-right" style="font-size: small;">
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Morbi leo risus</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Серебро с Золотыми накладками</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">Vestibulum at eros</a>
+        <!-- jewel-box-modal -->
+        <div class="modal fade" id="jewel-box-modal" tabindex="-1" aria-labelledby="jbModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h6 class="modal-title" id="jbModalLabel"></h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 pb-0">
+                        <tbody>
+                            <tr align="center">
+                                <td><img class="mjb-img" src="" width="80rem;"></td>
+                                <td class="mjb-mtype"></td>
+                                <td class="mjb-client"></td>
+                                <td>
+                                    <a class="mjb-link btn btn-success btn-sm" href="" role="button">Перейти</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="mb-0 pb-0">
+                                    <div class="form-group">
+                                        <label for="commenttext">Комментарий</label>
+                                        <textarea class="form-control" id="mjb-commenttext" rows="2"></textarea>
                                     </div>
-                                </div>
-                                <div class="card border-0 rounded-0" style="width: 14rem;">
-                                    <div class="card-header bg-light">Серебро</div>
-                                    <div class="list-group border-right" style="font-size: small;">
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Morbi leo risus</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Porta ac consectetur ac</a>
-                                    </div>
-                                </div>
-                                <div class="card border-0 rounded-0" style="width: 14rem;">
-                                    <div class="card-header bg-light">Бриллианты</div>
-                                    <div class="list-group border-right" style="font-size: small;">
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Morbi leo risus</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Porta ac consectetur ac</a>
-                                    </div>
-                                </div>
-                                <div class="card border-0 rounded-0" style="width: 14rem;">
-                                    <div class="card-header bg-light">Разное</div>
-                                    <div class="list-group" style="font-size: small;">
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Morbi leo risus</a>
-                                        <a href="#" class="p-2 border-0 list-group-item list-group-item-action">Porta ac consectetur ac</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <span class="text-xl-left">stats:</span>
-                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" id="mjb-submit" class="btn btn-primary">Сохранить</button>
+              </div>
             </div>
+          </div>
         </div>
-        <!--// Collections Modal -->
 
         <div class="container-fluid content" id="wrapp">
             <?= $content; ?>

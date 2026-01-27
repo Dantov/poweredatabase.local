@@ -203,35 +203,46 @@ class SiteController extends GeneralController
 
     public function actionJewel()
     {
-        $session = Yii::$app->session;
         $request = Yii::$app->request;
-        $proceed = ($request->isAjax && $request->isPost);
-        
-        $box = (string)$request->get('box');
-        if ( !$box ) exit(json_encode(false));
+        $response = Yii::$app->response;
 
-        $post = $request->post();
-        $jewelbox = new JewelStore($post);
-        if ( !$jewelbox->accessControl() ) exit(json_encode("false 123"));
+        $proceed = ($request->isAjax && $request->isPost);
+        $box = (string)$request->get('box');
+        $jewelbox = new JewelStore( $request->post() );
 
         switch($box)
         {
             case "add":
+                if ( !$jewelbox->accessControl() ) 
+                    exit(json_encode("false 123"));
+
                 if ( !$proceed ) exit(json_encode(false));
                 exit(json_encode($jewelbox->add()));
             break;
             case "show":
+                if ( !$jewelbox->accessControl() ) 
+                    $response->redirect(['/site/error/','message'=>"forbidden"])->send();
+
                 $storedModels = $jewelbox->getStoredModels();
                 $comp = compact(['storedModels']);
                 return $this->render('jewelbox',$comp);
             break;
             case "edit":
-                
+                if ( !$jewelbox->accessControl() ) exit(json_encode("false 123"));
+                if ( !$proceed ) exit(json_encode(false));
+
+                exit(json_encode( $jewelbox->edit() ));
             break;
             case "remove":
+                if ( !$jewelbox->accessControl() ) 
+                    $response->redirect(['/site/error/','message'=>"forbidden"])->send();
 
+                $jewelbox->remove($request->get('id')); 
+                $response->redirect(['/site/jewel/','box'=>'show'])->send();
             break;
         }
+
+        $response->redirect(['site/'])->send();
     }
 
     /**

@@ -89,8 +89,8 @@ body {
     bottom: 32px;
 }
 .jewelboxBtnMain {
-    position: relative;
-    bottom: 32px;
+    position: absolute;
+    bottom: 0px;
     left: 82%;
 }
 .jewelboxTopbar{

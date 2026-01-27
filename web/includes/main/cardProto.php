@@ -18,7 +18,8 @@ use app\models\User;
                 </a>
                 <?php endif; ?>
                 <?php if ( User::hasPermission('jewelbox') ): ?>
-                <button class="btn btn-dark btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-toggle="tooltip" data-placement="bottom" title="Добавить в Шкатулку">
+                <button class="btn btn-dark btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-placement="bottom" title="Добавить в Шкатулку">
+                    <input class="addJBdata" type="hidden" data-img="stock/<?=$model['id']?>/images/<?=$imgname?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>
                 <?php endif; ?>

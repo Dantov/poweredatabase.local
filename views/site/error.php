@@ -7,7 +7,7 @@
 
 use yii\helpers\Html;
 use app\models\User;
-//$name = User::getFIO();
+
 $this->title = $name . ' error';
 ?>
 <div class="site-error">
