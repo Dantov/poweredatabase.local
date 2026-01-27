@@ -9,7 +9,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\{Main,User,Nom};
-use app\models\serviceClasses\{SaveModel,AddEdit,ModelView};
+use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore};
 
 class SiteController extends GeneralController
 {
@@ -199,6 +199,39 @@ class SiteController extends GeneralController
         }
         
         exit(json_encode(false));
+    }
+
+    public function actionJewel()
+    {
+        $session = Yii::$app->session;
+        $request = Yii::$app->request;
+        $proceed = ($request->isAjax && $request->isPost);
+        
+        $box = (string)$request->get('box');
+        if ( !$box ) exit(json_encode(false));
+
+        $post = $request->post();
+        $jewelbox = new JewelStore($post);
+        if ( !$jewelbox->accessControl() ) exit(json_encode("false 123"));
+
+        switch($box)
+        {
+            case "add":
+                if ( !$proceed ) exit(json_encode(false));
+                exit(json_encode($jewelbox->add()));
+            break;
+            case "show":
+                $storedModels = $jewelbox->getStoredModels();
+                $comp = compact(['storedModels']);
+                return $this->render('jewelbox',$comp);
+            break;
+            case "edit":
+                
+            break;
+            case "remove":
+
+            break;
+        }
     }
 
     /**

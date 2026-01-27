@@ -44,17 +44,6 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="../images/favicon.ico?ver=<?=time()?>">
     <script src="../js/const.js?ver=<?=time()?>"></script>
-    <script>
-        addEventListener("load", function () {
-            setTimeout(hideURLbar, 0);
-        }, false);
-
-        function hideURLbar() {
-            window.scrollTo(0, 1);
-        }
-    </script>
-    <!-- loading-gif Js -->
-    <!--// loading-gif Js -->
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
@@ -347,7 +336,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 </div>
                                 <div class="dropdown-divider"></div>
                                 
-                                <a href="<?=Url::to(['site/jewelbox'])?>" class="dropdown-item mt-2">
+                                <a href="<?=Url::to(['site/jewel','box'=>'show'])?>" class="dropdown-item mt-2">
                                     <h4><i class="far fa-gem mr-3"></i>Показать</h4>
                                 </a>
                             
@@ -371,7 +360,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 </div>
                                 <div class="dropdown-divider"></div>
                                 <?php if(User::hasPermission('jewelbox')): ?>
-                                <a href="<?=Url::to(['site/jewelbox'])?>" class="dropdown-item mt-2">
+                                <a href="<?=Url::to(['site/jewel','box'=>'show'])?>" class="dropdown-item mt-2">
                                     <h4><i class="far fa-gem mr-3"></i>Шкатулка</h4>
                                 </a>
                                 <?php endif;?>
@@ -453,8 +442,6 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         </div>
         <!--// Collections Modal -->
 
-
-
         <div class="container-fluid content" id="wrapp">
             <?= $content; ?>
         </div>
@@ -462,7 +449,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         <!-- Copyright -->
         <div class="copyright-w3layouts shadow pt-2 pb-2 mt-2 text-center" style="bottom: 0 !important;" id="footer">
             <p class="float-left ml-3"><small>Developed by Vadym Bykov</small></p>
-            <p class="float-right mr-3"> ver3.0.0wip</p>
+            <p class="float-right mr-3"> ver 3.0.1alpha</p>
             <div class="clearfix"></div>
         </div>
         <!--// Copyright -->
@@ -472,44 +459,6 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
     <div id="alertResponseContent" style="padding: 10px" class="hidden"></div>
 </div>
 <?php $this->endBody() ?>
-
-<!-- Sidebar-nav Js -->
-<script>
-    $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
-        });
-
-        let sidemenu = document.querySelector('.components');
-        let allA = sidemenu.querySelectorAll('a[data-toggle="collapse"]');
-
-        sidemenu.addEventListener('click',function(e){
-            //e.preventDefault();
-            let click = e.target;
-            let b;
-            b = (click.hasAttribute('data-toggle') || click.classList.contains('fa-angle-down') || click.classList.contains('fa-angle-left'));
-            if ( !b ) return;
-            if ( click.hasAttribute('data-toggle') ){
-                click.lastElementChild.classList.toggle('fa-angle-down');
-                click.lastElementChild.classList.toggle('fa-angle-left');    
-            } else {
-                click.classList.toggle('fa-angle-down');
-                click.classList.toggle('fa-angle-left');
-            }
-            
-        },false);
-    });
-</script>
-<!--// Sidebar-nav Js -->
-
-<!-- Tooltip -->
-<script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    });
-</script>
-<!-- //Tooltip -->
-
 </body>
 </html>
 <?php $this->endPage() ?>

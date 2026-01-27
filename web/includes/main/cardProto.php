@@ -18,7 +18,7 @@ use app\models\User;
                 </a>
                 <?php endif; ?>
                 <?php if ( User::hasPermission('jewelbox') ): ?>
-                <button class="btn btn-dark btn-sm jewelboxBtnMain" role="button" data-toggle="tooltip" data-placement="bottom" title="Добавить в Шкатулку">
+                <button class="btn btn-dark btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-toggle="tooltip" data-placement="bottom" title="Добавить в Шкатулку">
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>
                 <?php endif; ?>
