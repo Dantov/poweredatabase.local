@@ -1,6 +1,6 @@
 <?php 
 namespace app\models;
-use app\models\serviceTables\{Service_data, Stock};
+use app\models\serviceTables\{Service_data, Stock, Jewelbox};
 use app\models\User;
 use Yii;
 
@@ -152,8 +152,28 @@ class Common
         }
         return $stock;
 	}
+
+	public function drawEditBtn( int $creatorID ) : bool
+    {
+   		if (  User::hasPermission('edit_all_models') ) return true;
+
+   		if (  User::hasPermission('edit_own_models') )
+   			if ( $creatorID === User::getID() ) return true; 
+
+   		return false;
+    }
+
+	public function getJewelStoredModels() : array
+	{
+		$jb = Jewelbox::find()->where(['userid'=>User::getID()]);
+		if (!$jb->exists()) return [];
+        $jb = $jb->one();
+        return json_decode($jb->storedmodels,true);
+	}
 	
-	protected function setIdAsKeys( array &$array )
+
+
+	public function setIdAsKeys( array &$array )
     {
         foreach ( $array as $key => $element )
         {
@@ -162,16 +182,6 @@ class Common
             unset($array[$key]);
         }
     }
-
-   public function drawEditBtn( int $creatorID ) : bool
-   {
-   		if (  User::hasPermission('edit_all_models') ) return true;
-
-   		if (  User::hasPermission('edit_own_models') )
-   			if ( $creatorID === User::getID() ) return true; 
-
-   		return false;
-   }
 
 
 }

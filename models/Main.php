@@ -167,10 +167,29 @@ class Main extends Common
         if ( User::hasPermission('hideclients') )
             $this->hideClientsName();
 
+        if ( User::hasPermission('jewelbox') )
+            $this->setJewelStoredModels();
+
         foreach ($this->stock as &$model)
             $model['isEditBtn'] = $this->drawEditBtn( $model['creator_id'] );
 
         return $this->stock;
+    }
+
+    public function pagination() : array
+    {
+        if ( !$this->stockQuery->exists() ) return [];
+
+        $session = Yii::$app->session;
+        $maxPos = $session->get('positionsCount');
+        //$maxPos = 5;
+
+        $this->countPos = $this->stockQuery->count();
+        $pages = new Pagination(['totalCount' => $this->countPos,'pageSize' => $maxPos]);
+        $models = $this->stockQuery->asArray()->offset($pages->offset)->limit($pages->limit)->all();
+        $this->pages = $pages;
+
+        return $models;
     }
 
     protected function setMainImgforStock()
@@ -227,19 +246,22 @@ class Main extends Common
         }
     }
 
-    public function pagination() : array
+    
+
+    protected function setJewelStoredModels()
     {
-        if ( !$this->stockQuery->exists() ) return [];
+        $jsm = $this->getJewelStoredModels();
 
-        $session = Yii::$app->session;
-        $maxPos = $session->get('positionsCount');
-        //$maxPos = 5;
-
-        $this->countPos = $this->stockQuery->count();
-        $pages = new Pagination(['totalCount' => $this->countPos,'pageSize' => $maxPos]);
-        $models = $this->stockQuery->asArray()->offset($pages->offset)->limit($pages->limit)->all();
-        $this->pages = $pages;
-
-        return $models;
+        foreach ( $this->stock as &$model )
+        {
+            $model['stored'] = false;
+            foreach ( $jsm as $storedmodel )
+            {
+                if ( $model['id'] == $storedmodel['id'] ) {
+                    $model['stored'] = true;
+                    break;
+                }
+            }
+        }
     }
 }
