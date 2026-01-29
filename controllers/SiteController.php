@@ -228,6 +228,14 @@ class SiteController extends GeneralController
                 $comp = compact(['allOrders']);
                 return $this->render('jewelbox',$comp);
             break;
+            case "showorders":
+                if ( !User::isAdmin() ) 
+                    $response->redirect(['/site/error/','message'=>"forbidden"])->send();
+
+                $allOrders = $jewelbox->getAllOrders();
+                $comp = compact(['allOrders']);
+                return $this->render('jewelboxorders',$comp);
+            break;
             case "edit":
                 if ( !$proceed ) exit(json_encode(false));
                 if ( !$jewelbox->accessControl() ) exit(json_encode(false));

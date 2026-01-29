@@ -19,7 +19,7 @@ class UsersAll extends Common
     {
         $this->userfields = [
             'id','login','name','lastname','thirdname','fio','fullFio','role','clients','permissions',
-            'location','about','email','access'];
+            'files_access','about','email','access'];
         $this->getAllUsers();
         
         if ($id > 0 && $id < PHP_INT_MAX)
@@ -325,6 +325,10 @@ class UsersAll extends Common
         return $thisuser->select(['id','permissions'])->one();
     }
 
+
+    /*
+     * Adding new User Information
+     */
     public function addNewUser( array $post )
     {
         $v = new Validator("add user");
@@ -367,7 +371,7 @@ class UsersAll extends Common
         $newUser->clients = json_encode($uClients);
 
         $newUser->permissions = json_encode([]);
-        $newUser->location = '';
+        $newUser->files_access = json_encode([]);
         $newUser->access = 0;
 
         $res = $newUser->save(false);

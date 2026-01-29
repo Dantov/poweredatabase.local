@@ -1,6 +1,6 @@
 <?php 
 namespace app\models;
-use app\models\serviceTables\{Service_data, Stock, Jewelbox};
+use app\models\serviceTables\{Service_data, Stock, Jewelbox, Users};
 use app\models\User;
 use Yii;
 
@@ -8,10 +8,31 @@ class Common
 {
 	public static array $clients;
 	public static array $roles;
+	public static array $userData;
 
 	public function __construct()
     {
         
+    }
+
+    public function getUserDataByID( int $id ) : array
+    {
+    	if ( isset(self::$userData) ) return self::$userData;
+    	
+    	if ( $id < 1 || $id > PHP_INT_MAX ) return [];
+
+    	$user = Users::find()
+    		->select(['name','lastname','thirdname','fio','fullFio','role','clients','permissions','email','about','access'])
+    		->where(['id' => $id]);
+    	if ( !$user->exists() ) return [];
+
+    	$user = $user->asArray()->one();
+
+    	$user['role'] = json_decode($user['role'],true);
+    	$user['clients'] = json_decode($user['clients'],true);
+    	$user['permissions'] = json_decode($user['permissions'],true);
+
+    	return self::$userData = $user;
     }
 
 	public function dateConvert( string $date ) : string

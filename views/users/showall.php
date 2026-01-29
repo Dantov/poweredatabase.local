@@ -36,7 +36,8 @@ $this->registerJsFile("@web/js/add-edit/Validator.js?v=$tt",['depends' => [\app\
     <!--// Profiile -->
     <?php foreach ($all as $single): ?>
     <!-- Profile -->
-    <div class="col-md-auto">
+    <?php $self = ($single['id']===User::getID())?"bg-info":"" ?>
+    <div class="col-md-auto <?=$self?>">
         <div class="outer-w3-agile mt-3" style="width: 20rem !important;">
             <div class="profile-main-w3ls">
                 <div class="profile-pic wthree">

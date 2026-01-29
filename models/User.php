@@ -2,7 +2,7 @@
 namespace app\models;
 
 use app\models\serviceTables\Users;
-use app\models\serviceTables\Permissions;
+use app\models\serviceTables\{Permissions,Service_data};
 use Yii;
 
 class User
@@ -12,6 +12,7 @@ class User
      * @var bool
      */
     protected static bool $isGuest;
+    protected static bool $isAdmin;
 
     protected static $userInstance;
 
@@ -25,10 +26,16 @@ class User
     protected static string $userFullFIO;
 
     /**
-     * ID участков к которым принадлежит пользователь
+     * array of all info about user roles
      * @var array
      */
-    protected static array $userLocations;
+    protected static array $userRoles;
+
+    /**
+     * array Ids of models user can dowmload 3d files 
+     * @var array
+     */
+    protected static array $userFilesAccess;
 
     /**
      * уровень доступа
@@ -85,7 +92,7 @@ class User
             return self::$userInstance = $user;
         }
         if ( $userID < 0 || $userID > PHP_INT_MAX )
-            throw new \Exception("We got no user sorry!", 510);
+            throw new \Exception("We got no user sorry 123!", 510);
         
         if ( !$userID )
         {
@@ -100,6 +107,21 @@ class User
         self::$userInstance = Users::find()->where(['id'=>$userID])->asArray()->one();
         
         return self::$userInstance;
+    }
+
+    public static function getFilesAccess() : array
+    {
+        if (isset(self::$userFilesAccess)) return self::$userFilesAccess;
+
+        $user = self::userInstance();
+        return self::$userFilesAccess = json_decode($user['files_access'],true);
+    }
+    public static function hasFilesAccess( int $modelid ) : bool
+    {
+        if ( !self::hasPermission('clientFilesDownload') ) return false;
+        if ( $userID < 0 || $userID > PHP_INT_MAX ) return false;
+
+        return in_array(self::getFilesAccess() $modelid); 
     }
 
     public static function permissions() : array
@@ -174,6 +196,36 @@ class User
         return $clientPerm;
     }
 
+    public static function getRoles( int $singleID = 0 ) : mixed
+    {
+        if ( isset(self::$userRoles) )
+        {
+            if ( $singleID )
+                if ( isset(self::$userRoles[$singleID]) ) return self::$userRoles[$singleID];
+            return self::$userRoles;  
+        } 
+
+        $user = self::userInstance();
+        $roleIDs = json_decode($user['role']);
+
+        $allroles = Service_data::find()->where(['tab'=>'role'])->andWhere(['in','id',$roleIDs]);
+        if ( !$allroles->exists() ) return false;
+
+        $allroles = $allroles->asArray()->all();
+
+        foreach ( $allroles as $key => $element )
+        {
+            if (!isset($element['id'])) continue;
+            $allroles[$element['id']] = $element;
+            unset($allroles[$key]);
+        }
+        self::$userRoles = $allroles;
+
+        if ( $singleID )
+            if ( isset(self::$userRoles[$singleID]) ) return self::$userRoles[$singleID];
+        return self::$userRoles;
+    }
+
     /**
      * @throws \Exception
      */
@@ -189,9 +241,11 @@ class User
      */
     public static function isAdmin() : bool
     {
-        if ( isset(self::$isGuest) ) return self::$isGuest;
+        if ( isset(self::$isAdmin) ) return self::$isAdmin;
 
-        return self::$isGuest = !self::getAccess() ? true : false;
+        $role = self::getRoles(419);
+        if ( $role['name'] === 'Admin' ) return self::$isAdmin = true;
+        return self::$isAdmin = false;
     }
 
     /**

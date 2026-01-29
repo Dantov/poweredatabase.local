@@ -18,7 +18,7 @@ $mStored = $model['stored']??false;
                     <i class="fas fa-pencil-alt"></i>
                 </a>
                 <?php endif; ?>
-                <?php if ( User::hasPermission('jewelbox') && !$mStored ): ?>
+                <?php if ( User::hasPermission('jewelbox') && !$mStored && !User::isAdmin() ): ?>
                 <button class="btn btn-primary btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-placement="bottom" title="Добавить в Шкатулку">
                     <input class="addJBdata" type="hidden" data-img="stock/<?=$model['id']?>/images/<?=$imgname?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
                     <i class="fa-solid fa-basket-shopping"></i>

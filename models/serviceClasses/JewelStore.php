@@ -44,6 +44,15 @@ class JewelStore extends Common
         } 
         return 0;
     }
+    public static function getOrdersCount() : int
+    {
+        $jb = Jewelbox::find()->where(['status'=>1])->orWhere(['status'=>0]);
+        if ( $jb->exists() ) 
+        {
+            return $jb->count();
+        } 
+        return 0;
+    }
 
     public function add()
     {
@@ -79,6 +88,26 @@ class JewelStore extends Common
         $jb = $jb->one();
 
         return $jb->status;
+    }
+
+    public function getAllOrders() : array
+    {
+        $jb = Jewelbox::find();
+        if ( !$jb->exists() ) return [];
+
+        $jb = $jb->asArray()->all();
+
+        $this->setIdAsKeys($jb);
+
+        foreach( $jb as &$order ) {
+            $order['storedmodels'] = $this->proceedStoredModels(json_decode($order['storedmodels'],true));
+            $this->setIdAsKeys($order['storedmodels']);
+            
+            $order['userdata'] = $this->getUserDataByID($order['userid']);
+            $order['lastdate'] = $this->dateConvert($order['lastdate']);
+        }
+
+        return $jb;
     }
 
     public function getStoredModels() : array

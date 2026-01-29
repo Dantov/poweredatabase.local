@@ -326,18 +326,21 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         <li class="nav-item dropdown">
                             <a class="dropdown-toggle" style="" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true"
                                aria-expanded="false">
-                               <span class="p-1 border border-dark bg-secondary text-light rounded-circle jbBadge"><?=JewelStore::getModelsCount()?></span>
+                                <?php if( !User::isAdmin()): ?>
+                                <span class="p-1 border border-dark bg-secondary text-light rounded-circle jbBadge"><?=JewelStore::getModelsCount()?></span>
+                                <?php endif; ?>
                                 <div class="profile-l mr-0">
                                     <img src="/pictAssets/jewels-inside.png" class="img-fluid" alt="Responsive image">
                                 </div>
                             </a>
                             <div class="dropdown-menu drop-3">
+                                <?php $whatinside=User::isAdmin()?JewelStore::getOrdersCount()." заказов внутри":JewelStore::getModelsCount()." моделей внутри"?>
                                 <div class="profile-r align-self-center">
-                                    <h5 class="sub-title-w3-agileits"><small><?=JewelStore::getModelsCount()?> моделей внутри</small></h5>
+                                    <h5 class="sub-title-w3-agileits"><small><?=$whatinside?></small></h5>
                                 </div>
                                 <div class="dropdown-divider"></div>
-                                
-                                <a href="<?=Url::to(['site/jewel','box'=>'show'])?>" class="dropdown-item mt-2">
+                                <?php $uri = User::isAdmin() ? 'showorders' : 'show' ?>
+                                <a href="<?=Url::to(['site/jewel','box'=>$uri])?>" class="dropdown-item mt-2">
                                     <h4><i class="far fa-gem mr-3"></i>Показать</h4>
                                 </a>
                                 <?php if(JewelStore::getModelsCount()): ?>
