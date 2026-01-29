@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use app\models\User;
+use app\models\serviceClasses\JewelStore;
 
 AppAsset::register($this);
 
@@ -319,27 +320,31 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </div>
                     </div>
                 </div>
-                <?php if(User::hasPermission('jewelbox')): ?>
+                <?php if( User::hasPermission('jewelbox')): ?>
                 <div class="p-1 bd-highlight jewelboxTopbar">
                     <ul class="user-bar top-icons-agileits-w3layouts">
                         <li class="nav-item dropdown">
                             <a class="dropdown-toggle" style="" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true"
                                aria-expanded="false">
-                               <span class="p-1 border border-dark bg-secondary text-light rounded-circle jbBadge">125</span>
+                               <span class="p-1 border border-dark bg-secondary text-light rounded-circle jbBadge"><?=JewelStore::getModelsCount()?></span>
                                 <div class="profile-l mr-0">
                                     <img src="/pictAssets/jewels-inside.png" class="img-fluid" alt="Responsive image">
                                 </div>
                             </a>
                             <div class="dropdown-menu drop-3">
                                 <div class="profile-r align-self-center">
-                                    <h5 class="sub-title-w3-agileits"><small>25 models inside</small></h5>
+                                    <h5 class="sub-title-w3-agileits"><small><?=JewelStore::getModelsCount()?> моделей внутри</small></h5>
                                 </div>
                                 <div class="dropdown-divider"></div>
                                 
                                 <a href="<?=Url::to(['site/jewel','box'=>'show'])?>" class="dropdown-item mt-2">
                                     <h4><i class="far fa-gem mr-3"></i>Показать</h4>
                                 </a>
-                            
+                                <?php if(JewelStore::getModelsCount()): ?>
+                                <a href="<?=Url::to(['site/jewel','box'=>'send'])?>" class="dropdown-item mt-2">
+                                    <h4><i class="fa-regular fa-paper-plane"></i> Отправить Запрос</h4>
+                                </a>
+                                <?php endif;?>
                             </div>
                         </li>
                     </ul>

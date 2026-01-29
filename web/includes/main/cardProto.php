@@ -1,10 +1,11 @@
 <?php
 use yii\helpers\Url;
 use app\models\User;
+$mStored = $model['stored']??false;
 ?>
-<div class="card bg-light mb-1 mainCard" style="width: <?=$session->get('tilesControlSize')?>rem;">
-    <div class="card-header p-1 cursorPointer text-truncate bg-<?=$model['stored']?"primary":"secondary"?> text-white text-center">
-        <small data-toggle="tooltip" title="<?=$model['stored']?"В Шкатулке":htmlentities($model['client'])?>" data-placement="top"><?=htmlentities($model['client'])?></small>
+<div class="card bg-light mb-1 mainCard" data-toggle="tooltip" title="<?=$mStored?"В Шкатулке":""?>" style="width: <?=$session->get('tilesControlSize')?>rem;">
+    <div class="card-header p-1 cursorPointer text-truncate bg-<?=$mStored?"primary":"secondary"?> text-white text-center">
+        <small data-toggle="tooltip" title="<?=htmlentities($model['client'])?>" data-placement="top"><?=htmlentities($model['client'])?></small>
         <div class="clearfix"></div>
     </div>
     <a href="<?=Url::to(['site/view','id'=>$model['id']])?>">
@@ -17,8 +18,8 @@ use app\models\User;
                     <i class="fas fa-pencil-alt"></i>
                 </a>
                 <?php endif; ?>
-                <?php if ( User::hasPermission('jewelbox') && !$model['stored'] ): ?>
-                <button class="btn btn-dark btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-placement="bottom" title="Добавить в Шкатулку">
+                <?php if ( User::hasPermission('jewelbox') && !$mStored ): ?>
+                <button class="btn btn-primary btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-placement="bottom" title="Добавить в Шкатулку">
                     <input class="addJBdata" type="hidden" data-img="stock/<?=$model['id']?>/images/<?=$imgname?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>

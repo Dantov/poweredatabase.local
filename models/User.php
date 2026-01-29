@@ -185,6 +185,16 @@ class User
     }
 
     /**
+     * @throws \Exception
+     */
+    public static function isAdmin() : bool
+    {
+        if ( isset(self::$isGuest) ) return self::$isGuest;
+
+        return self::$isGuest = !self::getAccess() ? true : false;
+    }
+
+    /**
      * @return int
      * @throws \Exception
      */

@@ -223,13 +223,14 @@ class SiteController extends GeneralController
                 if ( !$jewelbox->accessControl() ) 
                     $response->redirect(['/site/error/','message'=>"forbidden"])->send();
 
-                $storedModels = $jewelbox->getStoredModels();
-                $comp = compact(['storedModels']);
+                $allOrders = $jewelbox->getStoredModels();
+                //$orderStatus = $jewelbox->getOrderStatus();
+                $comp = compact(['allOrders']);
                 return $this->render('jewelbox',$comp);
             break;
             case "edit":
-                if ( !$jewelbox->accessControl() ) exit(json_encode("false 123"));
                 if ( !$proceed ) exit(json_encode(false));
+                if ( !$jewelbox->accessControl() ) exit(json_encode(false));
 
                 exit(json_encode( $jewelbox->edit() ));
             break;
@@ -237,7 +238,23 @@ class SiteController extends GeneralController
                 if ( !$jewelbox->accessControl() ) 
                     $response->redirect(['/site/error/','message'=>"forbidden"])->send();
 
-                $jewelbox->remove($request->get('id')); 
+                $jewelbox->remove($request->get('id'),$request->get('orderid')); 
+                $response->redirect(['/site/jewel/','box'=>'show'])->send();
+            break;
+            case "sendorder":
+                if ( !$jewelbox->accessControl() ) 
+                    $response->redirect(['/site/error/','message'=>"forbidden"])->send();
+
+                if ( !$jewelbox->sendOrder( $request->get('orderid') ) ) 
+                    $response->redirect(['/site/error/','message'=>"При обоаботке заказа возникла ошибка!"])->send();
+
+                $response->redirect(['/site/jewel/','box'=>'show'])->send();
+            break;
+            case "removeorder":
+                if ( !$jewelbox->accessControl() ) 
+                    $response->redirect(['/site/error/','message'=>"forbidden"])->send();
+
+                $jewelbox->removeOrder($request->get('orderid')); 
                 $response->redirect(['/site/jewel/','box'=>'show'])->send();
             break;
         }

@@ -9,10 +9,14 @@ class JewelBox
         this.jbBtns = document.querySelectorAll('.jewelboxBtnMain');
         if ( this.jbBtns ) this.btnsClickApply(this.jbBtns, "add");
 
+        this.jbBtnV = document.querySelectorAll('.jewelboxBtnView');
+        if ( this.jbBtnV ) this.btnsClickApply(this.jbBtnV, "add");
+
         this.editBtns = document.querySelectorAll('.editbtnJewelBox');
         if ( this.editBtns ) this.btnsClickApply(this.editBtns, "edit");
 
         this.queryObj = {
+            orderid: '',
             modelID: '',
             comment: '',
             price: '',
@@ -42,7 +46,8 @@ class JewelBox
         let modelClient = modelData.getAttribute('data-client');
 
         let modal = document.getElementById('jewel-box-modal');
-        let jbcomment,label = "";
+        let jbcomment = "";
+        let label = "";
 
         if ( condition == "add" ) label = "Добавить в шкатулку: ";
         if ( condition == "edit" ) {
@@ -61,6 +66,9 @@ class JewelBox
         let self = this;
         modal.querySelector('#mjb-submit').onclick = function()
         {
+            if ( btn.hasAttribute('data-orderid') )
+                self.queryObj.orderid = btn.getAttribute('data-orderid');
+
             self.queryObj.modelID = btn.getAttribute('data-id');
             self.queryObj.comment = modal.querySelector('#mjb-commenttext').value;
             //debug(self.queryObj);
@@ -82,7 +90,8 @@ class JewelBox
                 if (resp) {
                     //AR.serverError(resp);
                     $('#jewel-box-modal').modal('hide');
-                    if ( condition == "edit" ) reload(true);
+                    reload(true);
+                    //if ( condition == "edit" ) reload(true);
                 } 
             }
         });

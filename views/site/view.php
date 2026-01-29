@@ -29,9 +29,17 @@ $this->registerJs($imgJs);
         </div>
     </div>
     <div class="col-sm">
-        <div class="d-flex justify-content-between bg-dots" id="complects">
-            <div class="p-1 bg-light"><span>В Комплекте:</span></div>
-            <div class="p-1 bg-light text-primary"><b><a imgtoshow="" class="text-primary" href="index.php?id=60"></a></b></div>
+        <div class="d-flex justify-content-between bg-dots">
+            <?php if ( User::hasPermission('jewelbox') ):?>
+                <?php if ( $model['stored'] ):?>
+                <button type="button" class="btn btn-success btn-lg btn-block mt-2">Модель уже в Шкатулке</button>
+                <?php else:?>
+                <button type="button" data-id="<?=$model['id']?>" class="btn btn-primary btn-lg btn-block mt-2 jewelboxBtnView">
+                    <input class="addJBdata" type="hidden" data-img="/stock/<?=$model['id']?>/images/<?=$model['mainimage']?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
+                    Добавть Модель в Шкатулку
+                </button>
+                <?php endif;?>
+            <?php endif;?>
         </div>
     </div>
 </div>

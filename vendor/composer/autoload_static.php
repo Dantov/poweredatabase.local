@@ -15,19 +15,22 @@ class ComposerStaticInit7309b9d2e4518ad52988e780a875afc0
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
+        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
-        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         'e3b2795a8a512b6083af088fb53afe6c' => __DIR__ . '/..' . '/codeception/codeception/functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
+        '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '77e7c5c0b74965caa0fbb0a094b7713f' => __DIR__ . '/..' . '/codeception/verify/src/Codeception/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'y' => 
+        'y' =>
         array (
             'yii\\symfonymailer\\' => 18,
+            'yii\\swiftmailer\\' => 16,
             'yii\\gii\\' => 8,
             'yii\\faker\\' => 10,
             'yii\\debug\\' => 10,
@@ -35,16 +38,17 @@ class ComposerStaticInit7309b9d2e4518ad52988e780a875afc0
             'yii\\bootstrap5\\' => 15,
             'yii\\' => 4,
         ),
-        'c' => 
+        'c' =>
         array (
             'cebe\\markdown\\' => 14,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
             'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
             'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
+            'Symfony\\Polyfill\\Iconv\\' => 23,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Contracts\\Service\\' => 26,
             'Symfony\\Contracts\\EventDispatcher\\' => 34,
@@ -60,7 +64,7 @@ class ComposerStaticInit7309b9d2e4518ad52988e780a875afc0
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Component\\BrowserKit\\' => 29,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psy\\' => 4,
             'Psr\\Log\\' => 8,
@@ -69,26 +73,26 @@ class ComposerStaticInit7309b9d2e4518ad52988e780a875afc0
             'Psr\\Container\\' => 14,
             'PhpParser\\' => 10,
         ),
-        'G' => 
+        'G' =>
         array (
             'GuzzleHttp\\Psr7\\' => 16,
         ),
-        'F' => 
+        'F' =>
         array (
             'Faker\\' => 6,
         ),
-        'E' => 
+        'E' =>
         array (
             'Egulias\\EmailValidator\\' => 23,
         ),
-        'D' => 
+        'D' =>
         array (
             'Doctrine\\Instantiator\\' => 22,
             'Doctrine\\Deprecations\\' => 22,
             'Doctrine\\Common\\Lexer\\' => 22,
             'DeepCopy\\' => 9,
         ),
-        'C' => 
+        'C' =>
         array (
             'Codeception\\Extension\\' => 22,
             'Codeception\\' => 12,
@@ -96,168 +100,176 @@ class ComposerStaticInit7309b9d2e4518ad52988e780a875afc0
     );
 
     public static $prefixDirsPsr4 = array (
-        'yii\\symfonymailer\\' => 
+        'yii\\symfonymailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-symfonymailer/src',
         ),
-        'yii\\gii\\' => 
+        'yii\\swiftmailer\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/yiisoft/yii2-swiftmailer/src',
+        ),
+        'yii\\gii\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-gii/src',
         ),
-        'yii\\faker\\' => 
+        'yii\\faker\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-faker/src',
         ),
-        'yii\\debug\\' => 
+        'yii\\debug\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-debug/src',
         ),
-        'yii\\composer\\' => 
+        'yii\\composer\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-composer',
         ),
-        'yii\\bootstrap5\\' => 
+        'yii\\bootstrap5\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2-bootstrap5/src',
         ),
-        'yii\\' => 
+        'yii\\' =>
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2',
         ),
-        'cebe\\markdown\\' => 
+        'cebe\\markdown\\' =>
         array (
             0 => __DIR__ . '/..' . '/cebe/markdown',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        'Symfony\\Polyfill\\Intl\\Idn\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Iconv\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-iconv',
+        ),
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
+        'Symfony\\Contracts\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
-        'Symfony\\Component\\Yaml\\' => 
+        'Symfony\\Component\\Yaml\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/yaml',
         ),
-        'Symfony\\Component\\VarDumper\\' => 
+        'Symfony\\Component\\VarDumper\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/var-dumper',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\Mime\\' => 
+        'Symfony\\Component\\Mime\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mime',
         ),
-        'Symfony\\Component\\Mailer\\' => 
+        'Symfony\\Component\\Mailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/mailer',
         ),
-        'Symfony\\Component\\Finder\\' => 
+        'Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\DomCrawler\\' => 
+        'Symfony\\Component\\DomCrawler\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/dom-crawler',
         ),
-        'Symfony\\Component\\CssSelector\\' => 
+        'Symfony\\Component\\CssSelector\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/css-selector',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'Symfony\\Component\\BrowserKit\\' => 
+        'Symfony\\Component\\BrowserKit\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/browser-kit',
         ),
-        'Psy\\' => 
+        'Psy\\' =>
         array (
             0 => __DIR__ . '/..' . '/psy/psysh/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\Http\\Message\\' => 
+        'Psr\\Http\\Message\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/http-factory/src',
             1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'PhpParser\\' => 
+        'PhpParser\\' =>
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
-        'GuzzleHttp\\Psr7\\' => 
+        'GuzzleHttp\\Psr7\\' =>
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
         ),
-        'Faker\\' => 
+        'Faker\\' =>
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
         ),
-        'Egulias\\EmailValidator\\' => 
+        'Egulias\\EmailValidator\\' =>
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
         ),
-        'Doctrine\\Instantiator\\' => 
+        'Doctrine\\Instantiator\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
         ),
-        'Doctrine\\Deprecations\\' => 
+        'Doctrine\\Deprecations\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
-        'Doctrine\\Common\\Lexer\\' => 
+        'Doctrine\\Common\\Lexer\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/lexer/src',
         ),
-        'DeepCopy\\' => 
+        'DeepCopy\\' =>
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
-        'Codeception\\Extension\\' => 
+        'Codeception\\Extension\\' =>
         array (
             0 => __DIR__ . '/..' . '/codeception/codeception/ext',
         ),
-        'Codeception\\' => 
+        'Codeception\\' =>
         array (
             0 => __DIR__ . '/..' . '/codeception/verify/src/Codeception',
             1 => __DIR__ . '/..' . '/codeception/codeception/src/Codeception',
@@ -266,23 +278,23 @@ class ComposerStaticInit7309b9d2e4518ad52988e780a875afc0
     );
 
     public static $prefixesPsr0 = array (
-        'H' => 
+        'H' =>
         array (
-            'HTMLPurifier' => 
+            'HTMLPurifier' =>
             array (
                 0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
             ),
         ),
-        'D' => 
+        'D' =>
         array (
-            'Diff' => 
+            'Diff' =>
             array (
                 0 => __DIR__ . '/..' . '/phpspec/php-diff/lib',
             ),
         ),
-        'B' => 
+        'B' =>
         array (
-            'Behat\\Gherkin' => 
+            'Behat\\Gherkin' =>
             array (
                 0 => __DIR__ . '/..' . '/behat/gherkin/src',
             ),

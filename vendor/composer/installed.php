@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'yiisoft/yii2-app-basic',
-        'pretty_version' => '2.0.52',
-        'version' => '2.0.52.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '07effbf55e6df2a9b3087fff9056582dacca7f85',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -553,6 +553,15 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
+        'swiftmailer/swiftmailer' => array(
+            'pretty_version' => 'v6.3.0',
+            'version' => '6.3.0.0',
+            'reference' => '8a5d5072dca8f48460fce2f4131fcc495eec654c',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../swiftmailer/swiftmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'symfony/browser-kit' => array(
             'pretty_version' => 'v6.0.19',
             'version' => '6.0.19.0',
@@ -658,6 +667,15 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
+        'symfony/polyfill-iconv' => array(
+            'pretty_version' => 'v1.33.0',
+            'version' => '1.33.0.0',
+            'reference' => '5f3b930437ae03ae5dff61269024d8ea1b3774aa',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../symfony/polyfill-iconv',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'symfony/polyfill-intl-grapheme' => array(
             'pretty_version' => 'v1.32.0',
             'version' => '1.32.0.0',
@@ -749,9 +767,9 @@
             'dev_requirement' => false,
         ),
         'yiisoft/yii2-app-basic' => array(
-            'pretty_version' => '2.0.52',
-            'version' => '2.0.52.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '07effbf55e6df2a9b3087fff9056582dacca7f85',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -801,6 +819,15 @@
             'install_path' => __DIR__ . '/../yiisoft/yii2-gii',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'yiisoft/yii2-swiftmailer' => array(
+            'pretty_version' => '2.1.3',
+            'version' => '2.1.3.0',
+            'reference' => '7b7ec871b4a63c0abbcd10e1ee3fb5be22f8b340',
+            'type' => 'yii2-extension',
+            'install_path' => __DIR__ . '/../yiisoft/yii2-swiftmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'yiisoft/yii2-symfonymailer' => array(
             'pretty_version' => '2.0.4',

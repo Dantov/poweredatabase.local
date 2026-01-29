@@ -167,8 +167,15 @@ class Common
 	{
 		$jb = Jewelbox::find()->where(['userid'=>User::getID()]);
 		if (!$jb->exists()) return [];
-        $jb = $jb->one();
-        return json_decode($jb->storedmodels,true);
+        $jb = $jb->all();
+
+        $storedmodels = [];
+        foreach( $jb as $ordID => $orderData )
+        {
+        	$om = json_decode($orderData->storedmodels,true);
+        	$storedmodels = array_merge($storedmodels, $om);
+        }
+        return $storedmodels;
 	}
 	
 

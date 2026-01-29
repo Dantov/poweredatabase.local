@@ -290,7 +290,7 @@ class UsersAll extends Common
         $thisuser = $this->applyRightPrepare( $permid );
         if ( $thisuser === false ) return false;
         if ( !$this->hasPermission($permid) ) return false;
-        $oldUP = json_decode($thisuser->permissions);
+        $oldUP = json_decode($thisuser->permissions,true);
         foreach ( $oldUP as $key => $upID )
         {
             if ( $upID === $permid )
@@ -302,7 +302,7 @@ class UsersAll extends Common
     }
     protected function applyRightPrepare( int $permid ) : mixed
     {
-        if ( !($permid > 0 && $permid < PHP_INT_MAX) ) return false;
+        if ( $permid < 1 || $permid > PHP_INT_MAX ) return false;
 
         $thisuser = Users::find()->where(['id'=>$this->uid]);
 
