@@ -1,7 +1,7 @@
 <?php
 namespace app\models\serviceClasses;
 
-use app\models\serviceTables\{Stock,Service_data,Jewelbox};
+use app\models\serviceTables\{Stock,Service_data,Jewelbox,Users};
 use app\models\{Common,Files,User,Validator};
 
 use Yii;
@@ -12,14 +12,17 @@ class JewelStore extends Common
     protected int $modelID;
     protected string $modelComment;
     protected int $orderID;
+    protected string $price;
+    protected int $filesAccess;
 
 	public function __construct( array $post )
     {
         $v = new Validator();
+
         if ( isset($post['modelID']) ) {
             $id = (int)$post['modelID'];
 
-            if ( $id < 1 || $id > PHP_INT_MAX ) return false;
+            //if ( $id < 1 || $id > PHP_INT_MAX ) return false;
             $this->modelID = $id;
         }
 
@@ -30,6 +33,16 @@ class JewelStore extends Common
             $orderid = (int)$post['orderid'];
             if ( $orderid < 1 || $orderid > PHP_INT_MAX ) return false;
             $this->orderID = $orderid;
+        }
+
+        if ( isset($post['price']) ) {
+            $this->price = trim( $v->sanitarizePost('price') );
+        }
+
+        if ( isset($post['access']) ) {
+            $access = (int)$post['access'];
+            //if ( $access < 0 || $access > 1 ) return false;
+            $this->filesAccess = $access;
         }
 
         parent::__construct();
@@ -70,6 +83,7 @@ class JewelStore extends Common
             'id' => $this->modelID,
             'comment' => $this->modelComment,
             'price' => '...',
+            'access' => '',
         ];
         $jbModels[] = $jbModel;
         
@@ -90,9 +104,16 @@ class JewelStore extends Common
         return $jb->status;
     }
 
-    public function getAllOrders() : array
+    public function getAllOrders( int $userID = 0 ) : array
     {
         $jb = Jewelbox::find();
+        if ( $userID ) {
+           $jb->where(['userid'=>User::getID()]); 
+        } else {
+            // For admin we don't show not formed orders
+            $jb->where(['<>','status',0]); 
+        }
+
         if ( !$jb->exists() ) return [];
 
         $jb = $jb->asArray()->all();
@@ -110,6 +131,9 @@ class JewelStore extends Common
         return $jb;
     }
 
+    /*
+     * OLD
+     */
     public function getStoredModels() : array
     {
         $jb = Jewelbox::find()->where(['userid'=>User::getID()]);
@@ -146,6 +170,7 @@ class JewelStore extends Common
                 if ( $model['id'] === $sm['id'] ){
                     $model['comment'] = $sm['comment'];
                     $model['storeprice'] = $sm['price'];// round($model['model_cost'] / 2); //
+                    $model['access'] = $sm['access'];// round($model['model_cost'] / 2); //
                 }
             }
             foreach( $model['images'] as $img ) {
@@ -189,7 +214,7 @@ class JewelStore extends Common
         if ( $orderid < 1 || $orderid > PHP_INT_MAX ) return false;
 
         $jb = Jewelbox::find()->where(['userid'=>User::getID()])->andWhere(['id'=>$orderid]);
-        if (!$jb->exists()) return false;
+        if ( !$jb->exists() ) return false;
         $jb = $jb->one();
         $storedmodels = json_decode($jb->storedmodels,true);
 
@@ -253,6 +278,93 @@ class JewelStore extends Common
             ->setHtmlBody('Заказ № <i>' . $jb->id . '</i> от ' .'<b>'.User::getFIO().'</b> УДАЛЕН!')
             ->send();
         }
+    }
+
+    public function openModelFiles( string $condition = 'one' ) : bool
+    {
+        // Jewel Box Part
+        $jb = Jewelbox::find()->where(['id'=>$this->orderID]);
+        if ( !$jb->exists() ) return false;
+        $jb = $jb->one();
+        $userID = $jb->userid;
+        $storedmodels = json_decode($jb->storedmodels,true);
+        $found = false;
+        $allIDs = [];
+        foreach ($storedmodels as &$modeldata) 
+        {
+            if ( $condition === 'one' )
+            {
+                if ( $modeldata['id'] == $this->modelID ) {
+                    $modeldata['access'] = 1;
+                    $found = true;
+                    break;
+                }
+            } elseif ( $condition === 'all' ) {
+                $modeldata['access'] = 1;
+                $allIDs[] = $modeldata['id'];
+                $found = true;
+            }
+        }
+        if ( !$found ) return false;
+
+        // Check if all models are open to set complete to order
+        if ( $condition === 'all' ) $jb->status = 2;
+        if ( $condition === 'one' ) 
+        {
+            $flagStatus2 = true;
+            foreach ($storedmodels as $modeldata) {
+                if ( $modeldata['access'] == 0 ) {
+                    $flagStatus2 = false;
+                    break;
+                }
+            }   
+            if ( $flagStatus2 )
+                $jb->status = 2;
+        }
+
+        $jb->storedmodels = json_encode($storedmodels,true);
+        $jb->save(false);    
+
+        // User Part 
+        $userData = Users::find()->select(['id','files_access'])->where(['id'=>$userID]);
+        if ( !$userData->exists() ) return false;
+        $userData = $userData->one();
+        $fa = json_decode($userData->files_access,true);
+        if ( $condition === 'all' ) {
+            foreach ( $allIDs as $singleID )
+            {
+                if ( !in_array($singleID, $fa) )
+                    $fa[] = $singleID;
+            }
+        } elseif ( $condition === 'one' ) {
+            if ( !in_array($singleID, $fa) )
+                    $fa[] = $this->modelID;
+        }
+        $userData->files_access = json_encode($fa,true);
+        return $userData->save(false);
+    }
+
+    public function setModelPrice()
+    {
+        $jb = Jewelbox::find()->where(['id'=>$this->orderID]);
+        if ( !$jb->exists() ) return false;
+        $jb = $jb->one();
+
+        $storedmodels = json_decode($jb->storedmodels,true);
+        $flag = false;
+        foreach( $storedmodels as $key => &$storedmodel ) {
+            if ( (int)$storedmodel['id'] === $this->modelID ) {
+                $storedmodel['price'] = $this->price;
+                $flag = true;
+                break;
+            }
+        }
+        if ($flag) {
+            $jb->storedmodels = json_encode($storedmodels,true);
+            $jb->lastdate = date('Y-m-d');
+            return $jb->save(false);    
+        }
+        return false;
     }
 
     public function accessControl() : bool

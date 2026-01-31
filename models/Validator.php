@@ -15,7 +15,7 @@ class Validator
 
     protected $fieldRules = [];
 
-    protected $badChars = ['\'', '.', ',', '\\', '/', '"', '%','&','?','*','|','^', '<', '>', ':',';','`','+','='];
+    protected $badChars = ['\'', '\\', '/', '"', '%','&','?','*','|','^', '<', '>', ':',';','`','+','='];
 
     /**
      * Table name bad chars

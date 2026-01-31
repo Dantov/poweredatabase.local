@@ -1,8 +1,7 @@
 <?php
 namespace app\models;
 
-use app\models\serviceTables\Users;
-use app\models\serviceTables\{Permissions,Service_data};
+use app\models\serviceTables\{Users,Permissions,Service_data};
 use Yii;
 
 class User
@@ -30,6 +29,11 @@ class User
      * @var array
      */
     protected static array $userRoles;
+    /**
+     * array of some user gettin by ID
+     * @var array
+     */
+    protected static Users $userData;
 
     /**
      * array Ids of models user can dowmload 3d files 
@@ -75,14 +79,35 @@ class User
     
     public static function getUsernameByID( int $id ) : string
     {
-        if ( $id < 0 || $id > PHP_INT_MAX )
-            throw new \Exception("We got no user sorry!", 510);
-        $u = Users::find()->select(['id','fio'])
-            ->where(['id'=>$id])
-            ->asArray()
-            ->one();
-        return $u['fio']??'';
+        $userdata = self::getAnyUserByID($id);
+        return $userdata->fio;
     }
+
+    public static function getAnyUserByID( int $id ) : Users
+    {
+        if ( isset(self::$userData) ) return self::$userData;
+        
+        if ( $id < 1 || $id > PHP_INT_MAX ) 
+            throw new \Exception('Wrong user id',55);
+
+        $user = Users::find()
+            ->select(['id','name','lastname','thirdname','fio','fullFio','role','clients','permissions','email','about','access'])
+            ->where(['id' => $id]);
+        if ( !$user->exists() ) {
+            // Empty User
+            $user = Users::find()->where(['id' => 1]);
+            //throw new \Exception('No such user exists',56);
+        }
+
+        $user = $user->one();
+
+        $user->role = json_decode($user->role,true);
+        $user->clients = json_decode($user->clients,true);
+        $user->permissions = json_decode($user->permissions,true);
+
+        return self::$userData = $user;
+    }
+
     public static function init( int $userID=null, array $user=[] ) : array
     {
         if ( isset(self::$userInstance) && is_array(self::$userInstance) ) 
@@ -114,14 +139,14 @@ class User
         if (isset(self::$userFilesAccess)) return self::$userFilesAccess;
 
         $user = self::userInstance();
-        return self::$userFilesAccess = json_decode($user['files_access'],true);
+        return self::$userFilesAccess = json_decode($user['files_access'],true)??[];
     }
     public static function hasFilesAccess( int $modelid ) : bool
     {
         if ( !self::hasPermission('clientFilesDownload') ) return false;
-        if ( $userID < 0 || $userID > PHP_INT_MAX ) return false;
+        if ( $modelid < 0 || $modelid > PHP_INT_MAX ) return false;
 
-        return in_array(self::getFilesAccess() $modelid); 
+        return in_array($modelid,self::getFilesAccess()); 
     }
 
     public static function permissions() : array
@@ -244,6 +269,10 @@ class User
         if ( isset(self::$isAdmin) ) return self::$isAdmin;
 
         $role = self::getRoles(419);
+        if ( !$role ) return false;
+        if ( !is_array($role) ) return false;
+        if ( !isset($role['name']) ) return false;
+
         if ( $role['name'] === 'Admin' ) return self::$isAdmin = true;
         return self::$isAdmin = false;
     }

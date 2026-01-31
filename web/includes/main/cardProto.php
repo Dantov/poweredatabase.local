@@ -2,9 +2,19 @@
 use yii\helpers\Url;
 use app\models\User;
 $mStored = $model['stored']??false;
+$bgcolor = 'secondary';
+$mainTitle = "";
+if ( $mStored ) {
+    $bgcolor = 'primary';
+    $mainTitle = "В Шкатулке";
+}
+if (User::hasFilesAccess($model['id'])) {
+    $bgcolor = 'success';
+    $mainTitle = "Доступны файлы";
+}
 ?>
-<div class="card bg-light mb-1 mainCard" data-toggle="tooltip" title="<?=$mStored?"В Шкатулке":""?>" style="width: <?=$session->get('tilesControlSize')?>rem;">
-    <div class="card-header p-1 cursorPointer text-truncate bg-<?=$mStored?"primary":"secondary"?> text-white text-center">
+<div class="card bg-light mb-1 mainCard" data-toggle="tooltip" title="<?=$mainTitle?>" style="width: <?=$session->get('tilesControlSize')?>rem;">
+    <div class="card-header p-1 cursorPointer text-truncate bg-<?=$bgcolor?> text-white text-center">
         <small data-toggle="tooltip" title="<?=htmlentities($model['client'])?>" data-placement="top"><?=htmlentities($model['client'])?></small>
         <div class="clearfix"></div>
     </div>
@@ -24,6 +34,9 @@ $mStored = $model['stored']??false;
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>
                 <?php endif; ?>
+                <?php if (User::hasFilesAccess($model['id'])): ?>
+                    <span class="jewelboxOpened p-1 pr-2 pl-2 bg-success text-white"><i class="fa-solid fa-cube"></i></span>
+                <?php endif; ?>                
             </div>
         </div>
         <ul class="list-group list-group-flush">

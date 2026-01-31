@@ -223,8 +223,8 @@ class SiteController extends GeneralController
                 if ( !$jewelbox->accessControl() ) 
                     $response->redirect(['/site/error/','message'=>"forbidden"])->send();
 
-                $allOrders = $jewelbox->getStoredModels();
-                //$orderStatus = $jewelbox->getOrderStatus();
+                //$allOrders = $jewelbox->getStoredModels();
+                $allOrders = $jewelbox->getAllOrders( User::getID() );
                 $comp = compact(['allOrders']);
                 return $this->render('jewelbox',$comp);
             break;
@@ -235,6 +235,21 @@ class SiteController extends GeneralController
                 $allOrders = $jewelbox->getAllOrders();
                 $comp = compact(['allOrders']);
                 return $this->render('jewelboxorders',$comp);
+            break;
+            case "setmodelprice":
+                if ( !User::isAdmin() || !$proceed ) exit(json_encode(false));
+
+                exit(json_encode( $jewelbox->setModelPrice() ));
+            break;
+            case "openmodel":
+                if ( !User::isAdmin() || !$proceed ) exit(json_encode(false));
+
+                exit(json_encode( $jewelbox->openModelFiles('one') ));
+            break;
+            case "openallmodels":
+                if ( !User::isAdmin() || !$proceed ) exit(json_encode(false));
+
+                exit(json_encode( $jewelbox->openModelFiles('all') ));
             break;
             case "edit":
                 if ( !$proceed ) exit(json_encode(false));

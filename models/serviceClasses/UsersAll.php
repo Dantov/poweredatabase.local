@@ -79,8 +79,12 @@ class UsersAll extends Common
         if ( isset( $this->all ) ) return $this->all;
         $this->all = Users::find()
             ->select($this->userfields)
+            ->where(['>','id',1])
             ->asArray()
             ->all();
+        foreach( $this->all as &$singleU ){
+            $singleU['role'] = $this->getRoleNames($singleU['role']);
+        }
         return $this->all;
     }
 
@@ -142,6 +146,10 @@ class UsersAll extends Common
 
         return $clients;
     }
+    
+    /*
+     * string $roles - json string
+    */
     public function getRoleNames( string $roles = '' ) : string
     {
         if ( empty($roles) )

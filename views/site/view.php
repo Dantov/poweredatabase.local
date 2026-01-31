@@ -31,8 +31,10 @@ $this->registerJs($imgJs);
     <div class="col-sm">
         <div class="d-flex justify-content-between bg-dots">
             <?php if ( User::hasPermission('jewelbox') ):?>
-                <?php if ( $model['stored'] ):?>
-                <button type="button" class="btn btn-success btn-lg btn-block mt-2">Модель уже в Шкатулке</button>
+                <?php if ( User::hasFilesAccess($model['id'])  ):?>
+                <button type="button" class="btn btn-success btn-lg btn-block mt-2">Можно скачать файлы</button>
+                <?php elseif( $model['stored'] ):?>
+                <button type="button" class="btn btn-info btn-lg btn-block mt-2">Модель уже в Шкатулке</button>
                 <?php else:?>
                 <button type="button" data-id="<?=$model['id']?>" class="btn btn-primary btn-lg btn-block mt-2 jewelboxBtnView">
                     <input class="addJBdata" type="hidden" data-img="/stock/<?=$model['id']?>/images/<?=$model['mainimage']?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
@@ -67,7 +69,7 @@ $this->registerJs($imgJs);
                 </div>
             </div>
         </div>
-        <?php if ( User::hasPermission('downloadfiles') ): ?>
+        <?php if ( User::hasPermission('downloadfiles') || User::hasFilesAccess($model['id']) ): ?>
         <div class="row">
             <div class="col-12">
             <?php require "includes/view/datafiles.php"?>
@@ -102,6 +104,7 @@ $this->registerJs($imgJs);
         </div>
         <div class="clearfix"></div>
         <hr>
+        <?php if ( count($model['hashtags']) ):?>
         <div class=""><b>Хештеги:</b></div>
         <div class="d-flex justify-content-left ">
             <div class="">
@@ -110,6 +113,7 @@ $this->registerJs($imgJs);
             <?php endforeach; ?>
             </div>
         </div>
+        <?php endif; ?>
         <div class="d-flex justify-content-between bg-dots fontsView">
             <div class="p-1 bg-light">
                 <i class="far fa-eye" data-toggle="tooltip" data-placement="top" title="Вид модели"></i>

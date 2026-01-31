@@ -93,6 +93,11 @@ body {
     bottom: 0px;
     left: 82%;
 }
+.jewelboxOpened {
+    position: absolute;
+    bottom: 0px;
+    left: 82%;
+}
 .jewelboxTopbar{
     position:absolute !important;
     right: 3.5rem;

@@ -43,7 +43,7 @@ $this->registerJsFile("@web/js/add-edit/Validator.js?v=$tt",['depends' => [\app\
                 <div class="profile-pic wthree">
                     <img src="/images/defaultUser2.png" class="img-fluid" alt="Responsive image">
                     <h3><?=$single['fio']?></h3>
-                    <p><?=$users->getRoleNames($single['role'])?></p>
+                    <p><?=$single['role']?></p>
                 </div>
                 <div class="w3-message">
                     <h5>Note</h5>
