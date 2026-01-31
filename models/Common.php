@@ -171,6 +171,9 @@ class Common
 	            $model['mainimage'] = $randomimg['name'];
 	        }
         }
+        if ( User::hasPermission('hideclients') )
+            $this->hideClientsName($stock);
+
         return $stock;
 	}
 

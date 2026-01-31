@@ -165,7 +165,7 @@ class Main extends Common
 
         $this->setMainImgforStock();
         if ( User::hasPermission('hideclients') )
-            $this->hideClientsName();
+            $this->hideClientsName($this->stock);
 
         if ( User::hasPermission('jewelbox') )
             $this->setJewelStoredModels();
@@ -231,10 +231,10 @@ class Main extends Common
         return "";
     }
 
-    protected function hideClientsName()
+    protected function hideClientsName( array &$stock )
     {
         $allClients = $this->getClients();
-        foreach ( $this->stock as &$model )
+        foreach ( $stock as &$model )
         {
             foreach ( $allClients as $clientTmpl )
             {

@@ -180,7 +180,23 @@ class JewelStore extends Common
                 }
             }
         }
+        if ( User::hasPermission('hideclients') )
+            $this->hideClientsName($stock);
         return $stock;
+    }
+    protected function hideClientsName( array &$stock )
+    {
+        $allClients = $this->getClients();
+        foreach ( $stock as &$model )
+        {
+            foreach ( $allClients as $clientTmpl )
+            {
+                if ( $model['client'] == $clientTmpl['name'] ){
+                    $model['client'] = $clientTmpl['secondname'];
+                    break;
+                }
+            }
+        }
     }
 
     public function edit()

@@ -21,12 +21,18 @@ description: '<?=$uPermission['description']?>'
 });
 <?php endforeach; ?>
 </script>
-<div class="site-about">
-     <code><?php //echo debug($allroles) ?></code>
-</div>
+<div class="site-about"></div>
 <div class="row validform">
     <div class="col-md-2 order-md-1 validform2"></div>
     <div class="col-md-8 order-md-1 validform2">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <a href="<?=Url::previous()?>" role="button" class="btn btn-outline-secondary">
+                <i class="fas fa-caret-left"></i>
+                <span>Назад</span>
+            </a>
+        </div>
+    </div>
     <div class="outer-w3-agile mt-3"> 
         <h4 class="tittle-w3-agileits mb-4"><?= $this->title = 'Edit User:' . $single['fio'] ?></h4> 
         <?php if( $session->hasFlash('allgood') ):?>
