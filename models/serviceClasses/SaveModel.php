@@ -488,12 +488,32 @@ class SaveModel extends Common
         }
         return false;
     }
-
-    public function publishModel()
+    public function publishAllModels() : string
     {
-        //debug(__METHOD__, '__METHOD__::name');
-        //debug($this->modelID, 'modelIDID', 1);
+        $stock = Stock::find();
+        if ( User::hasPermission('edit_all_models') ) 
+        {
+            $stock = $stock->andWhere(['model_status'=>0]);
+        } elseif ( User::hasPermission('edit_own_models') )
+        {
+            // only self models
+            $stock = $stock->andWhere(['model_status'=>0])
+                ->andWhere(['creator_id'=>User::getID()]);
+        } else {
+            return 'false';    
+        }
 
+        $stock = $stock->all();
+
+        $res = [];
+        foreach( $stock as $model ) {
+            $model->model_status = 1;
+            $res[$model->id] = $model->save(false);
+        }
+        return 'true';
+    }
+    public function publishModel() : string
+    {
         $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
         $stock->model_status = 1;
 

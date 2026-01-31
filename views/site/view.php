@@ -15,7 +15,9 @@ $imgJs = <<<JS
     }, false);
 JS;
 $this->registerJs($imgJs);
-
+$modelDeleted = ((int)$model['model_status']===2);
+$modelNonPublished = ((int)$model['model_status']===0);
+$modelPublished = ((int)$model['model_status']===1);
 ?>
 <div class="row justify-content-center bg-light mb-2">
     <div class="col-sm">
@@ -29,7 +31,8 @@ $this->registerJs($imgJs);
         </div>
     </div>
     <div class="col-sm">
-        <div class="d-flex justify-content-between bg-dots">
+        <?php if ( $modelPublished ):?>
+        <div class="d-flex justify-content-between">
             <?php if ( User::hasPermission('jewelbox') ):?>
                 <?php if ( User::hasFilesAccess($model['id'])  ):?>
                 <button type="button" class="btn btn-success btn-lg btn-block mt-2">Можно скачать файлы</button>
@@ -43,6 +46,17 @@ $this->registerJs($imgJs);
                 <?php endif;?>
             <?php endif;?>
         </div>
+        <?php endif;?>
+        <?php if ( $modelNonPublished ):?>
+            <div class="d-flex justify-content-between">
+                <button type="button" data-publish="pub" class="btn btn-success btn-lg btn-block mt-2">Модель не опубликована</button>
+            </div>
+        <?php endif;?>
+        <?php if ( $modelDeleted ):?>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-danger btn-lg btn-block mt-2">Модель была удалена!</button>
+            </div>
+        <?php endif;?>
     </div>
 </div>
 
@@ -50,7 +64,8 @@ $this->registerJs($imgJs);
     <div class="col-sm-12 col-md-6 bg-light pr-0" id="images_block">
         <div class="row">
             <div class="d-none d-sm-block col-sm-12 p-0 mb-2" id="mainImage">
-                <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$model['mainimageID']?>" data-name="<?=$model['mainimage']?>" style="background-image: url(/web/stock/<?=$model['id']?>/images/<?=$model['mainimage']?>);"></div>
+                <?php $imgUrl = empty($model['mainimage'])?"/pictAssets/default.png":'/stock/'.$model['id'].'/images/'.$model['mainimage']?>
+                <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$model['mainimageID']?>" data-name="<?=$model['mainimage']?>" style="background-image: url(<?=$imgUrl?>);"></div>
             </div>
             <div class="col-12 pl-0">
                 <div class="row p-0 m-0 dopImages" id="bottomDopImages">
@@ -83,7 +98,10 @@ $this->registerJs($imgJs);
             <i class="fas fa-gem"></i>
             <span>Заказчик: </span>
             <strong>
-                <i><a class="text-primary" href="<?=Url::to(['search/select-by','client'=>$model['clientID']])?>" id="collection"><?=$model['client']?></a></i>
+                <i>
+                <a class="text-primary" href="<?=Url::to(['search/select-by','client'=>$model['clientID']??0 ])?>" id="collection"><?=$model['client']?>
+                </a>
+                </i>
             </strong>
         </div>
         <div class="fontsView">

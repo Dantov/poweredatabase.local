@@ -177,6 +177,10 @@ class SiteController extends GeneralController
 
             if ( $request->get('publish') )
                 exit(json_encode( $sm->publishModel() ));
+
+            if ( $request->get('publishall') )
+                exit(json_encode( $sm->publishAllModels() ));
+
             if ( $request->get('exclude') )
                 exit(json_encode( $sm->excludeModel() ));
             if ( $request->get('deletemodel') )

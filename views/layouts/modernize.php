@@ -69,9 +69,22 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                 </a>
                 <ul class="collapse list-unstyled" id="showSubmenu1">
                     <li><a href="<?=Url::to(['/site/add'])?>"><i class="far fa-file"></i> Создать модель</a></li>
-                    <li><a href="<?=Url::to(['/site'])?>"><i class="fas fa-th-large"></i> Отобразить Плиткой</a></li>
+                    <li><a href="<?=Url::to(['/search/select','by'=>'purgeall'])?>"><i class="fas fa-th-large"></i> Отобразить Плиткой</a></li>
                     <li><a href="<?=Url::to(['/site'])?>"><i class="far fa-edit"></i> Режим выделения</a></li>
                     <li><a href="<?=Url::to(['/site'])?>"><i class="far fa-file-alt"></i> Записать в PDF</a></li>
+                    <?php if ( count($nonPublished) ): ?>
+                    <li>
+                        <a href="<?=Url::to(['/search/select','by'=>'nonpub'])?>">
+                        <i class="fa-solid fa-envelopes-bulk"></i> Не Опубликованные</a>
+                    </li>
+                    <li>
+                        <a class="bg-danger" href="<?=Url::to(['/search/select','by'=>'publishall'])?>">
+                        <i class="fa-solid fa-stamp"></i>Опубликовать Все</a>
+                    </li>
+                    <?php endif; ?>
+                    <?php if ( User::isAdmin() ): ?>
+                    <li><a href="<?=Url::to(['/search/select','by'=>'deleted'])?>"><i class="fa-solid fa-ban"></i> Удаленные</a></li>
+                    <?php endif; ?>
                 </ul>
             </li>
             <li>

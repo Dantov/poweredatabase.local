@@ -155,6 +155,9 @@ class Auth extends Common
         $session->set('selectByMatMetal', '');
         $session->set('selectByMatProbe', '');
 
+        $session->set('SelectByNonPub', '');
+        $session->set('SelectByDeleted', '');
+
         /****  OLD VARIABLES 
         $assist['maxPos'] = 48;        // кол-во выводимых позиций по дефолту
         $assist['regStat'] = "Нет";    // выбор статуса по умоляанию

@@ -59,7 +59,13 @@ class ModelView extends Common
         } else {
             return;
         }
-
+        /*
+        if ( empty($row['images']) )
+        {
+            $row[0]['previmg'] = '';
+            return;
+        }
+        */
         foreach ( $row['images'] as &$image )
         {
             $imgname = $files->getFileName($image['name']);
@@ -76,10 +82,13 @@ class ModelView extends Common
 
     protected function setMainImg()
     {
-        $this->setIdAsKeys($this->row['images']);
         if ( empty($this->row['images']) )
+        {
+            $this->row['mainimage'] = '';
+            $this->row['mainimageID'] = 0;
             return;
-
+        }
+        $this->setIdAsKeys($this->row['images']);
         $found = false;
         foreach ( $this->row['images'] as $image )
         {
@@ -91,7 +100,6 @@ class ModelView extends Common
                 break;
             }
         }
-
         if ( !$found )
         {
             $randomimg = $this->row['images'][ random_int( 0, (count( $this->row['images']))-1) ];

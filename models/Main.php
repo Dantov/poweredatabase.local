@@ -19,7 +19,7 @@ class Main extends Common
 
     protected function startStockQuery()
     {
-        $this->stockQuery = Stock::find()->where(['model_status' => 1]);
+        $this->stockQuery = Stock::find();
     }
 
     protected function addByClient()
@@ -46,6 +46,28 @@ class Main extends Common
         $this->stockQuery
             ->andWhere('number_3d LIKE :search OR client LIKE :search OR modeller3d LIKE :search OR model_type LIKE :search OR description LIKE :search OR hashtags LIKE :search')
             ->addParams([':search' => "%$searchFor%"]);
+    }
+    
+    protected function addNonPublishedAndDeleted()
+    {
+        $session = Yii::$app->session;
+        $byNonPub = $session->get('SelectByNonPub');
+        $byDeleted = $session->get('SelectByDeleted');
+
+        // Normal Mode
+        if ( empty($byNonPub) && empty($byDeleted) ) 
+        {
+            $this->stockQuery->andWhere(['model_status' => 1]);
+            return;
+        }
+
+        //Non Published Mode
+        if ( !empty($byNonPub) ) 
+            $this->stockQuery->andWhere(['model_status' => 0]);
+
+        //Deleted Mode
+        if ( !empty($byDeleted) ) 
+            $this->stockQuery->andWhere(['model_status' => 2]); 
     }
 
     protected function addModelType()
@@ -158,6 +180,7 @@ class Main extends Common
         $this->addToDate();
         $this->addMaterials();
         $this->addOrderBy();
+        $this->addNonPublishedAndDeleted();
 
         $this->stockQuery->with(['images']);
 
@@ -196,8 +219,15 @@ class Main extends Common
     {
         foreach ( $this->stock as &$model )
         {
-            $randomimg = '';
+            $randomimg['name'] = '';
             $found = false;
+
+            if ( !count($model['images']) ) {
+                $model['mainimage'] = '';
+                $model['mainimgprev'] = '';
+                continue;
+            }
+
             foreach ( $model['images'] as $image )
             {
                 if ( $image['status'] === 1 ) {
@@ -206,16 +236,22 @@ class Main extends Common
                     break;
                 }
             }
-
             if ( !$found )
             {
-                $randomimg = $model['images'][ random_int( 0, (count( $model['images']))-1) ];
+                if ( count($model['images'] )) {
+                    $min = 0;
+                    $max = (count($model['images']))-1;
+                    if ( $max > 0 )
+                        $randomimg = $model['images'][ random_int( $min, $max ) ];
+                }
                 $model['mainimage'] = $randomimg['name'];
             }
+
             if ( $prevImgName = $this->addPreviewImages( $model['mainimage'], $model['id'] ) )
                 $model['mainimgprev'] = $prevImgName;
         }
     }
+
     protected function addPreviewImages( $mainimgname, $id ) : string
     {
         $files = Files::instance();

@@ -1,6 +1,6 @@
 <?php
 namespace app\controllers;
-
+use app\models\serviceClasses\SaveModel;
 use Yii;
 
 class SearchController extends GeneralController
@@ -18,31 +18,65 @@ class SearchController extends GeneralController
         }
         exit(json_encode(false));
     }
+    protected function purge()
+    {
+        $session = Yii::$app->session;
+
+        $session->set('SelectByClient','Все');
+        $session->set('searchFor', '');
+        $session->set('selectByHashtag', '');
+        $session->set('selectByModelType', '');
+
+        $session->set('selectByMatColor', '');
+        $session->set('selectByMatMetal', '');
+        $session->set('selectByMatProbe', '');
+
+        $session->set('selectFromDate','');
+        $session->set('selectToDate','');
+        $session->set('selectByOrder', SORT_ASC);
+
+        $session->set('SelectByNonPub', '');
+        $session->set('SelectByDeleted', '');
+    }
     public function actionPurge()
     {
         $request = Yii::$app->request;
         if ( $request->isAjax && $request->isPost )
         {
             if ( (int)$request->post('clean') !== 1 ) exit(json_encode(false));
-
-            $session = Yii::$app->session;
-
-            $session->set('SelectByClient','Все');
-            $session->set('searchFor', '');
-            $session->set('selectByHashtag', '');
-            $session->set('selectByModelType', '');
-
-            $session->set('selectByMatColor', '');
-            $session->set('selectByMatMetal', '');
-            $session->set('selectByMatProbe', '');
-
-            $session->set('selectFromDate','');
-            $session->set('selectToDate','');
-            $session->set('selectByOrder', SORT_ASC);
-            
+            $this->purge();
             exit(json_encode(true));
         }
-        exit(json_encode(false));
+
+        Yii::$app->response->redirect(['/site'])->send();
+    }
+
+    public function actionSelect()
+    {
+        $request = Yii::$app->request;
+        $session = Yii::$app->session;
+
+        switch( $request->get('by') )
+        {
+            case "purgeall":
+                $this->purge();
+            break;
+            case "nonpub":
+                $session->set('SelectByDeleted', '');
+                $session->set('SelectByNonPub', 1);
+            break;
+            case "deleted":
+                // Only nonPublished or Deleted can be displyed at one time
+                $session->set('SelectByNonPub', '');
+                $session->set('SelectByDeleted', 1);
+            break;
+            case "publishall":
+                $sm = new SaveModel();
+                $sm->publishAllModels();
+            break;
+        }
+
+        Yii::$app->response->redirect(['/site'])->send();
     }
 
     /**
@@ -61,14 +95,13 @@ class SearchController extends GeneralController
 
         $matcolor = $request->get('matcolor');
         $matprobe = $request->get('matprobe');
-        $matname = $request->get('matname');
+        $matname  = $request->get('matname');
 
         $purgedate = $request->get('purgedate');
         $order = $request->get('order');
 
         if ( $matpurge ) $this->materialsPurge();
         if ( $client ) $this->SelectByClient( $client );
-        //if ( $hashtag )  $this->SelectBy( $hashtag, 'selectByHashtag', $this->hashtags );
         if ( $hashtag )  $this->SelectByHashtags( $hashtag );
         if ( $modeltype )  $this->SelectBy( $modeltype,'selectByModelType', $this->modelTypes );
         if ( $matcolor )  $this->SelectBy( $matcolor, 'selectByMatColor', $this->modelMaterials['metal_color'] );

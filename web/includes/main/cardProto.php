@@ -22,7 +22,8 @@ if (User::hasFilesAccess($model['id'])) {
         <div class="ratio">
             <div class="ratio-inner ratio-4-3">
                 <?php $imgname = isset($model['mainimgprev'])?$model['mainimgprev']:$model['mainimage'] ?>
-                <div class="ratio-content card-main-image" style="background: url('stock/<?=$model['id']?>/images/<?=$imgname?>');"></div>
+                <?php $imgUrl = empty($imgname)?"/pictAssets/default.png":'/stock/'.$model['id'].'/images/'.$imgname?>
+                <div class="ratio-content card-main-image" style="background: url('<?=$imgUrl?>');"></div>
                 <?php if ( $model['isEditBtn'] ): ?>
                 <a class="btn btn-outline-secondary btn-sm editBtnMain" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
                     <i class="fas fa-pencil-alt"></i>
