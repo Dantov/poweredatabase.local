@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controllers;
 
 use Yii;
@@ -7,9 +6,8 @@ use yii\filters\AccessControl;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
 use app\models\{Main,User,Nom};
-use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore};
+use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore,UsersAll,Crypt};
 
 class SiteController extends GeneralController
 {
@@ -183,6 +181,7 @@ class SiteController extends GeneralController
 
             if ( $request->get('exclude') )
                 exit(json_encode( $sm->excludeModel() ));
+
             if ( $request->get('deletemodel') )
                 exit(json_encode( $sm->deleteModel() ));
 
@@ -309,6 +308,7 @@ class SiteController extends GeneralController
         $comp = compact(['modelTypes','gemsNames','gemsColors','gemsCuts','gemsSizes']);
         return $this->render('nomenclature',$comp);
     }
+
     /**
      * Displays user profile page.
      *
@@ -316,12 +316,41 @@ class SiteController extends GeneralController
      */
     public function actionProfile()
     {
-        if (!User::hasPermission(70)) 
-            Yii::$app->response->redirect('/site')->send();
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+        if ( !User::hasPermission(70) ) 
+            $response->redirect('/site')->send();
 
+        $edit = (string)$request->get('edit');
+        if ($request->isAjax && $request->isPost)
+        {
+            $post = $request->post();
+            if (!isset($post['uid']) ) exit(json_encode( false ));
+            $uid = (int)Crypt::strDecode($post['uid']);
+            $users = new UsersAll($uid);
+            if (!$users) exit(json_encode( false ));
+
+            
+            switch ( $edit )
+            {
+                case "text":        
+                    exit(json_encode( $users->editInput($post) ));
+                break;
+                case "picture":
+                    exit(json_encode( $users->uploadPicture() ));
+                break;
+            }
+            exit(json_encode( false ));
+        }
+
+        if ( $edit === 'dellavatar') {
+            (new UsersAll(User::getID()))->deletePicture();
+            $response->redirect('/site/profile/')->send();
+        }   
 
         return $this->render('profile');
     }
+    
     /**
      * Displays user options page.
      *

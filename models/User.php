@@ -19,10 +19,16 @@ class User
      * ID юзера из таблицы
      * @var integer
      */
+
+    protected static string $userThirdName;
+    protected static string $userName;
     protected static string $userSurname;
     protected static int $userID;
     protected static string $userFIO;
     protected static string $userFullFIO;
+    protected static string $userEmail;
+    protected static string $userAbout;
+    protected static string $userPicture;
 
     /**
      * array of all info about user roles
@@ -91,7 +97,10 @@ class User
             throw new \Exception('Wrong user id',55);
 
         $user = Users::find()
-            ->select(['id','name','lastname','thirdname','fio','fullFio','role','clients','permissions','email','about','access'])
+            ->select(['id','name','lastname',
+                      'thirdname','fio','fullFio',
+                      'role','clients','permissions',
+                      'email','about','picture','access'])
             ->where(['id' => $id]);
         if ( !$user->exists() ) {
             // Empty User
@@ -297,8 +306,23 @@ class User
     {
         if ( isset( self::$userSurname ) ) return self::$userSurname;
 
-        self::$userSurname = explode(' ', self::getFIO())[0];
-        return self::$userSurname;
+        $user = self::userInstance();
+        return self::$userSurname = $user['lastname'];
+    }
+
+    public static function getThirdName() : string
+    {
+        if ( isset( self::$userThirdName ) ) return self::$userThirdName;
+
+        $user = self::userInstance();
+        return self::$userThirdName = $user['thirdname'];
+    }
+
+    public static function getName() : string
+    {
+        if ( isset( self::$userName ) ) return self::$userName;
+        $user = self::userInstance();
+        return self::$userName = $user['name'];
     }
 
     /**
@@ -324,19 +348,36 @@ class User
         $user = self::userInstance();
         return self::$userFullFIO = $user['fullFio'];
     }
-
-    /**
-     * @return array
+     /**
+     * @return string
      * @throws \Exception
      */
-    public static function getLocations() : array
+    public static function getEmail() : string
     {
-        if ( isset( self::$userLocations ) ) return self::$userLocations;
-        $user = self::userInstance();
+        if ( isset( self::$userEmail ) ) return self::$userEmail;
 
-        //return self::$userLocations = explode(',',$user['location']);
-        return self::$userLocations = json_decode($user['location']);
+        $user = self::userInstance();
+        return self::$userEmail = $user['email'];
     }
+
+    public static function getAbout() : string
+    {
+        if ( isset( self::$userAbout ) ) return self::$userAbout;
+
+        $user = self::userInstance();
+        return self::$userAbout = $user['about'];
+    }
+
+    public static function getAvatar() : string
+    {
+        if ( isset( self::$userPicture ) ) return self::$userPicture;
+
+        $user = self::userInstance();
+        self::$userPicture = empty($user['picture']) ? "defaultUser2.png" : $user['picture'];
+
+        return self::$userPicture;
+    }
+    
 
     /**
      * @return int

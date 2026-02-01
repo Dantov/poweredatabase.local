@@ -58,7 +58,7 @@ class Validator
         return false;
     }
 
-    protected function baseValidate( string $str ) : string
+    public function baseValidate( string $str ) : string
     {
         $str = trim($str);
         $str = strip_tags($str);

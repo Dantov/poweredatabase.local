@@ -157,7 +157,7 @@ class Main extends Common
         $session = Yii::$app->session;
         $orderBy = $session->get('selectByOrder');
         if ( empty($orderBy) ) return;
-        $ColName = 'date'; // for adding date by default 
+        $ColName = 'stock.id'; // for adding date by default 
 
         if ($session->get('selectFromDate') || $session->get('selectToDate') )
             $ColName = 'create_date';
@@ -178,12 +178,12 @@ class Main extends Common
         $this->addModelType();
         $this->addFromDate();
         $this->addToDate();
-        $this->addMaterials();
         $this->addOrderBy();
+        $this->addMaterials();
         $this->addNonPublishedAndDeleted();
-
+        
         $this->stockQuery->with(['images']);
-
+        
         $this->stock = $this->pagination();
 
         $this->setMainImgforStock();
@@ -192,6 +192,8 @@ class Main extends Common
 
         if ( User::hasPermission('jewelbox') )
             $this->setJewelStoredModels();
+
+
 
         foreach ($this->stock as &$model)
             $model['isEditBtn'] = $this->drawEditBtn( $model['creator_id'] );

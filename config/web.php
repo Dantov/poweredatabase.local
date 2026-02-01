@@ -5,7 +5,7 @@ $db = require __DIR__ . '/db.php';
 
 $config = [
     'id' => 'basic',
-    'name' => "ХЮФ 3Д база моделей",
+    'name' => "PJ3D база моделей",
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
 	'layout' => 'modernize',
@@ -54,7 +54,6 @@ $config = [
 				'<controller:\w+>/<action:\w+>/' => '<controller>/<action>',
 			],
         ],
-        
     ],
     'params' => $params,
 ];

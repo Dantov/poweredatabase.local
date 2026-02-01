@@ -126,11 +126,15 @@ class Common
 
 	public function getNonPublished()
 	{
-		$stock = Stock::find()->where(['model_status' => 0]);
-
-		if ( User::hasPermission('edit_own_models') )
+		$stock = Stock::find();
+		if ( User::hasPermission('edit_all_models') ) {
+			$stock = $stock->andWhere(['model_status' => 0]);
+		} elseif ( User::hasPermission('edit_own_models') ) {
 			$stock->andWhere(['creator_id' => User::getID() ]);
-
+		} else {
+			return [];
+		}
+		
 		$stock = $stock->with(['images'])->asArray()->all();
 
 		$files = Files::instance();

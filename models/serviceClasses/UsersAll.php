@@ -2,7 +2,7 @@
 namespace app\models\serviceClasses;
 
 use app\models\serviceTables\{Service_data,Users,Permissions};
-use app\models\{User,Common,Validator};
+use app\models\{User,Common,Validator,Files};
 
 use Yii;
 
@@ -19,14 +19,18 @@ class UsersAll extends Common
     {
         $this->userfields = [
             'id','login','name','lastname','thirdname','fio','fullFio','role','clients','permissions',
-            'files_access','about','email','access'];
+            'files_access','about','email','picture','access'];
         $this->getAllUsers();
         
         if ($id > 0 && $id < PHP_INT_MAX)
         {
             $this->uid = $id;
-            $this->getUserByID($this->uid);
+            $this->user = $this->getUserByID($this->uid);
+            if ( $this->user === false ) return;
+
             $this->getAllPermissions();    
+        } else {
+            return;
         }
 
         parent::__construct();
@@ -65,15 +69,15 @@ class UsersAll extends Common
         debug($res,'$res',1);
         return $res;
     }
-    protected function getUserByID(int $id) : array
+
+    protected function getUserByID(int $id) : mixed
     {
-        $this->user = Users::find()
-            ->select($this->userfields)
-            ->where(['id'=>$id])
-            ->asArray()
-            ->one();
-        return $this->user;
+        $user = Users::find()->select($this->userfields)->where(['id'=>$id]);
+        if ( !$user->exists() ) return false;
+
+        return $user->asArray()->one();
     }
+
     public function getAllUsers() : array
     {
         if ( isset( $this->all ) ) return $this->all;
@@ -403,6 +407,113 @@ class UsersAll extends Common
         if ( User::hasPermission('Users') ) 
             return true;
         return false;
+    }
+
+
+
+    //PROFILE METHODS
+    public function editInput( array $post ) : bool
+    {
+        if ( !isset($post['name']) ) return false;
+
+        $postField = $post['name'];
+
+        // Validate field Name
+        $userfields = ['id','login','name','lastname','thirdname','about','email','picture'];
+        $found=false;
+        foreach ($userfields as $field) {
+            if ( $field === $postField ) {
+                $found = true;
+                break;
+            }
+        }
+        if ( !$found ) return false;
+
+        $user = Users::find()->select($userfields)->where(['id' => $this->uid]);
+        if ( !$user->exists() ) return false;
+
+        $user = $user->one();
+
+        $v = new Validator("edit user");
+
+        $value = $v->sanitarizePost('value');
+        $value = $v->baseValidate($post['value']);
+        switch( $postField )
+        {
+            case "name" :
+                $user->name = $value;
+                $user->fio = $value . " " . $user->lastname;
+                $user->fullFio = $value . " " . $user->lastname . " " . $user->thirdname;
+            break;
+            case "lastname" :
+                $user->fio = $user->name . " " . $value;
+                $user->fullFio = $user->name . " " . $value . " " . $user->thirdname;
+            break;
+            case "thirdname" :
+                $user->fullFio = $user->name . " " . $user->lastname . " " . $value;
+            break;
+            case "email" :
+                if ( !$v->validateEmail($value, $this->getAllUsers()) )
+                    return false;
+                $user->email = $value;
+            break;
+            case "about" :
+                $user->about = $value;
+            break;
+        }
+
+        return $user->save(false);
+    }
+
+    public function uploadPicture() : array
+    {
+        $files = Files::instance();
+        if ( !$files->has('UploadImage') ) return false;
+
+        $user = Users::find()->select(['id','picture'])->where(['id' => $this->uid]);
+        if ( !$user->exists() ) return false;
+
+        $uplImg = $files->get('UploadImage');
+        $newImgName = '';
+        $user = $user->one();
+
+        $oldPict = $user->picture;
+        $user->picture = $newImgName = "avatar_". $this->uid ."_". randomStringChars( 15, 'en', 'symbols').'.'.$files->getExtension($uplImg['name']);
+
+        $destPath = _webDIR_ . 'images/users/';
+        $res = false;
+        if ($user->save(false))
+        {
+            if (!empty($oldPict))
+                $files->delete($destPath.$oldPict);
+
+            $res = $files->upload($uplImg['tmp_name'], $destPath.$newImgName, ['png','gif','jpg','jpeg','webp']);
+            if ($res) {
+                /** оптимизация размера файла */
+                ImageConverter::optimizeUpload($destPath.$newImgName);
+            }
+        }
+
+        return ['filename'=>$newImgName,'upload'=>$res,'type'=>'picture'];
+    }
+    public function deletePicture() : bool
+    {
+        $user = Users::find()->select(['id','picture'])->where(['id' => $this->uid]);
+        if ( !$user->exists() ) return false;
+
+        $user = $user->one();
+
+        $oldPict = $user->picture;
+        $user->picture = '';
+
+        if ($res = $user->save(false))
+        {
+            $destPath = _webDIR_ . 'images/users/';
+            $files = Files::instance();
+            if (!empty($oldPict))
+                $files->delete($destPath.$oldPict);
+        }
+        return $res;
     }
 
 }

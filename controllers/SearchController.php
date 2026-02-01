@@ -54,13 +54,41 @@ class SearchController extends GeneralController
     public function actionSelect()
     {
         $request = Yii::$app->request;
-        $session = Yii::$app->session;
+        $response = Yii::$app->response;
+        $session = Yii::$app->session; 
 
+        $value = $request->get('v');
         switch( $request->get('by') )
         {
-            case "purgeall":
-                $this->purge();
+            case "client":
+                if ( $value ) 
+                    $this->SelectByClient( (int)$value );
             break;
+            case "hashtag":
+                if ( $value )
+                    $this->SelectByHashtags( $value );
+            break;
+            case "order":
+                if ( $value ) 
+                    $this->orderBy($value);
+            break;
+            case "modeltype":
+                if ( $value ) 
+                    $this->SelectBy($value,'selectByModelType', $this->modelTypes);
+            break;
+            case "matname":
+                if ( $value ) 
+                    $this->SelectBy($value, 'selectByMatMetal', $this->modelMaterials['model_material']);
+            break;
+            case "matcolor":
+                if ( $value ) 
+                    $this->SelectBy($value, 'selectByMatColor', $this->modelMaterials['metal_color']);
+            break;
+            case "matprobe":
+                if ( $value ) 
+                    $this->SelectBy($value, 'selectByMatProbe', $this->modelMaterials['metal_probe']);
+            break;
+            
             case "nonpub":
                 $session->set('SelectByDeleted', '');
                 $session->set('SelectByNonPub', 1);
@@ -74,45 +102,21 @@ class SearchController extends GeneralController
                 $sm = new SaveModel();
                 $sm->publishAllModels();
             break;
+
+            case "materials":
+                $this->materialsPurge();
+            break;
+            case "purgedate":
+                $this->purgeDate();
+            break;
+            case "purgeall":
+                $this->purge();
+            break;
         }
 
-        Yii::$app->response->redirect(['/site'])->send();
+        $response->redirect(['/site'])->send();
     }
-
-    /**
-     *
-     * @return string
-     */
-    public function actionSelectBy()
-    {
-        $request = Yii::$app->request;
-
-        $client = (int)$request->get('client');
-        $hashtag = $request->get('hashtag');
-        $modeltype = $request->get('modeltype');
-
-        $matpurge = $request->get('materials');
-
-        $matcolor = $request->get('matcolor');
-        $matprobe = $request->get('matprobe');
-        $matname  = $request->get('matname');
-
-        $purgedate = $request->get('purgedate');
-        $order = $request->get('order');
-
-        if ( $matpurge ) $this->materialsPurge();
-        if ( $client ) $this->SelectByClient( $client );
-        if ( $hashtag )  $this->SelectByHashtags( $hashtag );
-        if ( $modeltype )  $this->SelectBy( $modeltype,'selectByModelType', $this->modelTypes );
-        if ( $matcolor )  $this->SelectBy( $matcolor, 'selectByMatColor', $this->modelMaterials['metal_color'] );
-        if ( $matprobe )  $this->SelectBy( $matprobe, 'selectByMatProbe', $this->modelMaterials['metal_probe'] );
-        if ( $matname )  $this->SelectBy( $matname, 'selectByMatMetal', $this->modelMaterials['model_material'] );
-
-        if ( $purgedate )  $this->purgeDate();
-        if ( $order )  $this->orderBy($order);
-        
-        Yii::$app->response->redirect(['/site'])->send();
-    }
+    
     protected function SelectBy( string $needle, string $sessName, array $heap )
     {
         $session = Yii::$app->session;
@@ -137,23 +141,6 @@ class SearchController extends GeneralController
         $session->set('selectByMatMetal', '');
         $session->set('selectByMatProbe', '');
     }
-    protected function SelectByMaterialColor( string $mcolor )
-    {
-        $session = Yii::$app->session;
-        if ( (int)$mcolor === 123 )
-        {
-            $session->set('selectByMatColor', '');
-            return;
-        }
-        foreach ( $this->modelMaterials['metal_color'] as $color )
-        {
-            if ( $color['name'] === $mcolor )
-            {
-                $session->set('selectByMatColor', $color['name']);
-                break;
-            }
-        }
-    }
 
     protected function SelectByClient( int $client )
     {
@@ -173,24 +160,7 @@ class SearchController extends GeneralController
             }
         }
     }
-    protected function SelectByModelType( string $modeltype )
-    {
-        $session = Yii::$app->session;
-        if ( (int)$modeltype === 123 )
-        {
-            $session->set('selectByModelType', '');
-            return;
-        }
-
-        foreach ( $this->modelTypes as $singleMT )
-        {
-            if ( $singleMT['name'] === $modeltype )
-            {
-                $session->set('selectByModelType', $singleMT['name']);
-                break;
-            }
-        }
-    }
+   
     protected function SelectByHashtags( string $hashtag )
     {
         $session = Yii::$app->session;

@@ -68,7 +68,9 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     <i class="fas fa-angle-left fa-pull-right"></i>
                 </a>
                 <ul class="collapse list-unstyled" id="showSubmenu1">
-                    <li><a href="<?=Url::to(['/site/add'])?>"><i class="far fa-file"></i> Создать модель</a></li>
+                    <?php if ( User::hasPermission('addmodel') ):?>
+                        <li><a href="<?=Url::to(['/site/add'])?>"><i class="far fa-file"></i> Создать модель</a></li>
+                    <?php endif; ?>
                     <li><a href="<?=Url::to(['/search/select','by'=>'purgeall'])?>"><i class="fas fa-th-large"></i> Отобразить Плиткой</a></li>
                     <li><a href="<?=Url::to(['/site'])?>"><i class="far fa-edit"></i> Режим выделения</a></li>
                     <li><a href="<?=Url::to(['/site'])?>"><i class="far fa-file-alt"></i> Записать в PDF</a></li>
@@ -119,10 +121,10 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
                         <ul class="collapse list-unstyled" id="modeltypeSubmenu1">
-                            <li><a href="<?= Url::to(['/search/select-by','modeltype'=>123])?>">Нет</a></li>
+                            <li><a href="<?= Url::to(['/search/select','by'=>'modeltype','v'=>123])?>">Нет</a></li>
                             <?php foreach( $allModelTypes as $singleType ): ?>
                                 <li>
-                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','modeltype'=>$singleType['name']])?>">
+                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select','by'=>'modeltype','v'=>$singleType['name']])?>">
                                         &nbsp;&nbsp;<i class="fa-solid fa-ellipsis"></i><?=$singleType['name']?>
                                         <?php if ( $session->get('selectByModelType') == $singleType['name'] ): ?>
                                             &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
@@ -139,7 +141,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
                         <ul class="collapse list-unstyled" id="materialsSubmenu1">
-                            <li><a href="<?= Url::to(['/search/select-by','materials'=>123])?>">Нет</a></li>
+                            <li><a href="<?= Url::to(['/search/select','by'=>'materials'])?>">Нет</a></li>
                             <li>
                                 <a href="#materialsMetalSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
                                     &nbsp;&nbsp;<i class="fa-solid fa-boxes-stacked"></i>
@@ -149,7 +151,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 <ul class="collapse list-unstyled" id="materialsMetalSubmenu1">
                                     <?php foreach( $metalNames as $metalName ): ?>
                                         <li>
-                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','matname'=>$metalName['name']])?>">
+                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select','by'=>'matname','v'=>$metalName['name']])?>">
                                                 &nbsp;&nbsp;&nbsp;<?=$metalName['name']?>
                                                 <?php if ( $session->get('selectByMatMetal') == $metalName['name'] ): ?>
                                                     &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
@@ -168,7 +170,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 <ul class="collapse list-unstyled" id="materialsColorSubmenu1">
                                     <?php foreach( $metalColors as $metalColor ): ?>
                                         <li>
-                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','matcolor'=>$metalColor['name']])?>">
+                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select','by'=>'matcolor','v'=>$metalColor['name']])?>">
                                                 &nbsp;&nbsp;&nbsp;<?=$metalColor['name']?>
                                                 <?php if ( $session->get('selectByMatColor') == $metalColor['name'] ): ?>
                                                     &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
@@ -187,7 +189,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 <ul class="collapse list-unstyled" id="materialsProbeSubmenu1">
                                     <?php foreach( $metalProbes as $metalProbe ): ?>
                                         <li>
-                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','matprobe'=>$metalProbe['name']])?>">
+                                            <a class="pt-2 pb-2" href="<?= Url::to(['/search/select','by'=>'matprobe','v'=>$metalProbe['name']])?>">
                                                 &nbsp;&nbsp;&nbsp;<?=$metalProbe['name']?>
                                                 <?php if ( $session->get('selectByMatProbe') == $metalProbe['name'] ): ?>
                                                     &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
@@ -206,10 +208,10 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
                         <ul class="collapse list-unstyled" id="hashtagSubmenu1">
-                            <li><a href="<?= Url::to(['/search/select-by','hashtag'=>123])?>">Нет</a></li>
+                            <li><a href="<?= Url::to(['/search/select/','by'=>'hashtag','v'=>123])?>">Нет</a></li>
                             <?php foreach( $allHashtags as $singlehashtag ): ?>
                                 <li>
-                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select-by','hashtag'=>$singlehashtag['name']])?>">
+                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select/','by'=>'hashtag','v'=>$singlehashtag['name']])?>">
                                         &nbsp;&nbsp;<i class="fa-solid fa-ellipsis"></i><?=$singlehashtag['name']?>
                                         <?php if (isset($singlehashtag['active'])): ?>
                                             &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
@@ -227,7 +229,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </a>
                         <ul class="collapse list-unstyled" id="bySubmenu">
                             <li>
-                                <a href="<?=Url::to(['/search/select-by','purgedate'=>1])?>">Нет</a>
+                                <a href="<?=Url::to(['/search/select/','by'=>'purgedate'])?>">Нет</a>
                             </li>
                             <li>
                                 <a class="cursorPointer">С &nbsp;&nbsp;<input class="bg-dark text-light" type="date" id="createdatefrom" value="<?=$session->get('selectFromDate')?>"/></a>
@@ -240,28 +242,32 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     <li>
                         <a href="#growingSubmenu" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
                             <i class="fas fa-sort-amount-up-alt"></i>
-                            По: <?=($session->get('selectByOrder')===SORT_ASC)?"Самые новые":"Самые старые"?>
+                            По: <?=($session->get('selectByOrder')===SORT_ASC)?"Самые старые":"Самые новые"?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
                         <ul class="collapse list-unstyled" id="growingSubmenu">
                             <li>
-                                <a href="<?=Url::to(['/search/select-by','order'=>'ASC'])?>">Самые новые</a>
+                                <a href="<?=Url::to(['/search/select','by'=>'order','v'=>'ASC'])?>">Самые старые</a>
                             </li>
                             <li>
-                                <a href="<?=Url::to(['/search/select-by','order'=>'DESC'])?>">Самые старые</a>
+                                <a href="<?=Url::to(['/search/select','by'=>'order','v'=>'DESC'])?>">Самые новые</a>
                             </li>
                         </ul>
                     </li>
                 </ul>
             </li>
             <li>
+                <?php if ( User::hasPermission('addmodel') ):?>
                 <a href="<?=Url::to(['/site/add'])?>"><i class="far fa-file"></i>Создать модель</a>
+                <?php endif;?>
             </li>
             <li>
-                <a href="<?=Url::to(['/site/nomenclature'])?>">
-                    <i class="far fa-list-alt"></i>
-                    Номенклатура
-                </a>
+                <?php if ( User::hasPermission('nomenclature') ):?>
+                    <a href="<?=Url::to(['/site/nomenclature'])?>">
+                        <i class="far fa-list-alt"></i>
+                        Номенклатура
+                    </a>
+                <?php endif;?>
             </li>
             <li>
                 <a href="#noticesSubmenu" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
@@ -322,11 +328,11 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                     </span>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" data-clientID="11" href='/search/select-by?client=11'>Все</a>
+                                    <a class="dropdown-item" data-clientID="11" href="<?=Url::to(['/search/select','by'=>'client','v'=>11])?>">Все</a>
                                     <div class="dropdown-divider"></div>
                                     <?php foreach( $clients as $client ):?>
                                     <?php $clname = User::hasPermission('hideclients')?$client['secondname']:$client['name'] ?>
-                                        <a class="dropdown-item" data-clientID="<?=$client['id']?>" href='/search/select-by?client=<?=htmlentities($client['id'])?>'><?=htmlentities($clname) ?></a>
+                                        <a class="dropdown-item" data-clientID="<?=$client['id']?>" href="<?=Url::to(['/search/select','by'=>'client','v'=>$client['id'] ])?>"><?=htmlentities($clname) ?></a>
                                     <?php endforeach;?>
                                 </div>
                             </div>
@@ -372,28 +378,34 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <a class="dropdown-toggle" style="" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true"
                                aria-expanded="false">
                                 <div class="profile-l mr-0">
-                                    <img src="/web/images/defaultUser2.png" class="img-fluid" alt="Responsive image">
+                                    <img src="/web/images/users/<?=User::getAvatar()?>" class="img-fluid" alt="Responsive image">
                                 </div>
                             </a>
                             <div class="dropdown-menu drop-3">
                                 <div class="profile-r align-self-center">
-                                    <h3 class="sub-title-w3-agileits"><?php echo $session->get('user')['fio'] ?></h3>
+                                    <h3 class="sub-title-w3-agileits"><?=User::getFIO()?></h3>
                                 </div>
                                 <div class="dropdown-divider"></div>
                                 <?php if(User::hasPermission('jewelbox')): ?>
-                                <a href="<?=Url::to(['site/jewel','box'=>'show'])?>" class="dropdown-item mt-2">
-                                    <h4><i class="far fa-gem mr-3"></i>Шкатулка</h4>
-                                </a>
+                                    <a href="<?=Url::to(['site/jewel','box'=>'show'])?>" class="dropdown-item mt-2">
+                                        <h4><i class="far fa-gem mr-3"></i>Шкатулка</h4>
+                                    </a>
                                 <?php endif;?>
-                                <a href="<?=Url::to(['site/profile'])?>" class="dropdown-item mt-2">
-                                    <h4><i class="far fa-user mr-3"></i>Профиль</h4>
-                                </a>
-                                <a href="<?=Url::to(['site/options'])?>" class="dropdown-item mt-2">
-                                    <h4><i class="fas fa-tools mr-3"></i></i>Настройки</h4>
-                                </a>
-                                <a href="<?=Url::to(['site/statistic'])?>" class="dropdown-item mt-2">
-                                    <h4><i class="fas fa-chart-pie mr-3"></i>Статистика</h4>
-                                </a>
+                                <?php if(User::hasPermission('profile')): ?>
+                                    <a href="<?=Url::to(['site/profile'])?>" class="dropdown-item mt-2">
+                                        <h4><i class="far fa-user mr-3"></i>Профиль</h4>
+                                    </a>
+                                <?php endif;?>
+                                <?php if(User::hasPermission('options')): ?>
+                                    <a href="<?=Url::to(['site/options'])?>" class="dropdown-item mt-2">
+                                        <h4><i class="fas fa-tools mr-3"></i></i>Настройки</h4>
+                                    </a>
+                                <?php endif;?>
+                                <?php if(User::hasPermission('statistic')): ?>
+                                    <a href="<?=Url::to(['site/statistic'])?>" class="dropdown-item mt-2">
+                                        <h4><i class="fas fa-chart-pie mr-3"></i>Статистика</h4>
+                                    </a>
+                                <?php endif;?>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="<?=Url::to(['auth/logout'])?>">Выход</a>
                             </div>
@@ -453,7 +465,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         <!-- Copyright -->
         <div class="copyright-w3layouts shadow pt-2 pb-2 mt-2 text-center" style="bottom: 0 !important;" id="footer">
             <p class="float-left ml-3"><small>Developed by Vadym Bykov</small></p>
-            <p class="float-right mr-3"> ver 3.0.1alpha</p>
+            <p class="float-right mr-3"> ver 3.0.2 beta</p>
             <div class="clearfix"></div>
         </div>
         <!--// Copyright -->
