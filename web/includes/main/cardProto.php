@@ -12,10 +12,11 @@ if (User::hasFilesAccess($model['id'])) {
     $bgcolor = 'success';
     $mainTitle = "Доступны файлы";
 }
+$clientName = empty($model['client']) ? '<b class="text-muted">empty</b>' : htmlentities($model['client']);
 ?>
 <div class="card bg-light mb-1 mainCard" data-toggle="tooltip" title="<?=$mainTitle?>" style="width: <?=$session->get('tilesControlSize')?>rem;">
     <div class="card-header p-1 cursorPointer text-truncate bg-<?=$bgcolor?> text-white text-center">
-        <small data-toggle="tooltip" title="<?=htmlentities($model['client'])?>" data-placement="top"><?=htmlentities($model['client'])?></small>
+        <small data-toggle="tooltip" title="<?=htmlentities($model['client'])?>" data-placement="top"><?=$clientName;?></small>
         <div class="clearfix"></div>
     </div>
     <a href="<?=Url::to(['site/view','id'=>$model['id']])?>">
