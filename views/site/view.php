@@ -4,7 +4,6 @@ use app\models\User;
 
 $this->title = $model['number_3d'] . '-' . $model['model_type'];
 
-//debug($model,1,1);
 $tt=time();
 $this->registerCssFile("@web/css/view/view.css?v=$tt");
 $this->registerJsFile("@web/js/view/imageViewer_v2.js?v=$tt");
@@ -19,21 +18,12 @@ $modelDeleted = ((int)$model['model_status']===2);
 $modelNonPublished = ((int)$model['model_status']===0);
 $modelPublished = ((int)$model['model_status']===1);
 ?>
+
 <div class="row justify-content-center bg-light mb-2">
-    <div class="col-sm">
-        <div class="d-flex justify-content-between bg-dots">
-            <div class="p-1 bg-light"><span>№3D:</span></div>
-            <div onclick = "copyValueToClipBoard(this)" class="p-1 bg-light cursorPointer text-danger font-weight-bold" data-toggle="tooltip" data-placement="top" title="Копировать" id="num3d"><?=$model['number_3d']?></div>
-        </div>
-        <div class="d-flex justify-content-between bg-dots">
-            <div class="p-1 bg-light"><span>Дата создания 3Д:</span></div>
-            <div onclick = "copyValueToClipBoard(this)" class="p-1 bg-light cursorPointer text-danger font-weight-bold" data-toggle="tooltip" data-placement="top" title="Копировать" id="create_date"><?=$mv->dateConvert($model['create_date'])?></div>
-        </div>
-    </div>
-    <div class="col-sm">
+    <div class="col-sm-12">
         <?php if ( $modelPublished ):?>
-        <div class="d-flex justify-content-between">
-            <?php if ( User::hasPermission('jewelbox') ):?>
+            <?php if ( User::hasPermission('jewelbox') && !User::isAdmin() ):?>
+            <div class="d-flex justify-content-between">
                 <?php if ( User::hasFilesAccess($model['id'])  ):?>
                 <button type="button" class="btn btn-success btn-lg btn-block mt-2">Можно скачать файлы</button>
                 <?php elseif( $model['stored'] ):?>
@@ -44,8 +34,8 @@ $modelPublished = ((int)$model['model_status']===1);
                     Добавть Модель в Шкатулку
                 </button>
                 <?php endif;?>
+            </div>
             <?php endif;?>
-        </div>
         <?php endif;?>
         <?php if ( $modelNonPublished ):?>
             <div class="d-flex justify-content-between">
@@ -59,6 +49,7 @@ $modelPublished = ((int)$model['model_status']===1);
         <?php endif;?>
     </div>
 </div>
+
 
 <div class="row justify-content-center mb-2">
     <div class="col-sm-12 col-md-6 bg-light pr-0" id="images_block">
@@ -94,44 +85,49 @@ $modelPublished = ((int)$model['model_status']===1);
     </div>
 
     <div class="col-sm-12 col-md-6 bg-light position-relative" id="descriptions">
-        <div class="pt-1 fontsView">
-            <i class="fas fa-gem"></i>
-            <span>Заказчик: </span>
-            <strong>
-                <i>
-                <a class="text-primary" href="<?=Url::to(['search/select-by','client'=>$model['clientID']??0 ])?>" id="collection"><?=$model['client']?>
-                </a>
-                </i>
-            </strong>
-        </div>
-        <div class="fontsView">
-            <span class="float-left">
-                <i class="fas fa-user-edit"></i>
-                Автор:
-                <strong>
-                    <span></span>
-                </strong>
-            </span>
-            <span class="float-right">
-                <strong>
-                    <span><?=$model['modeller3d']?></span>
-                </strong>
-                 :3D модельер
-                <i class="fas fa-user-cog"></i>
-            </span>
-        </div>
-        <div class="clearfix"></div>
-        <hr>
-        <?php if ( count($model['hashtags']) ):?>
-        <div class=""><b>Хештеги:</b></div>
-        <div class="d-flex justify-content-left ">
-            <div class="">
-            <?php foreach( $model['hashtags'] as $htag ): ?>
-                <span class="badge badge-<?=$model['hashtags_colors'][random_int(0,6)]?> p-2 mb-1"><i class="fas fa-tag"></i> <?=$htag?></span>
-            <?php endforeach; ?>
+        <div class="d-flex justify-content-between bg-dots fontsView">
+            <div class="p-1 bg-light">
+                <i class="fa-solid fa-user-tie" data-toggle="tooltip" data-placement="top" title="Заказчик"></i>
+                <span class="d-none d-lg-inline">Заказчик:</span>
+            </div>
+            <div class="p-1 bg-light" id="client">
+                <b><i>
+                    <a class="text-primary" href="<?=Url::to(['search/select-by','client'=>$model['clientID']??0 ])?>" id="collection"><?=$model['client']?>
+                    </a>
+                </i></b>
             </div>
         </div>
-        <?php endif; ?>
+        <div class="d-flex justify-content-between bg-dots fontsView">
+            <div class="p-1 bg-light">
+                <i class="fa-solid fa-asterisk" data-toggle="tooltip" data-placement="top" title="Номер модели"></i>
+                <span class="d-none d-lg-inline">№3D:</span>
+            </div>
+            <div class="p-1 bg-light" id="num3d"><b><?=$model['number_3d']?></b></div>
+        </div>
+        <div class="d-flex justify-content-between bg-dots fontsView">
+            <div class="p-1 bg-light">
+                <i class="fa-regular fa-calendar" data-toggle="tooltip" data-placement="top" title="Дата создания 3Д"></i>
+                <span class="d-none d-lg-inline">Дата создания 3Д:</span>
+            </div>
+            <div class="p-1 bg-light" id="create_date"><b><?=formatDate($model['create_date'])?></b></div>
+        </div>
+        
+        <?php if ( isset($model['author']) ):?>
+        <div class="d-flex justify-content-between bg-dots fontsView">
+            <div class="p-1 bg-light">
+                <i class="fas fa-user-edit" data-toggle="tooltip" data-placement="top" title="Автор"></i>
+                <span class="d-none d-lg-inline">Автор:</span>
+            </div>
+            <div class="p-1 bg-light" id="author"><b></b></div>
+        </div>
+        <?php endif;?>
+        <div class="d-flex justify-content-between bg-dots fontsView">
+            <div class="p-1 bg-light">
+                <i class="fas fa-user-cog" data-toggle="tooltip" data-placement="top" title="3D модельер"></i>
+                <span class="d-none d-lg-inline">3D модельер</span>
+            </div>
+            <div class="p-1 bg-light" id="modeller3d"><b><?=$model['modeller3d']?></b></div>
+        </div>
         <div class="d-flex justify-content-between bg-dots fontsView">
             <div class="p-1 bg-light">
                 <i class="far fa-eye" data-toggle="tooltip" data-placement="top" title="Вид модели"></i>
@@ -172,6 +168,17 @@ $modelPublished = ((int)$model['model_status']===1);
                 </b>
             </div>
         </div>
+        <?php if ( count($model['hashtags']) ):?>
+        <hr>
+        <div class=""><i class="fa-solid fa-hashtag"></i><b>Хештеги:</b></div>
+        <div class="d-flex justify-content-left ">
+            <div class="">
+            <?php foreach( $model['hashtags'] as $htag ): ?>
+                <span class="badge badge-<?=$model['hashtags_colors'][random_int(0,6)]?> p-2 mb-1"><i class="fas fa-tag"></i> <?=$htag?></span>
+            <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
         <hr>
         <div class="d-none d-lg-block">
             <?php require "includes/view/gems.php"?>

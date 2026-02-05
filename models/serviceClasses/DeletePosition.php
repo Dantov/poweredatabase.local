@@ -100,51 +100,6 @@ class DeletePosition extends SaveModel
     }
 
     /*
-    protected function deleteDataFiles() : bool
-    {
-        $d3files = D3_files::find()->select(['id','zipname'])->where(['pos_id'=>$this->modelID]);
-        $count = 0;
-        if ($d3files->exists())
-        {
-        	$files = Files::instance();
-        	$path = _stockDIR_ . $this->modelID . "/3dfiles/";
-            foreach( $d3files->all() as $dfile )
-            {
-            	if (file_exists($path.$dfile['zipname']))
-            		$files->delete($path.$dfile['zipname']);
-            }
-            $count = D3_files::deleteAll(['pos_id'=>$this->modelID]);
-        }
-
-        if ($count) return true;
-        return false;
-    }
-    protected function deleteImages()
-    {
-    	$images = Images::find()->select(['id','name'])->where(['pos_id'=>$this->modelID]);
-        $count = 0;
-        if ($images->exists())
-        {
-        	$files = Files::instance();
-        	$path = _stockDIR_ . $this->modelID ."/images/";
-        	$posfix = "_prev";
-            foreach( $images->all() as $imgfile )
-            {
-            	if (file_exists($path.$imgfile['name']))
-            	{
-            		$files->delete($path.$imgfile['name']);
-            		if (file_exists($path.$imgfile['name']. ))
-            	}
-            }
-            $count = D3_files::deleteAll(['pos_id'=>$this->modelID]);
-        }
-
-        if ($count) return true;
-        return false;
-    }
-    */
-
-    /*
 	 * Удаляет папку(вместе с файлами)/файлы по указанному пути
 	 */
 	protected function rrmdir($src) : bool
@@ -164,4 +119,14 @@ class DeletePosition extends SaveModel
 	    closedir($dir);
 	    return rmdir($src);
 	}
+
+    public function restorePosition() : string
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 0;
+
+        if ( $stock->save(false) )
+            return 'restored';
+        return 'Some error occurred. Model is not restored!';
+    }
 }

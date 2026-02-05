@@ -259,11 +259,16 @@ $modelStatus = (int)$stockData['model_status'];
             <?php endif; ?>
         </div>
         <?php if ( $modelStatus === 2 ): ?>
+        <div class="col-sm-8 float-left">
             <i class="text-danger">Модель была удалена!</i></br>
-            <i class="text-danger">Что бы восстановить её, обратитесь к администратору.</i></br>
+            <i class="text-danger">Что бы восстановить её, обратитесь к администратору.</i>
+        </div>
+        <div class="col-sm-4 float-right">
             <?php if ( User::isAdmin() ): ?>
+                <button type="button" class="btn btn-sm btn-warning float-right fullyRestore" data-publish="fullyRestore">Восстановить!</button>
                 <button type="button" class="btn btn-sm btn-danger float-right fullydell" data-publish="fullydell">Удалить Полностью!</button>
             <?php endif; ?>
+        </div>
         <?php endif; ?>
     </div>
 </div>

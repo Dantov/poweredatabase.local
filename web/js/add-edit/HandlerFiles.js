@@ -174,7 +174,7 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
 
     let xhr;
     xhr = $.ajax({
-        url: '/site/edit/?pushfiles=1',
+        url: '/site/edit?v=pushfiles',
         type: 'POST',
         //dataType: "html", //формат данных
         //dataType: "json", // не работает с new FormData object
@@ -369,7 +369,7 @@ HandlerFiles.prototype.removeFile = function(self, imgRowID, fileType)
         fileType : fileType,
     };
     $.ajax({
-        url: "/site/edit/?dellFile=1",
+        url: "/site/edit?v=dellFile",
         type: 'POST',
         data: obj,
         dataType:"json",
@@ -399,7 +399,7 @@ HandlerFiles.prototype.setMainImgTag = function(self, imgRowID)
             modelID  : this.modelID,
     };
     $.ajax({
-        url: "/site/edit/?setMainImg=1",
+        url: "/site/edit?v=setMainImg",
         type: 'POST',
         data: obj,
         dataType:"json",

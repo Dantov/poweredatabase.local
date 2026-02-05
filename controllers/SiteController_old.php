@@ -133,94 +133,75 @@ class SiteController extends GeneralController
      */
     public function actionEdit()
     {
+        $session = Yii::$app->session;
         $request = Yii::$app->request;
-        if ( !($request->isAjax && $request->isPost) ) die;
-        $v = $request->get('v');
-        if (!$v) die;
-
-        $post = $request->post();
-        if ( !$post['modelID'] ) exit(json_encode(false));
-
-        $modelID = (int)$post['modelID'];
-        $sm = new SaveModel( $modelID );
-
-        //leave this place if no permission to edit
-        if ( !$sm->accessControl() ) exit(json_encode('not enough rights'));
-        //Leave this place if model is deleted
-        if ( !$sm->isEditable() ) exit(json_encode('not eligible to edit'));
-
-        //debug($request->get(),'GET',1);
-        //debug($post,1,1);
-        //debug($request->get('dellrow'),1,1);
-
-        switch( $v )
+        if ( $request->isAjax && $request->isPost )
         {
-            case"inputrow":
-                exit(json_encode( $sm->editInputs($post['modelID'], $post) ));
-            break;
+            $session->set('sitepage','edit');
+
+            $post = $request->post();
+            if ( !$post['modelID'] ) die;
+
+            $modelID = (int)$post['modelID'];
+            $sm = new SaveModel( $modelID );
+
+            //leave this place if no permission to edit
+            if ( !$sm->accessControl() ) exit(json_encode('not enough rights'));
+
+            //Leave this place if model is deleted
+            if ( !$sm->isEditable() ) exit(json_encode(false));
+
+            //debug($request->get(),'GET',1);
+            //debug($request->get('imgfiles'),'imgfiles',1);
+            //debug($post,1,1);
+            //debug($request->get('dellrow'),1,1);
 
             //*** FILES ***//
-            case"setMainImg":
-                exit(json_encode( $sm->setMainImg( $post['imgRowID'] )));
-            break;
-            case"dellFile":
-                exit(json_encode( $sm->dellFile( $post )));
-            break;
-            case"pushfiles":
+            if ( $request->get('pushfiles') )
                 exit(json_encode( $sm->addNewFile( $modelID )));
-            break;
+            if ( $request->get('dellFile') )
+                exit(json_encode( $sm->dellFile( $post )));
+            if ( $request->get('setMainImg') )
+                exit(json_encode( $sm->setMainImg( $post['imgRowID'] )));
 
-            //*** Tables ***//
-            case"linktable":
-                exit(json_encode( $sm->addNewLinkedRow( $post['tableName'] )));
-            break;
-            case"dellrow":
+            if ( $request->get('linktable') )
+                exit(json_encode( $sm->addNewLinkedRow( $request->get('linktable') )));
+
+            if ( $request->get('dellrow') )
                 exit(json_encode( $sm->dellRowLinked($post) ));
-            break;
-            case"duplicate":
+
+            if ( $request->get('duplicate') )
                 exit(json_encode( $sm->duplicateRowLinked($post) ));
-            break;
-            case"editLinkedRow":
-                //if ( isset($post['tableName'])  &&  (!empty($post['tableName'])) )
+
+            if ( $request->get('publish') )
+                exit(json_encode( $sm->publishModel() ));
+
+            if ( $request->get('publishall') )
+                exit(json_encode( $sm->publishAllModels() ));
+
+            if ( $request->get('exclude') )
+                exit(json_encode( $sm->excludeModel() ));
+
+            if ( $request->get('deletemodel') )
+                exit(json_encode( $sm->deleteModel() ));
+
+            if ( isset($post['tableName'])  &&  (!empty($post['tableName'])) )
                 exit(json_encode( $sm->editLinkedRow($post) ));
-            break;
 
-            //*** Hashtags ***//
-            case"hashtagdell":
-                //if ( $post['name'] === 'hashtags' && isset($post['dell']) )
+            if ( $post['name'] === 'hashtags' && isset($post['dell']) )
                 exit(json_encode( $sm->deleteHashtags($modelID,$post) ));
-            break;
-            case"hashtagcheck":
-                //if ( $post['name'] === 'hashtags' )
-                exit(json_encode( $sm->hashtagByClick($modelID,$post) ));
-            break;
-            case"hashtagByText":
-                //if ( $post['name'] === 'hashtags' && isset($post['hashtagByText']) )
+
+            if ( $post['name'] === 'hashtags' && isset($post['hashtagByText']) )
                 exit(json_encode( $sm->hashtagByText($modelID,$post) ));
-            break;
 
-        }
-
-
-        if ( $request->get('publish') )
-            exit(json_encode( $sm->publishModel() ));
-
-        if ( $request->get('publishall') )
-            exit(json_encode( $sm->publishAllModels() ));
-
-        if ( $request->get('exclude') )
-            exit(json_encode( $sm->excludeModel() ));
-
-        if ( $request->get('deletemodel') )
-            exit(json_encode( $sm->deleteModel() ));
-
-
-        
+            if ( $post['name'] === 'hashtags' )
+                exit(json_encode( $sm->hashtagByClick($modelID,$post) ));
             
-
+            $res = $sm->editInputs($post['modelID'], $post);
+            exit(json_encode($res));
+        }
         
-        
-        
+        exit(json_encode(false));
     }
 
     public function actionRestorePosition()

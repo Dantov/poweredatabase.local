@@ -144,13 +144,13 @@ class Common
         	if ( empty($model['images']) )
         	{
         		$model['mainimage'] = 'web1.webp';
-        		break;
+        		continue;
         	}
 
         	$found = false;
             foreach ( $model['images'] as $image )
             {
-                if ( $image['status'] === 1 ) {
+                if ( (int)$image['status'] === 1 ) {
 
                 	//Image preview check
                 	$imgname = $files->getFileName($image['name']);
@@ -175,6 +175,7 @@ class Common
 	            $model['mainimage'] = $randomimg['name'];
 	        }
         }
+
         if ( User::hasPermission('hideclients') )
             $this->hideClientsName($stock);
 

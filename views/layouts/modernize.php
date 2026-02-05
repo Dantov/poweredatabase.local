@@ -76,7 +76,8 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     <li><a href="<?=Url::to(['/site'])?>"><i class="far fa-file-alt"></i> Записать в PDF</a></li>
                     <?php if ( count($nonPublished) ): ?>
                     <li>
-                        <a href="<?=Url::to(['/search/select','by'=>'nonpub'])?>">
+                        <?php $nonPubactive = $session->get('SelectByNonPub')?"bg-secondary":"" ?>
+                        <a class="<?=$nonPubactive?>" href="<?=Url::to(['/search/select','by'=>'nonpub'])?>">
                         <i class="fa-solid fa-envelopes-bulk"></i> Не Опубликованные</a>
                     </li>
                     <li>
@@ -85,7 +86,10 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     </li>
                     <?php endif; ?>
                     <?php if ( User::isAdmin() ): ?>
-                    <li><a href="<?=Url::to(['/search/select','by'=>'deleted'])?>"><i class="fa-solid fa-ban"></i> Удаленные</a></li>
+                    <li>
+                        <?php $dellactive = $session->get('SelectByDeleted')?"bg-secondary":"" ?>
+                        <a class="<?=$dellactive?>" href="<?=Url::to(['/search/select','by'=>'deleted'])?>"><i class="fa-solid fa-ban"></i> Удаленные</a>
+                    </li>
                     <?php endif; ?>
                 </ul>
             </li>

@@ -68,7 +68,8 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 	};
 	
 	$.ajax({
-		url: "/site/edit/",
+		//url: "/site/edit/",
+		url: "/site/edit?v=inputrow",
 		type: 'POST',
 		data: obj,
 		dataType:"json",
@@ -182,7 +183,7 @@ AddEdit.prototype.addRowNew = function( protoName, targetTableName)
 				modelID : this.modelID,
 			};
 	$.ajax({
-		url: "/site/edit/?linktable=" + tName,
+		url: "/site/edit?v=linktable",
 		type: 'POST',
 		data: obj,
 		dataType:"json",
@@ -236,7 +237,7 @@ AddEdit.prototype.duplicateRowNew = function( self )
 	let that = this;
 	
 	$.ajax({
-		url: "/site/edit/?duplicate=" + tName,
+		url: "/site/edit?v=duplicate",
 		type: 'POST',
 		data: obj,
 		dataType:"json",
@@ -273,7 +274,7 @@ AddEdit.prototype.deleteRowNew = function( self )
 		debug(obj);
 
 	$.ajax({
-		url: "/site/edit/?dellrow=" + tName,
+		url: "/site/edit?v=dellrow",
 		type: 'POST',
 		data: obj,
 		dataType:"json",
@@ -306,41 +307,32 @@ AddEdit.prototype.singleHashtagCheck = function(input)
 
 	input.addEventListener('click', function () {
 
-	let selfInpt = this;
-	if ( this.hasAttribute('checked') ) {
+		let selfInpt = this;
+		let url = "hashtagcheck";
 		let obj = {
-					name    : this.getAttribute('name'),
-					dell    : 1,
-					value   : this.getAttribute('value'),
-					modelID : self.modelID,
-				};
-				$.ajax({
-					url: "/site/edit/",
+						name    : this.getAttribute('name'),
+						//dell    : 1,
+						value   : this.getAttribute('value'),
+						modelID : self.modelID,
+					};
+		if ( this.hasAttribute('checked') ){
+			obj.dell = 1;
+			url = 'hashtagdell';
+		}
+			
+		$.ajax({
+					url: "/site/edit?v=" + url,
 					type: 'POST',
 					data: obj,
 					dataType:"json",
 					success:function(resp) {
 						console.log(resp);
 						if (resp == true) selfInpt.removeAttribute('checked')
+
+						if (resp == true) selfInpt.setAttribute('checked','')
 					}
 				});
-	} else {
-		let obj = {
-				name    : this.getAttribute('name'),
-				value   : this.getAttribute('value'),
-				modelID : self.modelID,
-				};
-		$.ajax({
-				url: "/site/edit/",
-				type: 'POST',
-				data: obj,
-				dataType:"json",
-				success:function(resp) {
-					console.log(resp);
-					if (resp == true) selfInpt.setAttribute('checked','')
-				}
-			});
-		}
+		
 	});
 };
 
@@ -355,7 +347,7 @@ AddEdit.prototype.hashtagByText = function(textarea)
 			modelID : that.modelID,
 	};
 	$.ajax({
-		url: "/site/edit/",
+		url: "/site/edit?v=hashtagByText",
 		type: 'POST',
 		data: obj,
 		dataType:"json",
@@ -413,17 +405,20 @@ AddEdit.prototype.submitButtons = function( button, reqest )
 				return;
 			reqest.url = "publish";
 			if ( !this.validator.validate() ) return;
-			break;
+		break;
 		case "excl":
 			if (!confirm('Исключить модель из поиска?'))
 				return;
 			reqest.url = "exclude";
-			break;
+		break;
 		case "del":
 			if (!confirm('Удалить модель?'))
 				return;
 			reqest.url = "deletemodel";
-			break;
+		break;
+		case "fullyRestore":
+			return this.fullyRestore();
+		break;
 	}
 	$.ajax({
 			url: "/site/edit/?" + reqest.url + "=1",
@@ -435,20 +430,48 @@ AddEdit.prototype.submitButtons = function( button, reqest )
 					case "publish":
 						alert('Model is published successfully!');
 						reload(true);
-						break;
+					break;
 					case "exclude":
 						alert('Model is exclude from search successfully!');
 						reload(true);
-						break;
+					break;
+					case "restored":
+						alert('Model is restored!');
+						reload(true);
+					break;
 					case "delete":
 						alert('Model is deleted!');
 						redirect('/site');
-						break;
+					break;
 				}
 			}
 		});
 }
+AddEdit.prototype.fullyRestore = function()
+{
+	let conf = confirm("Restore this model?");
+		if (!conf) return;
 
+		let self = this;
+		$.ajax({
+			url: "/site/restore-position/",
+			type: 'POST',
+			data: {
+				modelID: self.modelID,
+			},
+			dataType:"json",
+			success:function( resp ) {
+
+				let modal = self.content.querySelector('#delete-pos-modal');
+				if (modal) {
+					if (resp)
+						modal.querySelector('.gems').children[0].innerHTML = resp;
+				}
+
+				$('#delete-pos-modal').modal('show');
+			}
+		});
+};
 AddEdit.prototype.deleteFull = function()
 {
 		let conf = confirm("Delete model totally? This action can't be undone!!!");
