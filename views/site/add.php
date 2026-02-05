@@ -254,15 +254,52 @@ $modelStatus = (int)$stockData['model_status'];
             <?php endif; ?>
         </div>
         <div class="col-sm-5 float-right">
-            <i class="text-danger"><?=($modelStatus === 2)?"Модель была удалена!":"" ?></i></br>
-            <i class="text-danger"><?=($modelStatus === 2)?"Что бы восстановить её, обратитесь к администратору.":"" ?></i></br>
             <?php if ( $modelStatus !== 2 ): ?>
                 <button type="button" class="btn btn-outline-danger float-right" data-publish="del">Удалить</button>
             <?php endif; ?>
         </div>
+        <?php if ( $modelStatus === 2 ): ?>
+            <i class="text-danger">Модель была удалена!</i></br>
+            <i class="text-danger">Что бы восстановить её, обратитесь к администратору.</i></br>
+            <?php if ( User::isAdmin() ): ?>
+                <button type="button" class="btn btn-sm btn-danger float-right fullydell" data-publish="fullydell">Удалить Полностью!</button>
+            <?php endif; ?>
+        <?php endif; ?>
     </div>
 </div>
+
+<?php if ( User::isAdmin() ): ?>
+<!-- jewel-box-modal -->
+<div class="modal fade" id="delete-pos-modal" tabindex="-1" aria-labelledby="DellModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title" id="DellModalLabel">Deleting Model Data...</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 pb-0">
+                <tbody>
+                    <tr class="gems" align="center"><td class="bg-info"></td></tr>
+                    <tr class="materials" align="center"><td class="bg-success"></td></tr>
+                    <tr class="images" align="center"><td class="bg-secondary"></td></tr>
+                    <tr class="data" align="center"><td class="bg-primary"></td></tr>
+                    <tr class="files" align="center"><td class="bg-warning"></td></tr>
+                </tbody>
+            </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a type="button" href="<?=Url::to(['/site'])?>" class="btn btn-secondary">Done</a>
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <input type="hidden" id="modelID" value="<?=$modelID?>" />
 <input type="hidden" name="_csrf" value="<?=Yii::$app->request->getCsrfToken()?>" />
-
 <?php require _webDIR_.'includes/add-edit/protoRows.php'?>

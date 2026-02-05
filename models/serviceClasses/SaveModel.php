@@ -494,8 +494,7 @@ class SaveModel extends Common
         if ( User::hasPermission('edit_all_models') ) 
         {
             $stock = $stock->andWhere(['model_status'=>0]);
-        } elseif ( User::hasPermission('edit_own_models') )
-        {
+        } elseif ( User::hasPermission('edit_own_models') ) {
             // only self models
             $stock = $stock->andWhere(['model_status'=>0])
                 ->andWhere(['creator_id'=>User::getID()]);
@@ -535,44 +534,6 @@ class SaveModel extends Common
     {
         $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
         $stock->model_status = 2;
-
-        if ( $stock->save(false) )
-            return 'delete';
-        return '';
-    }
-
-
-    /*
-     * Better to creale separetad class for this
-     */
-    public function deleteModelFull()
-    {
-        $stock = Stock::find()->select(['id','model_status'])
-        ->where(['id'=>$this->modelID])
-        ->andWhere(['model_status'=>2])
-        ->one();
-        if ( $stock->delete() ) {
-            Gems::deleteAll(['pos_id'=>$this->modelID]);
-            Materials::deleteAll(['pos_id'=>$this->modelID]);
-
-            //find images and 3d files to delete
-            $d3files = D3_files::find()->select(['id','zipname'])->where(['pos_id'=>$this->modelID]);
-            if ($d3files->exists())
-            {
-                $d3files->all();
-
-            }
-            
-            Images::find()->select(['id','name'])->where(['pos_id'=>$this->modelID])->all();
-
-            Images::deleteAll(['pos_id'=>$this->modelID]);
-            D3_files::deleteAll(['pos_id'=>$this->modelID]);
-        }
-
-        $linkedTables = ['d3_files','images','gems','materials'];
-
-
-        //jewelbox //user file_access
 
         if ( $stock->save(false) )
             return 'delete';

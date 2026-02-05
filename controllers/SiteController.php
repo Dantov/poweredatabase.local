@@ -7,7 +7,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\{Main,User,Nom};
-use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore,UsersAll,Crypt};
+use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore,UsersAll,Crypt,DeletePosition};
 
 class SiteController extends GeneralController
 {
@@ -202,6 +202,24 @@ class SiteController extends GeneralController
         }
         
         exit(json_encode(false));
+    }
+
+    public function actionDeletePositionFull()
+    {
+        $session = Yii::$app->session;
+        $request = Yii::$app->request;
+        if ( !($request->isAjax && $request->isPost) ) exit(json_encode([]));
+
+        $post = $request->post();
+        if ( !$post['modelID'] ) exit(json_encode([]));
+
+        $modelID = (int)$post['modelID'];
+        $dellPos = new DeletePosition( $modelID );
+
+        //leave this place if no permission to edit
+        if ( !User::isAdmin() ) exit(json_encode('not enough rights'));
+
+        exit(json_encode( $dellPos->deleteModelFull() ));
     }
 
     public function actionJewel()

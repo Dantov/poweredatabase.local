@@ -23,6 +23,16 @@ AddEdit.prototype.init = function()
   this.hashTagsCheckApply();
   this.pubExclDellModel();
 
+  let buttonDellF = this.content.querySelector('.fullydell');
+	if ( buttonDellF ) 
+	{
+		let self = this;
+		buttonDellF.onclick = function()
+		{
+			self.deleteFull();
+		};
+	}
+
   debug( 'AddEdit init ok' );
 };
 
@@ -42,7 +52,6 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 		event.stopPropagation();
   	event.preventDefault();	
 	}
-
 
 	let name = input.getAttribute('name');
 	let value = input.value;//this.getAttribute('value');
@@ -417,27 +426,61 @@ AddEdit.prototype.submitButtons = function( button, reqest )
 			break;
 	}
 	$.ajax({
-					url: "/site/edit/?" + reqest.url + "=1",
-					type: 'POST',
-					data: reqest,
-					dataType:"json",
-					success:function( resp ) {
-						switch ( resp ) {
-							case "publish":
-								alert('Model is published successfully!');
-								reload(true);
-								break;
-							case "exclude":
-								alert('Model is exclude from search successfully!');
-								reload(true);
-								break;
-							case "delete":
-								alert('Model is deleted!');
-								reload(true);
-								break;
-						}
-					}
-				});
+			url: "/site/edit/?" + reqest.url + "=1",
+			type: 'POST',
+			data: reqest,
+			dataType:"json",
+			success:function( resp ) {
+				switch ( resp ) {
+					case "publish":
+						alert('Model is published successfully!');
+						reload(true);
+						break;
+					case "exclude":
+						alert('Model is exclude from search successfully!');
+						reload(true);
+						break;
+					case "delete":
+						alert('Model is deleted!');
+						redirect('/site');
+						break;
+				}
+			}
+		});
+}
+
+AddEdit.prototype.deleteFull = function()
+{
+		let conf = confirm("Delete model totally? This action can't be undone!!!");
+		if (!conf) return;
+		
+		let self = this;
+		$.ajax({
+			url: "/site/delete-position-full/",
+			type: 'POST',
+			data: {
+				modelID: self.modelID,
+			},
+			dataType:"json",
+			success:function( resp ) {
+
+				let modal = self.content.querySelector('#delete-pos-modal');
+				if (modal) {
+					if (resp['gems'])
+						modal.querySelector('.gems').children[0].innerHTML = "Gems: Deleted!";
+					if (resp['materials'])
+						modal.querySelector('.materials').children[0].innerHTML = "Materials: Deleted!";
+					if (resp['images'])
+						modal.querySelector('.images').children[0].innerHTML = "Images: Deleted!";
+					if (resp['data'])
+						modal.querySelector('.data').children[0].innerHTML = "Data: Deleted!";
+					if (resp['files'])
+						modal.querySelector('.files').children[0].innerHTML = "Files: Deleted!";
+				}
+
+				$('#delete-pos-modal').modal('show');
+			}
+		});
 }
 
 let ae = new AddEdit( document.querySelector('.content') );

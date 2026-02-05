@@ -68,7 +68,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     <i class="fas fa-angle-left fa-pull-right"></i>
                 </a>
                 <ul class="collapse list-unstyled" id="showSubmenu1">
-                    <?php if ( User::hasPermission('addmodel') ):?>
+                    <?php if ( User::hasPermission('add_model') ):?>
                         <li><a href="<?=Url::to(['/site/add'])?>"><i class="far fa-file"></i> Создать модель</a></li>
                     <?php endif; ?>
                     <li><a href="<?=Url::to(['/search/select','by'=>'purgeall'])?>"><i class="fas fa-th-large"></i> Отобразить Плиткой</a></li>
@@ -257,7 +257,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                 </ul>
             </li>
             <li>
-                <?php if ( User::hasPermission('addmodel') ):?>
+                <?php if ( User::hasPermission('add_model') ):?>
                 <a href="<?=Url::to(['/site/add'])?>"><i class="far fa-file"></i>Создать модель</a>
                 <?php endif;?>
             </li>
