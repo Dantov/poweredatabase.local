@@ -20,6 +20,9 @@ $allModelTypes = $controller->modelTypes;
 $metalColors   = $controller->modelMaterials['metal_color'];
 $metalProbes   = $controller->modelMaterials['metal_probe'];
 $metalNames    = $controller->modelMaterials['model_material'];
+$totC = '';
+if (isset($controller->totalCount))
+    $totC = '('.$controller->totalCount.')';
 
 $showClname = isset($controller->clientHidedName)?$controller->clientHidedName:$session->get('SelectByClient');
 
@@ -79,10 +82,6 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         <?php $nonPubactive = $session->get('SelectByNonPub')?"bg-secondary":"" ?>
                         <a class="<?=$nonPubactive?>" href="<?=Url::to(['/search/select','by'=>'nonpub'])?>">
                         <i class="fa-solid fa-envelopes-bulk"></i> Не Опубликованные</a>
-                    </li>
-                    <li>
-                        <a class="bg-danger" href="<?=Url::to(['/search/select','by'=>'publishall'])?>">
-                        <i class="fa-solid fa-stamp"></i>Опубликовать Все</a>
                     </li>
                     <?php endif; ?>
                     <?php if ( User::isAdmin() ): ?>
@@ -282,6 +281,9 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     <?php endif; ?>
                 </a>
                 <ul class="collapse list-unstyled" id="noticesSubmenu">
+                    <li>
+                        <a class="bg-danger publishall" href=""><i class="fa-solid fa-stamp"></i>Опубликовать Все</a>
+                    </li>
                     <?php foreach( $nonPublished as $npModel): ?>
                     <li>
                         <a href="<?=Url::to(['/site/add','id'=>$npModel['id']])?>" class="p-2 border-bottom border-secondary">
@@ -318,8 +320,9 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                 </div>
                 <div class="p-1 bd-highlight" id="search-form">
                     <div class="pt-1 mx-auto">
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group-sm align-middle">
                             <div class="input-group-prepend">
+                                <button title="Найдено" class="btn btn-outline-primary border-0"><?=$totC?></button>
                                 <button title="Очистить выборку" id="purge_button" class="btn btn-outline-secondary border-0"><i class="fa-solid fa-broom"></i></button>
                                 <button title="Нажать для поиска" id="search_button" class="btn btn-outline-secondary border-0"><i class="fas fa-search"></i></button>
                             </div>

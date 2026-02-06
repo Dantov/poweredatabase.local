@@ -48,28 +48,32 @@ AddEdit.prototype.applyEventsChange = function(inputs)
 
 AddEdit.prototype.changeInpt = function(input, self, event)
 {
-	if (event){
+	if (event) {
 		event.stopPropagation();
   	event.preventDefault();	
 	}
 
 	let name = input.getAttribute('name');
-	let value = input.value;//this.getAttribute('value');
+	let value = input.value;
 	let rowID = input.getAttribute('data-rowID');
 	let tableName = input.getAttribute('data-table');
 	let modID = self.modelID;
 
 	let obj = {
 			name : name,
-			id   : rowID,
-			tableName : tableName,
 			value  : value,
 			modelID : modID,
 	};
+	let url = "inputrow";
+	if ( rowID && tableName ) {
+		url = "editLinkedRow";
+		obj.tableName = tableName;
+		obj.id = rowID;
+	}
 	
 	$.ajax({
 		//url: "/site/edit/",
-		url: "/site/edit?v=inputrow",
+		url: "/site/edit?v=" + url,
 		type: 'POST',
 		data: obj,
 		dataType:"json",
@@ -95,7 +99,6 @@ AddEdit.prototype.changeInpt = function(input, self, event)
 
 AddEdit.prototype.checkToggler = function( input, togg, back )
 {
-
 		let bg = input.previousElementSibling.children[0];
 		let svg = input.previousElementSibling.children[0].children[0];
 
@@ -421,7 +424,7 @@ AddEdit.prototype.submitButtons = function( button, reqest )
 		break;
 	}
 	$.ajax({
-			url: "/site/edit/?" + reqest.url + "=1",
+			url: "/site/approver-position?v=" + reqest.url,
 			type: 'POST',
 			data: reqest,
 			dataType:"json",
@@ -454,7 +457,7 @@ AddEdit.prototype.fullyRestore = function()
 
 		let self = this;
 		$.ajax({
-			url: "/site/restore-position/",
+			url: "/site/approver-position?v=restore",
 			type: 'POST',
 			data: {
 				modelID: self.modelID,
@@ -479,7 +482,7 @@ AddEdit.prototype.deleteFull = function()
 		
 		let self = this;
 		$.ajax({
-			url: "/site/delete-position-full/",
+			url: "/site/approver-position?v=deletefull",
 			type: 'POST',
 			data: {
 				modelID: self.modelID,

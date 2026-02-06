@@ -1,6 +1,6 @@
 <?php
 namespace app\controllers;
-use app\models\serviceClasses\SaveModel;
+//use app\models\serviceClasses\SaveModel;
 use Yii;
 
 class SearchController extends GeneralController
@@ -97,10 +97,6 @@ class SearchController extends GeneralController
                 // Only nonPublished or Deleted can be displyed at one time
                 $session->set('SelectByNonPub', '');
                 $session->set('SelectByDeleted', 1);
-            break;
-            case "publishall":
-                $sm = new SaveModel();
-                $sm->publishAllModels();
             break;
 
             case "materials":

@@ -1,7 +1,7 @@
 <?php
 namespace app\models\serviceClasses;
 
-use app\models\serviceTables\{Stock,Gems,Materials,Images,D3_files,Jewelbox,Users};
+use app\models\serviceTables\{Stock,Gems,Materials,Images,D3_files,Users};
 use app\models\{Files,User};
 
 use Yii;
@@ -9,7 +9,7 @@ use Yii;
 /**
  * Some methods for delete models
  */
-class DeletePosition extends SaveModel
+class ApprovePosition extends SaveModel
 {
 	
 	function __construct( int $modelID = 0 )
@@ -17,6 +17,69 @@ class DeletePosition extends SaveModel
 		parent::__construct($modelID);
 		
 	}
+
+    public function publishAllModels() : string
+    {
+        $stock = Stock::find();
+        if ( User::hasPermission('edit_all_models') ) 
+        {
+            $stock = $stock->andWhere(['model_status'=>0]);
+        } elseif ( User::hasPermission('edit_own_models') ) {
+            // only self models
+            $stock = $stock->andWhere(['model_status'=>0])
+                ->andWhere(['creator_id'=>User::getID()]);
+        } else {
+            return 'false';    
+        }
+
+        $stock = $stock->all();
+
+        $res = [];
+        foreach( $stock as $model ) {
+            $model->model_status = 1;
+            $res[$model->id] = $model->save(false);
+        }
+        return 'true';
+    }
+
+    public function publishModel() : string
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 1;
+
+        if ( $stock->save(false) )
+            return 'publish';
+        return '';
+    }
+
+    public function excludeModel()
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 0;
+
+        if ( $stock->save(false) )
+            return 'exclude';
+        return '';
+    }
+    public function deleteModel()
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 2;
+
+        if ( $stock->save(false) )
+            return 'delete';
+        return '';
+    }
+
+    public function restorePosition() : string
+    {
+        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
+        $stock->model_status = 0;
+
+        if ( $stock->save(false) )
+            return 'restored';
+        return 'Some error occurred. Model is not restored!';
+    }
 
 	/*
      * 
@@ -119,14 +182,4 @@ class DeletePosition extends SaveModel
 	    closedir($dir);
 	    return rmdir($src);
 	}
-
-    public function restorePosition() : string
-    {
-        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
-        $stock->model_status = 0;
-
-        if ( $stock->save(false) )
-            return 'restored';
-        return 'Some error occurred. Model is not restored!';
-    }
 }

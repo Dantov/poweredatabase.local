@@ -30,5 +30,30 @@ $(document).ready(function () {
 
 	},false);
 
+	let publishall = sidemenu.querySelector('.publishall');
+	if (publishall)
+	{
+		publishall.onclick = function(event){
+			event.stopPropagation();
+  			event.preventDefault();	
+
+			let conf = confirm("Sure to publish all models?");
+			if (!conf) return;
+			
+			$.ajax({
+				url: "/site/approver-position?v=publishall",
+				type: 'POST',
+				data: {
+					modelID: 1,
+				},
+				dataType:"json",
+				success:function( resp ) {
+					if (resp == 'true')
+						reload(true);
+				}
+			});
+		}
+	}
+
 	let jewelbox = new JewelBox();
  });

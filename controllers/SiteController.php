@@ -7,7 +7,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\{Main,User,Nom};
-use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore,UsersAll,Crypt,DeletePosition};
+use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore,UsersAll,Crypt,ApprovePosition};
 
 class SiteController extends GeneralController
 {
@@ -67,6 +67,7 @@ class SiteController extends GeneralController
         $stock = $main->getStockData();
         //debug($stock,'$stock',1);
         $pages = $main->pages??null;
+        $this->totalCount = count($stock);
 
         $compact = compact(['session','stock','main','pages']);
         return $this->render('index',$compact);
@@ -136,7 +137,7 @@ class SiteController extends GeneralController
         $request = Yii::$app->request;
         if ( !($request->isAjax && $request->isPost) ) die;
         $v = $request->get('v');
-        if (!$v) die;
+        if ( empty($v) ) die;
 
         $post = $request->post();
         if ( !$post['modelID'] ) exit(json_encode(false));
@@ -148,10 +149,6 @@ class SiteController extends GeneralController
         if ( !$sm->accessControl() ) exit(json_encode('not enough rights'));
         //Leave this place if model is deleted
         if ( !$sm->isEditable() ) exit(json_encode('not eligible to edit'));
-
-        //debug($request->get(),'GET',1);
-        //debug($post,1,1);
-        //debug($request->get('dellrow'),1,1);
 
         switch( $v )
         {
@@ -181,7 +178,6 @@ class SiteController extends GeneralController
                 exit(json_encode( $sm->duplicateRowLinked($post) ));
             break;
             case"editLinkedRow":
-                //if ( isset($post['tableName'])  &&  (!empty($post['tableName'])) )
                 exit(json_encode( $sm->editLinkedRow($post) ));
             break;
 
@@ -200,63 +196,57 @@ class SiteController extends GeneralController
             break;
 
         }
-
-
-        if ( $request->get('publish') )
-            exit(json_encode( $sm->publishModel() ));
-
-        if ( $request->get('publishall') )
-            exit(json_encode( $sm->publishAllModels() ));
-
-        if ( $request->get('exclude') )
-            exit(json_encode( $sm->excludeModel() ));
-
-        if ( $request->get('deletemodel') )
-            exit(json_encode( $sm->deleteModel() ));
-
-
-        
-            
-
-        
-        
         
     }
 
-    public function actionRestorePosition()
+    public function actionApproverPosition()
     {
-        $session = Yii::$app->session;
         $request = Yii::$app->request;
-        if ( !($request->isAjax && $request->isPost) ) exit(json_encode(false));
+        if ( !($request->isAjax && $request->isPost) ) die;
+
+        $v = $request->get('v');
+        if ( empty($v) ) die;
 
         $post = $request->post();
-        if ( !$post['modelID'] ) exit(json_encode("wrong id"));
+        if ( !isset($post['modelID']) || empty($post['modelID']) )
+            exit(json_encode('wrong id'));
 
         $modelID = (int)$post['modelID'];
-        $dellPos = new DeletePosition( $modelID );
+        $apprPos = new ApprovePosition( $modelID );
 
-        //leave this place if no permission to edit
-        if ( !User::isAdmin() ) exit(json_encode('not enough rights'));
-
-        exit(json_encode( $dellPos->restorePosition() ));
-    }
-
-    public function actionDeletePositionFull()
-    {
-        $session = Yii::$app->session;
-        $request = Yii::$app->request;
-        if ( !($request->isAjax && $request->isPost) ) exit(json_encode([]));
-
-        $post = $request->post();
-        if ( !$post['modelID'] ) exit(json_encode([]));
-
-        $modelID = (int)$post['modelID'];
-        $dellPos = new DeletePosition( $modelID );
-
-        //leave this place if no permission to edit
-        if ( !User::isAdmin() ) exit(json_encode('not enough rights'));
-
-        exit(json_encode( $dellPos->deleteModelFull() ));
+        switch ($v) 
+        {
+            case 'deletefull':
+                //leave this place if no permission to edit
+                if ( !User::isAdmin() ) 
+                    exit(json_encode('not enough rights'));
+                exit(json_encode( $apprPos->deleteModelFull() ));
+            break;
+            case 'restore':
+                if ( !User::isAdmin() ) 
+                    exit(json_encode('not enough rights'));
+                exit(json_encode( $apprPos->restorePosition() ));
+            break;
+            case 'publish':
+                if ( !$apprPos->isEditable() ) 
+                    exit(json_encode('not eligible to edit'));
+                exit(json_encode( $apprPos->publishModel() ));
+            break;
+            case 'publishall':
+                exit(json_encode( $apprPos->publishAllModels() ));
+            break;
+            case 'exclude':
+                if ( !$apprPos->isEditable() ) 
+                    exit(json_encode('not eligible to edit'));
+                exit(json_encode( $apprPos->excludeModel() ));
+            break;
+            case 'deletemodel':
+                if ( !$apprPos->isEditable() ) 
+                    exit(json_encode('not eligible to edit'));
+                exit(json_encode( $apprPos->deleteModel() ));
+            break;
+        }
+        
     }
 
     public function actionJewel()

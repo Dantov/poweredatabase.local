@@ -37,6 +37,7 @@ class GeneralController extends Controller
     public array $modelMaterials;
     public array $nonPublished;
     public string $clientHidedName;
+    public int $totalCount;
     
     public $status_arr = [];
     public $labels_arr = [];
