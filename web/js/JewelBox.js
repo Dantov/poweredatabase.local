@@ -58,7 +58,7 @@ class JewelBox
         e.preventDefault();
         e.stopPropagation();
 
-        let modelData = btn.firstElementChild;
+        let modelData = btn.firstElementChild; //input
 
         let modelLink = modelData.getAttribute('data-link');
         let modelImg = modelData.getAttribute('data-img');
@@ -77,6 +77,9 @@ class JewelBox
         }
         if ( condition == "openallmodels" ) {
             label = "Открыть доступ для всех моделей?";
+        }
+        if ( condition == "openmodel" ) {
+            label = "Открыть доступ для этой модели?";
         }
         
         modal.querySelector('#jbModalLabel').innerHTML = label;

@@ -92,7 +92,7 @@ $modelPublished = ((int)$model['model_status']===1);
             </div>
             <div class="p-1 bg-light" id="client">
                 <b><i>
-                    <a class="text-primary" href="<?=Url::to(['search/select-by','client'=>$model['clientID']??0 ])?>" id="collection"><?=$model['client']?>
+                    <a class="text-primary" href="<?=Url::to(['search/select','by'=>'client','v'=>$model['clientID']??0 ])?>" id="collection"><?=$model['client']?>
                     </a>
                 </i></b>
             </div>

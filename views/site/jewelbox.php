@@ -62,7 +62,11 @@ $this->title = 'Jewel Box ' . User::getFIO();
                         <th>Ссылка</th>
                         <th>Комментарий</th>
                         <th></th>
-                        <th>Стоимость</th>
+                        <?php $priceTotal = 0;?>
+                        <?php foreach( $storedModels as $stM ):?>
+                            <?php $priceTotal += (int)$stM['storeprice'];?>
+                        <?php endforeach;?>
+                        <th>Стоимость ( <?=$priceTotal?> )</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -94,7 +98,7 @@ $this->title = 'Jewel Box ' . User::getFIO();
                             <h5><span class="badge badge-warning"><?=$storedModel['storeprice']?></span></h5>
                         </td>
                         <td>
-                            <?php if ( $orderStatus == 0 ):?>
+                            <?php if ( $orderStatus !== 2 ):?>
                             <a type="button" href="<?=Url::to(['site/jewel','box'=>'remove','id'=>$storedModel['id'],'orderid'=>$orderID])?>" class="btn btn-sm btn-danger" title="Удалить"><i class="fa-solid fa-xmark"></i></a>
                             <?php endif;?>
                         </td>

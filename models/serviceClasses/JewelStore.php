@@ -321,21 +321,21 @@ class JewelStore extends Common
                 $found = true;
             }
         }
+        unset($modeldata); // super need it here to not rewrite var on next foreach
         if ( !$found ) return false;
 
         // Check if all models are open to set complete to order
         if ( $condition === 'all' ) $jb->status = 2;
-        if ( $condition === 'one' ) 
-        {
+
+        if ( $condition === 'one' ) {
             $flagStatus2 = true;
             foreach ($storedmodels as $modeldata) {
-                if ( $modeldata['access'] == 0 ) {
+                if ( (int)$modeldata['access'] === 0 ) {
                     $flagStatus2 = false;
                     break;
                 }
             }   
-            if ( $flagStatus2 )
-                $jb->status = 2;
+            if ( $flagStatus2 ) $jb->status = 2;
         }
 
         $jb->storedmodels = json_encode($storedmodels,true);
@@ -353,7 +353,7 @@ class JewelStore extends Common
                     $fa[] = $singleID;
             }
         } elseif ( $condition === 'one' ) {
-            if ( !in_array($singleID, $fa) )
+            if ( !in_array($this->modelID, $fa) )
                     $fa[] = $this->modelID;
         }
         $userData->files_access = json_encode($fa,true);

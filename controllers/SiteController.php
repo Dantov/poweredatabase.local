@@ -291,7 +291,6 @@ class SiteController extends GeneralController
             break;
             case "openmodel":
                 if ( !User::isAdmin() || !$proceed ) exit(json_encode(false));
-
                 exit(json_encode( $jewelbox->openModelFiles('one') ));
             break;
             case "openallmodels":
