@@ -318,6 +318,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         <i class="fas fa-bars"></i>
                     </button>
                 </div>
+                <?php if ($controller->isDesktop): ?>
                 <div class="p-1 bd-highlight" id="search-form">
                     <div class="pt-1 mx-auto">
                         <div class="input-group input-group-sm align-middle">
@@ -346,6 +347,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </div>
                     </div>
                 </div>
+                <?php endif;?>
                 <?php if( User::hasPermission('jewelbox')): ?>
                 <div class="p-1 bd-highlight jewelboxTopbar">
                     <ul class="user-bar top-icons-agileits-w3layouts">
@@ -385,7 +387,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                             <a class="dropdown-toggle" style="" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true"
                                aria-expanded="false">
                                 <div class="profile-l mr-0">
-                                    <img src="/web/images/users/<?=User::getAvatar()?>" class="img-fluid" alt="Responsive image">
+                                    <img src="/web/images/users/<?=User::getAvatar()?>" style="height:40px; object-fit: cover;" class="img-fluid" alt="Responsive image">
                                 </div>
                             </a>
                             <div class="dropdown-menu drop-3">
@@ -466,6 +468,32 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         </div>
 
         <div class="container-fluid content" id="wrapp">
+            <?php if ($controller->isMobile): ?>
+            <div class="input-group input-group-sm align-middle">
+                <div class="input-group-prepend">
+                    <button title="Найдено" class="btn btn-outline-primary border-0"><?=$totC?></button>
+                    <button title="Очистить выборку" id="purge_button" class="btn btn-outline-secondary border-0"><i class="fa-solid fa-broom"></i></button>
+                    <button title="Нажать для поиска" id="search_button" class="btn btn-outline-secondary border-0"><i class="fas fa-search"></i></button>
+                </div>
+                <input type="text" id="search_row" value="<?=$searchFor?>" type="search" placeholder="Поиск..." aria-label="Search" class="form-control border-top-0 border-left-0 border-right-0">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary border-0 dropdown-toggle" type="button" title="Где искать" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-gem"></i>
+                        <span>
+                            <?= $showClname ?>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" data-clientID="11" href="<?=Url::to(['/search/select','by'=>'client','v'=>11])?>">Все</a>
+                        <div class="dropdown-divider"></div>
+                        <?php foreach( $clients as $client ):?>
+                        <?php $clname = User::hasPermission('hideclients')?$client['secondname']:$client['name'] ?>
+                            <a class="dropdown-item" data-clientID="<?=$client['id']?>" href="<?=Url::to(['/search/select','by'=>'client','v'=>$client['id'] ])?>"><?=htmlentities($clname) ?></a>
+                        <?php endforeach;?>
+                    </div>
+                </div>
+            </div>
+            <?php endif;?>
             <?= $content; ?>
         </div>
 

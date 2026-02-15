@@ -123,7 +123,8 @@ class Files
     public function getFileName( string $fileName ) : string
     {
         $info = new \SplFileInfo($fileName);
-        return mb_strtolower( pathinfo($info->getFilename(), PATHINFO_FILENAME) );
+        //return mb_strtolower( pathinfo($info->getFilename(), PATHINFO_FILENAME) );
+        return pathinfo($info->getFilename(), PATHINFO_FILENAME);
     }
 
     public function delete( string $destination ) : bool

@@ -92,7 +92,7 @@ class ModelView extends Common
         $found = false;
         foreach ( $this->row['images'] as $image )
         {
-            if ( $image['status'] === 1 )
+            if ( (int)$image['status'] === 1 )
             {
                 $this->row['mainimage'] = $image['name'];
                 $this->row['mainimageID'] = $image['id'];
@@ -102,7 +102,13 @@ class ModelView extends Common
         }
         if ( !$found )
         {
-            $randomimg = $this->row['images'][ random_int( 0, (count( $this->row['images']))-1) ];
+
+            $min = 0;
+            $max = (count($this->row['images']))-1;
+            $i = $max ? random_int( $min, $max ) : array_key_first($this->row['images']);
+            $randomimg = $this->row['images'][ $i ];
+            //$randomimg = $this->row['images'][ random_int( 0, (count( $this->row['images']))-1) ];
+
             $this->row['mainimage'] = $randomimg['name'];
             $this->row['mainimageID'] = $randomimg['id'];
         }

@@ -18,12 +18,13 @@ if ( $pages )
     'nextPageLabel'=>'<i class="fa-solid fa-caret-right"></i>',
   ]);  
 }
-
+$controller = $this->context;
 ?>
 
 <div class="row justify-content-left">
     <?php //debug(User::permissions(),'perm'); ?>
-    <?php //debug($_SESSION,'session'); ?>
+    <?php //debug($controller->isDesktop,'isDesktop'); ?>
+    <?php //debug($controller->isMobile,'ismobile'); ?>
     <?php //debug($stock,1,1); ?>
 </div>
 <form>

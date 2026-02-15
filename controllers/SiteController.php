@@ -65,9 +65,8 @@ class SiteController extends GeneralController
 		
         $main = new Main();
         $stock = $main->getStockData();
-        //debug($stock,'$stock',1);
         $pages = $main->pages??null;
-        $this->totalCount = count($stock);
+        $this->totalCount = $main->countPos;
 
         $compact = compact(['session','stock','main','pages']);
         return $this->render('index',$compact);

@@ -53,7 +53,7 @@ class JewelStore extends Common
         $jb = Jewelbox::find()->where(['userid'=>User::getID()])->andWhere(['status'=>0]);
         if ($jb->exists()) {
             $jb =$jb->one();
-            return count(json_decode($jb->storedmodels,true));
+            return count(json_decode($jb->storedmodels,true)??[]);
         } 
         return 0;
     }
@@ -74,7 +74,7 @@ class JewelStore extends Common
         if ($jbt->exists())
         {
             $jbt = $jbt->one();
-            $jbModels = json_decode($jbt->storedmodels,true);
+            $jbModels = json_decode($jbt->storedmodels,true)??[];
         } else {
             $jbt = new Jewelbox();    
         }
@@ -121,7 +121,7 @@ class JewelStore extends Common
         $this->setIdAsKeys($jb);
 
         foreach( $jb as &$order ) {
-            $order['storedmodels'] = $this->proceedStoredModels(json_decode($order['storedmodels'],true));
+            $order['storedmodels'] = $this->proceedStoredModels(json_decode($order['storedmodels'],true)??[]);
             $this->setIdAsKeys($order['storedmodels']);
             
             $order['userdata'] = $this->getUserDataByID($order['userid']);
@@ -148,7 +148,7 @@ class JewelStore extends Common
         ];
         foreach( $jb as $num => $orders )
         {
-            $storedmodels = json_decode($orders->storedmodels,true);
+            $storedmodels = json_decode($orders->storedmodels,true)??[];
             $resp['storedmodels'][$orders->id] = $this->proceedStoredModels($storedmodels);
             $resp['statuses'][$orders->id] = $orders->status;
         }
@@ -204,7 +204,7 @@ class JewelStore extends Common
         $jb = Jewelbox::find()->where(['userid'=>User::getID()])->andWhere(['id'=>$this->orderID]);//andWhere(['status'=>0]);
         if (!$jb->exists()) return false;
         $jb = $jb->one();
-        $storedmodels = json_decode($jb->storedmodels,true);
+        $storedmodels = json_decode($jb->storedmodels,true)??[];
 
         $flag = false;
         foreach( $storedmodels as $key => &$storedmodel ) {
@@ -232,7 +232,7 @@ class JewelStore extends Common
         $jb = Jewelbox::find()->where(['userid'=>User::getID()])->andWhere(['id'=>$orderid]);
         if ( !$jb->exists() ) return false;
         $jb = $jb->one();
-        $storedmodels = json_decode($jb->storedmodels,true);
+        $storedmodels = json_decode($jb->storedmodels,true)??[];
 
         $flag = false;
         foreach( $storedmodels as $key => $storedmodel ) {
@@ -260,7 +260,7 @@ class JewelStore extends Common
         if (!$jb->exists()) return false;
         $jb = $jb->one();
         
-        $count = count(json_decode($jb->storedmodels,true));//$this->getModelsCount();
+        $count = count(json_decode($jb->storedmodels,true)??[]);//$this->getModelsCount();
         $sended = Yii::$app->mailer->compose()
             ->setFrom('from@domain.com')
             ->setTo('vady365@yahoo.com')
@@ -303,14 +303,14 @@ class JewelStore extends Common
         if ( !$jb->exists() ) return false;
         $jb = $jb->one();
         $userID = $jb->userid;
-        $storedmodels = json_decode($jb->storedmodels,true);
+        $storedmodels = json_decode($jb->storedmodels,true) ?? [];
         $found = false;
         $allIDs = [];
         foreach ($storedmodels as &$modeldata) 
         {
             if ( $condition === 'one' )
             {
-                if ( $modeldata['id'] == $this->modelID ) {
+                if ( (int)$modeldata['id'] === $this->modelID ) {
                     $modeldata['access'] = 1;
                     $found = true;
                     break;
@@ -345,7 +345,7 @@ class JewelStore extends Common
         $userData = Users::find()->select(['id','files_access'])->where(['id'=>$userID]);
         if ( !$userData->exists() ) return false;
         $userData = $userData->one();
-        $fa = json_decode($userData->files_access,true);
+        $fa = json_decode($userData->files_access,true) ?? [];
         if ( $condition === 'all' ) {
             foreach ( $allIDs as $singleID )
             {
@@ -366,7 +366,7 @@ class JewelStore extends Common
         if ( !$jb->exists() ) return false;
         $jb = $jb->one();
 
-        $storedmodels = json_decode($jb->storedmodels,true);
+        $storedmodels = json_decode($jb->storedmodels,true) ?? [];
         $flag = false;
         foreach( $storedmodels as $key => &$storedmodel ) {
             if ( (int)$storedmodel['id'] === $this->modelID ) {

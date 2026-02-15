@@ -26,7 +26,7 @@ $clientName = empty($model['client']) ? '<b class="text-muted">empty</b>' : html
                 <?php $imgUrl = empty($imgname)?"/pictAssets/default.png":'/stock/'.$model['id'].'/images/'.$imgname?>
                 <div class="ratio-content card-main-image" style="background: url('<?=$imgUrl?>');"></div>
                 <?php if ( $model['isEditBtn'] ): ?>
-                <a class="btn btn-outline-secondary btn-sm editBtnMain" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
+                <a class="btn btn-outline-secondary btn-sm editBtnMain border-0" href="<?=Url::to(['site/add','id'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
                 <?php endif; ?>

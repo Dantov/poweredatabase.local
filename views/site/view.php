@@ -168,6 +168,12 @@ $modelPublished = ((int)$model['model_status']===1);
                 </b>
             </div>
         </div>
+        <div class="d-none d-lg-block" id="notes">
+            <div class="alert alert-light" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-comment-alt"></i> Примечания:</h5>
+                <p><?=$model['description']?></p>
+            </div>
+        </div>
         <?php if ( count($model['hashtags']) ):?>
         <hr>
         <div class=""><i class="fa-solid fa-hashtag"></i><b>Хештеги:</b></div>
@@ -185,12 +191,6 @@ $modelPublished = ((int)$model['model_status']===1);
         </div>
         <div class="d-none d-lg-block">
             <?php require "includes/view/materials.php"?>
-        </div>
-        <div class="d-none d-lg-block" id="notes">
-            <div class="alert alert-light" role="alert">
-                <h5 class="alert-heading"><i class="fas fa-comment-alt"></i> Примечания:</h5>
-                <p><?=$model['description']?></p>
-            </div>
         </div>
     </div>
 </div>

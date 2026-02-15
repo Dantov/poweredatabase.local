@@ -243,8 +243,8 @@ class Main extends Common
                 if ( count($model['images'] )) {
                     $min = 0;
                     $max = (count($model['images']))-1;
-                    if ( $max > 0 )
-                        $randomimg = $model['images'][ random_int( $min, $max ) ];
+                    $i = $max ? random_int( $min, $max ) : 0;
+                    $randomimg = $model['images'][ $i ];
                 }
                 $model['mainimage'] = $randomimg['name'];
             }
