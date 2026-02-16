@@ -69,7 +69,7 @@ class AddEdit extends ModelView
             'gems_cut',
             'gems_names',
             'gems_sizes',
-            'probe',
+            'metal_probe',
             'hashtag',
         ];
 		$tables = [];

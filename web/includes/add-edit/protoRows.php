@@ -12,9 +12,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="name" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_names'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -29,9 +29,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="cut" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_cut'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -46,9 +46,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="size" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_sizes'] as $key => $sizes): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $sizes['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $sizes['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -63,9 +63,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" data-table="" data-rowID="" name="color" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_color'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -102,9 +102,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" name="part" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['model_type'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -119,9 +119,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" name="metal" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['model_material'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -136,9 +136,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" name="color" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['metal_color'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -153,10 +153,9 @@ use yii\helpers\Url;
             <input type="text" editable class="form-control" name="probe" data-table="" data-rowID="" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
-                    <?php foreach ($sevData['model_material'] as $key => $value): ?>
-                    <?php if (empty($value['probe'])) continue; ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['probe'] ?></a>
+                <div class="dropdown-menu p-1">
+                    <?php foreach ($sevData['metal_probe'] as $key => $mvalue): ?>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $mvalue['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>

@@ -45,6 +45,7 @@ class GeneralController extends Controller
 
     public function beforeAction($action)
     {
+        //HTTP_REFERER
         if ( !$this->accessControl() ) 
 		  return $this->redirect(['/auth'])->send();
 		

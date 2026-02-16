@@ -22,6 +22,8 @@ class SearchController extends GeneralController
     {
         $session = Yii::$app->session;
 
+        $session->set('SelectByClients',[]);
+
         $session->set('SelectByClient','Все');
         $session->set('searchFor', '');
         $session->set('selectByHashtag', '');
@@ -61,8 +63,10 @@ class SearchController extends GeneralController
         switch( $request->get('by') )
         {
             case "client":
-                if ( $value ) 
+                if ( $value ) {
                     $this->SelectByClient( (int)$value );
+                    $this->SelectByClients( (int)$value );
+                }  
             break;
             case "hashtag":
                 if ( $value )
@@ -136,6 +140,46 @@ class SearchController extends GeneralController
         $session->set('selectByMatColor', '');
         $session->set('selectByMatMetal', '');
         $session->set('selectByMatProbe', '');
+    }
+
+    protected function SelectByClients( int $client )
+    {
+        $session = Yii::$app->session;
+        if ( (int)$client === 11 )
+        {
+            $session->set('SelectByClients', []);
+            return;
+        }
+
+        function setClients( $newClientName, &$session )
+        {
+            $stClients = $session->get('SelectByClients')??[];
+            $found = false;
+            foreach ( $stClients as $key => $selectedClientName )
+            {
+                if ( $selectedClientName == $newClientName )
+                {
+                    //remove cl here
+                    unset($stClients[$key]);
+                    $found = true;
+                    break;
+                }
+            }
+            if ( !$found ) {
+                //add new client name here
+                $stClients[] = $newClientName;
+            }
+            return $stClients;
+        }
+
+        foreach ( $this->clients as $singleClient )
+        {
+            if ( (int)$singleClient['id'] === $client )
+            {
+                $session->set('SelectByClients', setClients($singleClient['name'],$session) );
+                break;
+            }
+        }
     }
 
     protected function SelectByClient( int $client )

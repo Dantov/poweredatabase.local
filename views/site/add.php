@@ -10,7 +10,7 @@ $this->registerJsFile("@web/js/add-edit/AddEdit.js?v=$tt",['depends' => [\app\as
 $this->registerJsFile("@web/js/add-edit/HandlerFiles.js?v=$tt",['depends' => [\app\assets\AppAsset::class]]);
 //$this->registerCssFile("@web/css/view/view.css?v=$tt");
 //debug($datafileSizes,'datafileSizes',1);
-//debug($stockData,'stockData',1);
+//debug($sevData['metal_probe'],'metal_probe',1);
 
 $modelStatus = (int)$stockData['model_status']; 
 ?>
@@ -40,9 +40,9 @@ $modelStatus = (int)$stockData['model_status'];
                     <input type="text" editable class="form-control" name="modeller3d" id="modeller3d" value="<?=$stockData['modeller3d']?>" placeholder="" >
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                        <div class="dropdown-menu">
+                        <div class="dropdown-menu p-1">
                             <?php foreach ($sevData['modeller3d'] as $key => $m3d): ?>
-                            <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $m3d['name'] ?></a>
+                            <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $m3d['name'] ?></a>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -59,9 +59,9 @@ $modelStatus = (int)$stockData['model_status'];
                     <input type="text" editable class="form-control" name="model_type" id="model_type" value="<?=$stockData['model_type']?>"placeholder="" >
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                        <div class="dropdown-menu">
+                        <div class="dropdown-menu p-1">
                             <?php foreach ($sevData['model_type'] as $key => $mtype): ?>
-                            <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $mtype['name'] ?></a>
+                            <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $mtype['name'] ?></a>
                             <?php endforeach; ?>
                         </div>
                     </div>

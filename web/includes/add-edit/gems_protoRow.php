@@ -8,9 +8,9 @@
             <input type="text" editable class="form-control" data-table="tableGems" value="<?=$gem['name']?>" data-rowID="<?=$gem['id']?>" name="name" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_names'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -25,9 +25,9 @@
             <input type="text" editable class="form-control" data-table="tableGems" value="<?=$gem['cut']?>" data-rowID="<?=$gem['id']?>" name="cut" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_cut'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -42,9 +42,9 @@
             <input type="text" editable class="form-control" data-table="tableGems" value="<?=$gem['size']?>" data-rowID="<?=$gem['id']?>" name="size" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_sizes'] as $key => $sizes): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $sizes['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $sizes['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -59,9 +59,9 @@
             <input type="text" class="form-control" editable data-table="tableGems" value="<?=$gem['color']?>" data-rowID="<?=$gem['id']?>" name="color" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['gems_color'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>

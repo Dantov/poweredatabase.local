@@ -36,6 +36,22 @@ class Main extends Common
         if ( $session->get('SelectByClient') !== 'Все' )
             return $this->stockQuery->andWhere(['client' => $session->get('SelectByClient') ]);
     }
+
+    protected function addByClients()
+    {
+        $session = Yii::$app->session;
+        $chosenClients = $session->get('SelectByClients');
+
+        if ( User::hasPermission('clientonly') && !User::hasPermission('clientall') ) {
+            foreach ( $chosenClients as $key => $clName ){
+                if ( !in_array($clName,self::$clients) )
+                    unset($chosenClients[$key]);
+            }
+        }
+        
+        if ( !empty($chosenClients) )
+            return $this->stockQuery->andWhere(['in', 'client', $chosenClients]);
+    }
     
     protected function addSearch()
     {
@@ -172,7 +188,8 @@ class Main extends Common
 
         $this->startStockQuery();
        
-        $this->addByClient();
+        //$this->addByClient();
+        $this->addByClients();
         if ( $session->has('searchFor') ) $this->addSearch();
         $this->addByHashtags();
         $this->addModelType();

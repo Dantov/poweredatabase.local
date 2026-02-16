@@ -11,9 +11,9 @@
             <input type="text" editable class="form-control" value="<?=$material['part']?>" name="part" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['model_type'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -28,9 +28,9 @@
             <input type="text" editable class="form-control" value="<?=$material['metal']?>" name="metal" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['model_material'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -45,9 +45,9 @@
             <input type="text" editable class="form-control" value="<?=$material['color']?>" name="color" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu p-1">
                     <?php foreach ($sevData['metal_color'] as $key => $value): ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
+                    <a class="dropdown-item p-1" style="cursor: pointer;" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -62,10 +62,9 @@
             <input type="text" editable class="form-control" value="<?=$material['probe']?>" name="probe" data-table="tableMats" data-rowID="<?=$material['id']?>" aria-label="">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
-                <div class="dropdown-menu">
-                    <?php foreach ($sevData['model_material'] as $key => $value): ?>
-                    <?php if (empty($value['probe'])) continue; ?>
-                    <a class="dropdown-item" style="cursor: pointer;" elemToAdd><?php echo $value['probe'] ?></a>
+                <div class="dropdown-menu p-1">
+                    <?php foreach ($sevData['metal_probe'] as $key => $value): ?>
+                    <a class="dropdown-item cursorPointer p-1" elemToAdd><?php echo $value['name'] ?></a>
                     <?php endforeach; ?>
                 </div>
             </div>

@@ -82,6 +82,8 @@ class Common
 
 		if ( $unhidedName == 'Все' )
 			return $unhidedName;
+		if ( count($session->get('SelectByClients')) > 1 ) 
+			return '...';
 
 		$allClients = $this->getClients();
 
