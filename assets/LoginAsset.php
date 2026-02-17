@@ -27,12 +27,13 @@ class LoginAsset extends AssetBundle
         $this->css = [
             'css/bootstrap.min.css',
             'css/style.css?v=' . time(),
-            'fontawesome5.9.0/css/all.min.css',
+            'fontawesome-free-7.1.0/css/all.min.css',
         ];
 
         $this->js = [
-            'js/jquery-3.4.1.min.js',
+            //'js/jquery-3.4.1.min.js',
             'js/bootstrap.bundle.min.js',
+            'fontawesome-free-7.1.0/js/all.min.js',
         ];
     }
 }

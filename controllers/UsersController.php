@@ -101,6 +101,9 @@ class UsersController extends GeneralController
         return $this->render('add',$compact);
     }
 
+    /**
+     * Shows User page data to edit
+     * */
     public function actionEdit( string $id )
     {
         $session = Yii::$app->session;

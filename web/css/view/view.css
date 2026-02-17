@@ -49,7 +49,7 @@
 	height: 100%;
 }
 #modalImageViewerContent .smallImgRow {
-	background-color: rgba(24,24,24,0.4);
+	/*background-color: rgba(24,24,24,0.4);*/
 	position: absolute !important;
 	bottom: 0;
 }
@@ -64,6 +64,11 @@
 .imageSmall {
 	vertical-align: middle;
 	background-color: #ffffff;
+}
+.imageViewerSmallImgDown {
+	background-size: cover;
+	width: 50px!important;
+	height: 50px!important;
 }
 .imageSmall:hover{
 	cursor: pointer;

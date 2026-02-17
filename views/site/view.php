@@ -14,6 +14,7 @@ $imgJs = <<<JS
     }, false);
 JS;
 $this->registerJs($imgJs);
+
 $modelDeleted = ((int)$model['model_status']===2);
 $modelNonPublished = ((int)$model['model_status']===0);
 $modelPublished = ((int)$model['model_status']===1);

@@ -327,7 +327,7 @@ ImageViewer.prototype.smallImagesRow = function()
         let fullsrc = src + (image.previmg??image.name);
         let div = document.createElement('div');
             //div.classList.add('col-xs-2', 'col-sm-3', 'p-0', 'imageSmall','border'); 
-            div.classList.add('col-12','col-sm-6', 'col-md-3', 'p-0', 'imageSmall','border'); //col-12 col-sm-6 col-md-3
+            div.classList.add('p-0','cursorPointer','imageSmall','imageViewerSmallImgDown','border'); //col-12 col-sm-6 col-md-3
         let mainImgID = that.mainImage.getAttribute('data-id');
         if ( +mainImgID === +image.id )
         {
@@ -338,8 +338,8 @@ ImageViewer.prototype.smallImagesRow = function()
         }
         div.setAttribute('data-id',image.id);
         div.style.backgroundImage = "url("+ fullsrc  +")";
-        div.style.width = 6+"em";
-        div.style.height = 5+"em";
+        //div.style.width = 80+"px";
+        //div.style.height = 80+"px";
 
         let appended = smallImgRow.appendChild(div);
         if ( flagActive )

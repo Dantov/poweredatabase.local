@@ -7,6 +7,8 @@
     </div>
     <div id="modalImageViewerContent">
         <div class="ImageViewerMainImage"></div>
-        <div class="row justify-content-md-left m-0 p-0 smallImgRow cursorPointer"></div>
+        <div class="row m-0 p-0">
+            <div class="col-sm-12 justify-content-md-center d-flex smallImgRow"></div>
+        </div>
     </div>
 </div>

@@ -75,14 +75,14 @@ class Common
 	public function getClientName() : string
 	{
 		$session = Yii::$app->session;
-		$selectedClients = $session->get('SelectByClients');
+		$selectedClients = $session->get('SelectByClients')??[];
 		$howManyClients = count($selectedClients);
 
 		if ( empty($howManyClients) ) return 'Все';
 		if ( $howManyClients > 1 ) return ' ..... ';
 
 		if ( $howManyClients == 1 ) {
-			$unhidedName = $selectedClients[0];
+			$unhidedName = $selectedClients[ array_key_first($selectedClients) ];
 			if ( User::hasPermission('hideclients') ) {
 
 				$allClients = $this->getClients();
