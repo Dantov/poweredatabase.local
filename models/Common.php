@@ -72,11 +72,43 @@ class Common
 		return [];
 	}
 
-	/*
-	 * For hide client name in top bar near search row
-	 */
 	public function getClientName() : string
 	{
+		$session = Yii::$app->session;
+		$selectedClients = $session->get('SelectByClients');
+		$howManyClients = count($selectedClients);
+
+		if ( empty($howManyClients) ) return 'Все';
+		if ( $howManyClients > 1 ) return ' ..... ';
+
+		if ( $howManyClients == 1 ) {
+			$unhidedName = $selectedClients[0];
+			if ( User::hasPermission('hideclients') ) {
+
+				$allClients = $this->getClients();
+				foreach ( $allClients as $clientTmpl ) 
+				{
+					if ( $clientTmpl['name'] == $unhidedName ){
+						return $clientTmpl['secondname'];
+					}
+				}
+
+			} else {
+				return $unhidedName;
+			}
+		}
+
+		return '';
+	}
+
+	/*
+	 * OLD 
+	 * For hide client name in top bar near search row
+	 */
+	/*
+	public function getClientName() : string
+	{
+		//if ( User::hasPermission('hideclients') )
 		$session = Yii::$app->session;
 		$unhidedName = $session->get('SelectByClient');
 
@@ -96,6 +128,7 @@ class Common
 
 		return '';
 	}
+	*/
 
 	public function getAllRoles()
 	{

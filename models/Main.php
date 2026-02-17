@@ -42,11 +42,16 @@ class Main extends Common
         $session = Yii::$app->session;
         $chosenClients = $session->get('SelectByClients');
 
-        if ( User::hasPermission('clientonly') && !User::hasPermission('clientall') ) {
-            foreach ( $chosenClients as $key => $clName ){
-                if ( !in_array($clName,self::$clients) )
-                    unset($chosenClients[$key]);
-            }
+        if ( User::hasPermission('clientonly') && !User::hasPermission('clientall') ) 
+        {
+            $selfClients = [];
+            foreach ( self::$clients as $cl )
+                $selfClients[] = $cl['name'];
+
+            if ( !empty($chosenClients) )
+                $selfClients = $chosenClients;
+
+            return $this->stockQuery->andWhere(['in', 'client', $selfClients]);
         }
         
         if ( !empty($chosenClients) )

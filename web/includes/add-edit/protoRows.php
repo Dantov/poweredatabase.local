@@ -220,11 +220,11 @@ use yii\helpers\Url;
 </a>
 <!--// PROTO PRE-LOAD DATA FILE -->
 <a class="list-group-item media d-none justify-content-between align-items-center p-1" id="proto-pre-load-data"> <!-- d-flex -->
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped bg-primary prog-bar-data-files" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
     <div class="media-body d-flex justify-content-between align-items-center">
         <div class="contact-wdgt-left">
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped bg-warning prog-bar-data-files" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
             <div class="clearfix"></div>
             <div class="lg-item-heading pl-3 data-file-text-info"></div>
         </div>

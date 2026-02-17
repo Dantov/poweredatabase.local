@@ -168,7 +168,7 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
             preLoadRow = document.getElementById('proto-pre-load-data').cloneNode(true);
             preLoadRow.removeAttribute('id');
             preLoadRow.classList.remove('d-none');
-            preLoadRow.classList.add('d-flex');
+            //preLoadRow.classList.add('d-flex');
             break;
     }
 

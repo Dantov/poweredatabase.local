@@ -14,6 +14,7 @@ $this->registerCsrfMetaTags();
 $session = Yii::$app->session;
 $controller    = $this->context;
 $clients       = $controller->clients;
+$clientName    = $controller->clientName;
 $nonPublished  = $controller->nonPublished;
 $allHashtags   = $controller->hashtags;
 $allModelTypes = $controller->modelTypes;
@@ -24,8 +25,8 @@ $totC = '';
 if (isset($controller->totalCount))
     $totC = '('.$controller->totalCount.')';
 
-$addClName = (count($session->get('SelectByClients')) > 1) ? "..." : $session->get('SelectByClient');
-$showClname = isset($controller->clientHidedName)?$controller->clientHidedName:$addClName;
+//$addClName = (count($session->get('SelectByClients')) > 1) ? "..." : $session->get('SelectByClient');
+//$showClname = isset($controller->clientHidedName)?$controller->clientHidedName:$addClName;
 
 $matSelectedCheck = (bool)($session->get('selectByMatMetal') || $session->get('selectByMatColor') || $session->get('selectByMatProbe'));
 
@@ -333,7 +334,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 <button class="btn btn-outline-secondary border-0 dropdown-toggle" type="button" title="Где искать" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-gem"></i>
                                     <span>
-                                        <?= $showClname ?>
+                                        <?= $clientName ?>
                                     </span>
                                 </button>
                                 <div class="dropdown-menu">
@@ -342,7 +343,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                     <?php foreach( $clients as $client ):?>
                                     <?php $clname = User::hasPermission('hideclients')?$client['secondname']:$client['name'] ?>
                                     <a class="dropdown-item" data-clientID="<?=$client['id']?>" href="<?=Url::to(['/search/select','by'=>'client','v'=>$client['id'] ])?>"><?=htmlentities($clname)?>
-                                    <?php if( in_array($clname,$session->get('SelectByClients')) ):?>
+                                    <?php if( in_array($client['name'],$session->get('SelectByClients')) ):?>
                                         <span class="float-right"><i class="fa-solid fa-square-check"></i></span>
                                     <?php endif; ?>
                                     </a>
