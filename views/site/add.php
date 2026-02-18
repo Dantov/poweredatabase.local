@@ -13,8 +13,18 @@ $this->registerJsFile("@web/js/add-edit/HandlerFiles.js?v=$tt",['depends' => [\a
 //debug($sevData['metal_probe'],'metal_probe',1);
 
 $modelStatus = (int)$stockData['model_status']; 
+$session = Yii::$app->session;
 ?>
-<h1 class="main-title-w3layouts mb-2 text-center">Добавить новую модель</h1>
+
+
+<?php if ( $session->hasFlash('cloned') ): ?>
+    <h1 class="main-title-w3layouts mb-2 text-center">Модель клонирована успешно!</h1>
+<?php elseif ( $session->hasFlash('editModel') ): ?>
+    <h1 class="main-title-w3layouts mb-2 text-center">Редактировать модель</h1>
+<?php else: ?>
+    <h1 class="main-title-w3layouts mb-2 text-center">Добавить новую модель</h1>
+<?php endif; ?>
+
 
 <!-- TEXT DATA -->
 <div class="outer-w3-agile mt-3">
@@ -227,6 +237,7 @@ $modelStatus = (int)$stockData['model_status'];
             <br/>
             <?php if ( $modelStatus !== 2 ): ?>
                 <a class="btn btn-outline-danger" href="<?=Url::to(["site/view", 'id'=>$stockData['id']])?>" role="button">Просмотр</a>
+                <a class="btn btn-outline-warning" id="clone-position" role="button">Клонировать</a>
             <?php endif; ?>
         </div>
          <div class="col-sm-5 float-right">

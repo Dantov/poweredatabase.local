@@ -288,7 +288,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     </li>
                     <?php foreach( $nonPublished as $npModel): ?>
                     <li>
-                        <a href="<?=Url::to(['/site/add','id'=>$npModel['id']])?>" class="p-2 border-bottom border-secondary">
+                        <a href="<?=Url::to(['/site/edits','model'=>$npModel['id']])?>" class="p-2 border-bottom border-secondary">
                             <span>Добавлена новая модель</span><br>
                             <span>Для <?=htmlentities($npModel['client'])?></span><br>
                             <span class="text-warning">Не опубликована!</span><br>

@@ -52,6 +52,79 @@ class ApprovePosition extends SaveModel
         return '';
     }
 
+    public function cloneModel()
+    {
+        $resp = [
+            'result' => false,
+            'newid' => false,
+        ];
+        $stock = Stock::find()->where(['id'=>$this->modelID]);
+        if ( !$stock->exists() ) return $resp;
+        $stock = $stock->one();
+
+        $newPos = new Stock();
+        $newPos->scenario = 'clone';
+        $newPos->attributes = $stock->attributes;
+        $newPos->id = null;
+        $newPos->description = $newPos->description . " CLONED!";
+        $newPos->model_status = 0;
+        $newPos->date = date('Y-m-d');
+
+        $newPos->isNewRecord = true;
+
+        //debug($newPos->attributes,'newPos',1);
+        if ( $newPos->save(false) )
+        {
+            $newid = $newPos->getPrimaryKey();
+
+            $resp['gems_cloned'] = $this->cloneLinkedTable( 'gems', $newid);
+            $resp['mats_cloned'] = $this->cloneLinkedTable( 'mats', $newid);
+
+            if ( $resp['gems_cloned'] && $resp['mats_cloned'] )
+                $resp['result'] = true;
+            
+            $resp['newid'] = $newid;
+            Yii::$app->session->setFlash('cloned','Модель клонирована успешно!');
+            return $resp;
+        }
+
+        $resp['newid'] = -1;
+        return $resp;
+    }
+    protected function cloneLinkedTable( string $tableName, int $newPosID ) : bool
+    {
+        $table = null;
+        if ( $tableName === 'gems' ) $table = Gems::find()->where(['pos_id'=>$this->modelID]);
+        if ( $tableName === 'mats' ) $table = Materials::find()->where(['pos_id'=>$this->modelID]);
+
+        if ( !$table->exists() ) return false;
+
+        //$table = $table->asArray()->all();
+        $results = [];
+        foreach ($table->each() as $row) 
+        {
+            $newTRow = null;
+            if ( $tableName === 'gems' ) $newTRow = new Gems();
+            if ( $tableName === 'mats' ) $newTRow = new Materials();
+
+            if ( $newTRow === null ) return false;
+
+            $newTRow->scenario = 'clone';
+            $newTRow->attributes = $row->attributes;
+            $newTRow->id = null;
+            $newTRow->pos_id = $newPosID;
+            $newTRow->isNewRecord = true;
+
+            $results[] = $newTRow->save(false);
+        }
+
+        foreach ($results as $result) {
+            if (!$result) return false;
+        }
+        
+        return true;
+    }
+
     public function excludeModel()
     {
         $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();

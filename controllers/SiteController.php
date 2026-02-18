@@ -100,7 +100,8 @@ class SiteController extends GeneralController
         $session = Yii::$app->session;
         $session->set('sitepage','add-edit');
 
-        $modelID = Yii::$app->request->get('id');
+        //$modelID = Yii::$app->request->get('id');
+        $modelID = Yii::$app->request->get('model');
         if ( !$modelID )
         {
              if ( !User::hasPermission('add_model'))
@@ -110,12 +111,15 @@ class SiteController extends GeneralController
             $sm->addNewModel();    
             $modelID = $sm->modelID;
 
-            return $response->redirect(['/site/add/','id'=>$modelID])->send();
+            return $response->redirect(['/site/add','model'=>$modelID])->send();
         }
 
         $addEdit = new AddEdit($modelID);
         $sevData = $addEdit->getDataTables();
         $stockData = $addEdit->getStockData();
+        if ( empty($stockData) ) 
+            return $response->redirect(['/site'])->send();
+
         $datafileSizes = $addEdit->datafileSizes;
 
         if ( !$addEdit->accessControl('edit') )
@@ -126,7 +130,11 @@ class SiteController extends GeneralController
         $comp = compact(['modelID','sevData','stockData','datafileSizes']);
         return $this->render('add',$comp);
     }
-
+    public function actionEdits()
+    {
+        Yii::$app->session->setFlash('editModel');
+        return $this->actionAdd();
+    }
     /**
      *
      * @return string
@@ -243,6 +251,11 @@ class SiteController extends GeneralController
                 if ( !$apprPos->isEditable() ) 
                     exit(json_encode('not eligible to edit'));
                 exit(json_encode( $apprPos->deleteModel() ));
+            break;
+            case 'clone':
+                if ( !$apprPos->isEditable() ) 
+                    exit(json_encode('not eligible to edit'));
+                exit(json_encode( $apprPos->cloneModel() ));
             break;
         }
         

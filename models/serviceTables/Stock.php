@@ -9,6 +9,7 @@ class Stock extends ActiveRecord
 
     const SCENARIO_ADD = 'add';
     const SCENARIO_EDIT = 'edit';
+    const SCENARIO_CLONE = 'clone';
 
     public $imgFor;
 
@@ -74,6 +75,7 @@ class Stock extends ActiveRecord
         return [
             self::SCENARIO_ADD => $columns,
             self::SCENARIO_EDIT => $columns,
+            self::SCENARIO_CLONE => $columns,
         ];
     }
 

@@ -226,7 +226,7 @@ $modelPublished = ((int)$model['model_status']===1);
                 </div>
                 <?php if ( $model['isEditBtn'] ): ?>
                 <div class="input-group-append">
-                    <a href="<?=Url::to(["site/add", 'id'=>$model['id']])?>" role="button" class="btn btn-outline-info">
+                    <a href="<?=Url::to(["site/edits", 'model'=>$model['id']])?>" role="button" class="btn btn-outline-info">
                         <i class="fas fa-pencil-alt"></i>
                         <span>Редактировать</span>
                     </a>

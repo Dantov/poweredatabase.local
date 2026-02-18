@@ -287,7 +287,7 @@ class JewelStore extends Common
         if ($jb->delete())
         {
             $sended = Yii::$app->mailer->compose()
-            ->setFrom('from@domain.com')
+            ->setFrom('insidemail@powered-jewelry-base.com')
             ->setTo('vady365@yahoo.com')
             ->setSubject('PJ3DB - Заказ УДАЛЕН!')
             ->setTextBody('Заказ № ' . $jb->id . ' от ' . User::getFIO() . ' УДАЛЕН!')

@@ -44,11 +44,12 @@ class AddEdit extends ModelView
 
     public function getStockData() : array
     {
-        $this->stock = Stock::find()
-            ->where(['id' => $this->id])
-            ->with(['materials','gems','images','d3_files'])
-            ->asArray()
-            ->one();
+
+        $stock = Stock::find()->where(['id' => $this->id]);
+        if ( !$stock->exists() )
+            return [];
+        
+        $this->stock = $stock->with(['materials','gems','images','d3_files'])->asArray()->limit(1)->one();
 
         $this->dataFilesPrepare();
         $this->addPreviewImages();

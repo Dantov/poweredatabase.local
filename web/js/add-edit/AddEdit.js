@@ -23,10 +23,17 @@ AddEdit.prototype.init = function()
   this.hashTagsCheckApply();
   this.pubExclDellModel();
 
+  let self = this;
+  let cloneButton = document.getElementById('clone-position');
+	if (cloneButton) {
+		cloneButton.addEventListener('click',function(e){
+			self.clonePosition();
+		},false);
+	}
+
   let buttonDellF = this.content.querySelector('.fullydell');
 	if ( buttonDellF ) 
 	{
-		let self = this;
 		buttonDellF.onclick = function()
 		{
 			self.deleteFull();
@@ -422,6 +429,9 @@ AddEdit.prototype.submitButtons = function( button, reqest )
 		case "fullyRestore":
 			return this.fullyRestore();
 		break;
+		case "fullyRestore":
+			return this.fullyRestore();
+		break;
 	}
 	$.ajax({
 			url: "/site/approver-position?v=" + reqest.url,
@@ -449,7 +459,44 @@ AddEdit.prototype.submitButtons = function( button, reqest )
 				}
 			}
 		});
-}
+};
+
+AddEdit.prototype.clonePosition = function()
+{
+		let conf = confirm("Clone this model?");
+		if (!conf) return;
+
+		let self = this;
+		$.ajax({
+			url: "/site/approver-position?v=clone",
+			type: 'POST',
+			data: {
+				modelID: self.modelID,
+			},
+			dataType:"json",
+			beforeSend:function() {
+			},
+			success:function( resp ) {
+				if ( (resp['result'] == true) && resp['newid'] )
+				{
+					debug(resp);
+					alert('Model was cloned successfully!');
+					redirect('/site/edits?model=' + resp['newid']);
+					return;
+				}
+				/*
+				let modal = self.content.querySelector('#delete-pos-modal');
+				if (modal) {
+					if (resp)
+						modal.querySelector('.gems').children[0].innerHTML = resp;
+				}
+				$('#delete-pos-modal').modal('show');
+				*/
+			}
+		});
+
+};
+
 AddEdit.prototype.fullyRestore = function()
 {
 	let conf = confirm("Restore this model?");

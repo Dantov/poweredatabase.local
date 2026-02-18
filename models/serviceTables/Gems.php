@@ -13,5 +13,22 @@ use yii\db\ActiveRecord;
 
 class Gems extends ActiveRecord
 {
+	const SCENARIO_CLONE = 'clone';
+
+	public function scenarios()
+    {
+        $columns = [
+            'id',
+            'name',
+            'cut',
+            'value',
+            'size',
+            'color',
+            'pos_id',
+        ];
+        return [
+            self::SCENARIO_CLONE => $columns,
+        ];
+    }
 
 }
