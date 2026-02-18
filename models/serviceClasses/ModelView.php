@@ -103,9 +103,10 @@ class ModelView extends Common
         if ( !$found )
         {
 
-            $min = 0;
-            $max = (count($this->row['images']))-1;
-            $i = $max ? random_int( $min, $max ) : array_key_first($this->row['images']);
+            //$min = 0;
+            //$max = (count($this->row['images']))-1;
+            //$i = $max ? random_int($min, $max) : array_key_first($this->row['images']);
+            $i = array_key_first($this->row['images']);
             $randomimg = $this->row['images'][ $i ];
             //$randomimg = $this->row['images'][ random_int( 0, (count( $this->row['images']))-1) ];
 

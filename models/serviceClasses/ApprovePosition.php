@@ -32,10 +32,16 @@ class ApprovePosition extends SaveModel
             return 'false';    
         }
 
-        $stock = $stock->all();
-
+        //$stock = $stock->all();
         $res = [];
-        foreach( $stock as $model ) {
+        foreach( $stock->each() as $model ) 
+        {
+            if (empty($model->client)) continue;
+            if (empty($model->model_type)) continue;
+
+            $matRows = Materials::find()->where(['pos_id'=>$model->id]);
+            if ( !$matRows->exists() ) continue;
+
             $model->model_status = 1;
             $res[$model->id] = $model->save(false);
         }
@@ -44,11 +50,20 @@ class ApprovePosition extends SaveModel
 
     public function publishModel() : string
     {
-        $stock = Stock::find()->select(['id','model_status'])->where(['id'=>$this->modelID])->one();
-        $stock->model_status = 1;
+        $model = Stock::find()->where(['id'=>$this->modelID]);
+        if ( !$model->exists() ) return '';
+        $model = $model->one();
 
-        if ( $stock->save(false) )
+        if (empty($model->client)) return '';
+        if (empty($model->model_type)) return '';
+
+        $matRows = Materials::find()->where(['pos_id'=>$model->id]);
+        if ( !$matRows->exists() ) return '';
+
+        $model->model_status = 1;
+        if ( $model->save(false) )
             return 'publish';
+
         return '';
     }
 
@@ -99,7 +114,6 @@ class ApprovePosition extends SaveModel
 
         if ( !$table->exists() ) return false;
 
-        //$table = $table->asArray()->all();
         $results = [];
         foreach ($table->each() as $row) 
         {

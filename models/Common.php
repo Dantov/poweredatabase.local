@@ -165,7 +165,8 @@ class Common
 		if ( User::hasPermission('edit_all_models') ) {
 			$stock = $stock->andWhere(['model_status' => 0]);
 		} elseif ( User::hasPermission('edit_own_models') ) {
-			$stock->andWhere(['creator_id' => User::getID() ]);
+			$stock->andWhere(['model_status' => 0])
+				  ->andWhere(['creator_id' => User::getID() ]);
 		} else {
 			return [];
 		}

@@ -190,15 +190,12 @@ class SiteController extends GeneralController
 
             //*** Hashtags ***//
             case"hashtagdell":
-                //if ( $post['name'] === 'hashtags' && isset($post['dell']) )
                 exit(json_encode( $sm->deleteHashtags($modelID,$post) ));
             break;
             case"hashtagcheck":
-                //if ( $post['name'] === 'hashtags' )
                 exit(json_encode( $sm->hashtagByClick($modelID,$post) ));
             break;
             case"hashtagByText":
-                //if ( $post['name'] === 'hashtags' && isset($post['hashtagByText']) )
                 exit(json_encode( $sm->hashtagByText($modelID,$post) ));
             break;
 
