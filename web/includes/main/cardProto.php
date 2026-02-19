@@ -1,6 +1,6 @@
 <?php
 use yii\helpers\Url;
-use app\models\User;
+use app\models\{User,Common};
 $mStored = $model['stored']??false;
 $bgcolor = 'secondary';
 $mainTitle = "";
@@ -23,7 +23,7 @@ $clientName = empty($model['client']) ? '<b class="text-muted">empty</b>' : html
         <div class="ratio">
             <div class="ratio-inner ratio-4-3">
                 <?php $imgname = isset($model['mainimgprev'])?$model['mainimgprev']:$model['mainimage'] ?>
-                <?php $imgUrl = empty($imgname)?"/pictAssets/default.png":'/stock/'.$model['id'].'/images/'.$imgname?>
+                <?php $imgUrl = empty($imgname)?"/pictAssets/default.png":'/stock/'.Common::modelPath($model['client'],$model['id']).'/images/'.$imgname?>
                 <div class="ratio-content card-main-image" style="background: url('<?=$imgUrl?>');"></div>
                 <?php if ( $model['isEditBtn'] ): ?>
                 <a class="btn btn-outline-secondary btn-sm editBtnMain border-0" href="<?=Url::to(['site/edits','model'=>$model['id'] ])?>" role="button" data-toggle="tooltip" data-placement="bottom" title="Редактировать">
@@ -32,7 +32,7 @@ $clientName = empty($model['client']) ? '<b class="text-muted">empty</b>' : html
                 <?php endif; ?>
                 <?php if ( User::hasPermission('jewelbox') && !$mStored && !User::isAdmin() ): ?>
                 <button class="btn btn-primary btn-sm jewelboxBtnMain" role="button" data-id="<?=$model['id']?>" data-placement="bottom" title="Добавить в Шкатулку">
-                    <input class="addJBdata" type="hidden" data-img="stock/<?=$model['id']?>/images/<?=$imgname?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
+                    <input class="addJBdata" type="hidden" data-img="/stock/<?=Common::modelPath($model['client'],$model['id'])?>/images/<?=$imgname?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
                     <i class="fa-solid fa-basket-shopping"></i>
                 </button>
                 <?php endif; ?>

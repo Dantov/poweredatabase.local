@@ -223,4 +223,44 @@ class Files
 
         return round(filesize($pathToFile) / $measureTypes[$measure], $precision );
     }
+
+    /**
+     * Recursivly copy whole folder with files
+     * */
+    public function xcopy($src, $dest) 
+    {
+        foreach (scandir($src) as $file) {
+            if (!is_readable($src . '/' . $file)) continue;
+            if (is_dir($src .'/' . $file) && ($file != '.') && ($file != '..') ) {
+                if (!is_dir($dest . '/' . $file))
+                {
+                    mkdir($dest . '/' . $file, 0777, true);
+                }
+                $this->xcopy($src . '/' . $file, $dest . '/' . $file);
+            } else if (($file != '.') && ($file != '..')) {
+                copy($src . '/' . $file, $dest . '/' . $file);
+            }
+        }
+    }
+
+    /*
+     * Удаляет папку(вместе с файлами)/файлы по указанному пути
+     */
+    public function rrmdir($src) : bool
+    {
+        $dir = opendir($src);
+        while(false !== ( $file = readdir($dir)) ) {
+            if (( $file != '.' ) && ( $file != '..' )) {
+                $full = $src . '/' . $file;
+                if ( is_dir($full) ) {
+                    $this->rrmdir($full);
+                }
+                else {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dir);
+        return rmdir($src);
+    }
 }

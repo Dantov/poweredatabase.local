@@ -414,8 +414,22 @@ class SiteController extends GeneralController
         if (!User::hasPermission(69)) 
             Yii::$app->response->redirect('/site')->send();
 
+        $mm =  new \app\models\serviceClasses\ModelsMover();
 
-        return $this->render('options');
+        $data = $mm->getStockData();
+        debug($data,1,1);
+        //debug( $mm->checkSHAID(12) );
+
+        foreach ($data as $model) 
+        {
+            //$mm->moveModel($model);
+            debug($model, $model['id'] . " moved");
+        }
+
+        //debug($mm->moveModel(8));
+
+        debug(__CLASS__,1,1);
+        //return $this->render('options');
     }
     /**
      * Displays user statistic page.

@@ -296,7 +296,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 <img src="/pictAssets/web1.webp" width="50px" class="mr-2">
                             <?php else: ?>
                                 <?php $imgname = isset($npModel['previmg'])?$npModel['previmg']:$npModel['mainimage'] ?>
-                                <img src="/stock/<?=$npModel['id']?>/images/<?=$imgname?>" width="50px" class="mr-2">
+                                <img src="<?=Url::to('/stock/'.Common::modelPath($npModel['client'],$npModel['id']).'/images/'.$imgname)?>" width="50px" class="mr-2">
                             <?php endif; ?>
                             <span><?=$npModel['number_3d']?></span><br>
                             <span>Добавил: <?=User::getUsernameByID($npModel['creator_id']). " - " .formatDate($npModel['date'])?></span>

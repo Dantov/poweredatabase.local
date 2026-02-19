@@ -9,10 +9,19 @@ class Common
 	public static array $clients;
 	public static array $roles;
 	public static array $userData;
+	public static $instance;
 
 	public function __construct()
     {
         
+    }
+
+    public static function instance()
+    {
+        if ( self::$instance instanceof self )
+            return self::$instance;
+
+        return self::$instance = new self;
     }
 
     public function getUserDataByID( int $id ) : array
@@ -100,35 +109,6 @@ class Common
 
 		return '';
 	}
-
-	/*
-	 * OLD 
-	 * For hide client name in top bar near search row
-	 */
-	/*
-	public function getClientName() : string
-	{
-		//if ( User::hasPermission('hideclients') )
-		$session = Yii::$app->session;
-		$unhidedName = $session->get('SelectByClient');
-
-		if ( $unhidedName == 'Все' )
-			return $unhidedName;
-		if ( count($session->get('SelectByClients')) > 1 ) 
-			return '...';
-
-		$allClients = $this->getClients();
-
-		foreach ( $allClients as $clientTmpl ) 
-		{
-			if ( $clientTmpl['name'] == $unhidedName ){
-				return $clientTmpl['secondname'];
-			}
-		}
-
-		return '';
-	}
-	*/
 
 	public function getAllRoles()
 	{
@@ -242,8 +222,6 @@ class Common
         }
         return $storedmodels;
 	}
-	
-
 
 	public function setIdAsKeys( array &$array )
     {
@@ -255,5 +233,27 @@ class Common
         }
     }
 
+    public static function clientPath( mixed $clientid ) : string
+    {
+    	if ( is_int($clientid) )
+    		return substr(sha1($clientid), 9, 14);
+
+    	if ( is_string($clientid) )
+    	{
+    		$clientName = $clientid;
+    		$common = Common::instance();
+    		foreach ($common->getClients() as $client) 
+            {
+                if ( $clientName == $client['name'] )
+                	return substr(sha1($client['id']), 9, 14);
+            }     
+    	}
+    	return '';
+    }
+
+    public static function modelPath( mixed $clientid, int $modelid ) : string
+    {
+    	return self::clientPath($clientid) ."/". substr(sha1($modelid), 16, 14);
+    }
 
 }
