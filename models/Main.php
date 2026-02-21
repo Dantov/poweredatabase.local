@@ -3,6 +3,7 @@ namespace app\models;
 
 use app\models\serviceTables\Stock;
 use app\models\{User,Files};
+use app\models\serviceClasses\{ImageConverter};
 
 use Yii;
 use yii\helpers\Url;
@@ -271,12 +272,12 @@ class Main extends Common
                 $model['mainimage'] = $randomimg['name'];
             }
 
-            if ( $prevImgName = $this->addPreviewImages( $model['mainimage'], $model['id'] ) )
+            if ( $prevImgName = $this->addPreviewImages( $model['mainimage'], $model['id'], $model['client'] ) )
                 $model['mainimgprev'] = $prevImgName;
         }
     }
 
-    protected function addPreviewImages( $mainimgname, $id ) : string
+    protected function addPreviewImages( $mainimgname, $id, $client ) : string
     {
         $files = Files::instance();
         $prevSuff = '_prev';
@@ -284,9 +285,15 @@ class Main extends Common
         $imgname = $files->getFileName($mainimgname);
         $imgExt = $files->getExtension($mainimgname);
         $previmg = $imgname.$prevSuff.".".$imgExt;
-        $path = _stockDIR_ . $id . "/images/".$previmg;
-        if ( file_exists($path) ){
+
+        $modelPath = Common::modelPath($client, $id);
+
+        $path = _stockDIR_ . $modelPath . "/images/";
+        if ( file_exists($path.$previmg) ) {
             return $previmg;
+        } else {
+            if (ImageConverter::makePrev( $path, $mainimgname ) )
+                return ImageConverter::getLastImgPrevName();
         }
         return "";
     }

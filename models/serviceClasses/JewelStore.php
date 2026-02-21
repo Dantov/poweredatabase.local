@@ -175,7 +175,8 @@ class JewelStore extends Common
             }
             foreach( $model['images'] as $img ) {
                 if ( (int)$img['status'] === 1 ){
-                    $model['mainimage'] = "stock/".$model['id']."/images/".$img['name'];
+
+                    $model['mainimage'] = "stock/".Common::modelPath($model['client'],$model['id'])."/images/".$img['name'];
                     break;
                 }
             }

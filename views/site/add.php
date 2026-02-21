@@ -124,7 +124,7 @@ $session = Yii::$app->session;
                 <div class="input-group-prepend">
                     <div class="input-group-text badge-light"><i class="fa-regular fa-square-full"></i></div>
                 </div>
-                <input type="text" editable class="form-control" value="<?=htmlspecialchars($stockData['client'])?>" name="client" id="client" aria-label="" >
+                <input type="text" disabled editable class="form-control" value="<?=htmlspecialchars($stockData['client'])?>" name="client" id="client" aria-label="" >
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"></button>
                     <div class="dropdown-menu">

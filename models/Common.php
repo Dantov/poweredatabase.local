@@ -11,6 +11,11 @@ class Common
 	public static array $userData;
 	public static $instance;
 
+	public const int SubstrID_FROM = 16;
+	public const int SubstrID_LEN = 14;
+	public const int SubstrClient_FROM = 9;
+	public const int SubstrClient_LEN = 14;
+
 	public function __construct()
     {
         
@@ -163,6 +168,8 @@ class Common
         		continue;
         	}
 
+        	$modelPath = Common::modelPath($model['client'],$model['id']);
+
         	$found = false;
             foreach ( $model['images'] as $image )
             {
@@ -172,8 +179,8 @@ class Common
                 	$imgname = $files->getFileName($image['name']);
 		            $imgExt = $files->getExtension($image['name']);
 		            $previmg = $imgname.$prevSuff.".".$imgExt;
-		            $path = _stockDIR_ . $image['pos_id'] . "/images/";
-		            $fullpath = _stockDIR_ . $image['pos_id'] . "/images/".$previmg;
+		            $path = _stockDIR_ . $modelPath . "/images/";
+		            $fullpath = _stockDIR_ . $modelPath . "/images/".$previmg;
 		            $model['path'] = $path;
 		            if ( file_exists($fullpath) ) {
 		                $model['previmg'] = $previmg;
@@ -187,7 +194,8 @@ class Common
 
             if ( !$found )
 	        {
-	            $randomimg = $model['images'][ random_int( 0, (count( $model['images']))-1) ];
+	            $randomimg = $model['images'][ array_key_first($model['images']) ];
+	            //Image preview check PLEASE!
 	            $model['mainimage'] = $randomimg['name'];
 	        }
         }
@@ -233,19 +241,24 @@ class Common
         }
     }
 
+    protected function getClientHash( $client_ID_or_Name ) : string
+    {
+    	return substr(sha1($client_ID_or_Name), self::SubstrClient_FROM, self::SubstrClient_LEN);
+    }
     public static function clientPath( mixed $clientid ) : string
     {
+    	$common = Common::instance();
     	if ( is_int($clientid) )
-    		return substr(sha1($clientid), 9, 14);
+    		return $common->getClientHash($clientid);
 
     	if ( is_string($clientid) )
     	{
     		$clientName = $clientid;
-    		$common = Common::instance();
+    		
     		foreach ($common->getClients() as $client) 
             {
-                if ( $clientName == $client['name'] )
-                	return substr(sha1($client['id']), 9, 14);
+                if ( ($clientName == $client['name']) || $clientName == $client['secondname'] )
+                	return $common->getClientHash($client['id']);
             }     
     	}
     	return '';
@@ -253,7 +266,11 @@ class Common
 
     public static function modelPath( mixed $clientid, int $modelid ) : string
     {
-    	return self::clientPath($clientid) ."/". substr(sha1($modelid), 16, 14);
+    	if ( empty($clientid) || empty($modelid) ) return '';
+    	$clPath = self::clientPath($clientid);
+    	if ( empty($clPath) ) return '';
+
+    	return $clPath ."/". substr(sha1($modelid), self::SubstrID_FROM, self::SubstrID_LEN);
     }
 
 }

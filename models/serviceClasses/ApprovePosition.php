@@ -2,7 +2,7 @@
 namespace app\models\serviceClasses;
 
 use app\models\serviceTables\{Stock,Gems,Materials,Images,D3_files,Users};
-use app\models\{Files,User};
+use app\models\{Files,User,Common};
 
 use Yii;
 
@@ -173,13 +173,12 @@ class ApprovePosition extends SaveModel
      */
     public function deleteModelFull() : array
     {
-        $stock = Stock::find()->select(['id','model_status'])
+        $stock = Stock::find()->select(['id','model_status','client'])
         ->where(['id'=>$this->modelID])
         ->andWhere(['model_status'=>2])
         ->one();
         $result = ['gems'=>false,'materials'=>false,'images'=>false,'data'=>false,'files'=>false];
-        //$result = ['gems'=>true,'materials'=>true,'images'=>true,'data'=>true,'files'=>true];
-        //return $result;
+        $clientName = $stock->client;
 
         if ( $stock->delete() )
         {
@@ -189,7 +188,7 @@ class ApprovePosition extends SaveModel
             $result['data'] = $this->deleteAllFromTable('data');
             $result['filesAccess'] = $this->deleteAllFromTable('userFilesAccess');
 
-            $path = _stockDIR_ . $this->modelID;
+            $path = _stockDIR_ . Common::modelPath($clientName,$this->modelID);
             if ( file_exists($path) )
             	$result['files'] = $this->rrmdir( $path );
         }

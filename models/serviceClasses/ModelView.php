@@ -59,23 +59,23 @@ class ModelView extends Common
         } else {
             return;
         }
-        /*
-        if ( empty($row['images']) )
-        {
-            $row[0]['previmg'] = '';
-            return;
-        }
-        */
+   
         foreach ( $row['images'] as &$image )
         {
             $imgname = $files->getFileName($image['name']);
             $imgExt = $files->getExtension($image['name']);
             $previmg = $imgname.$prevSuff.".".$imgExt;
-            $path = _stockDIR_ . $this->id . "/images/";
-            $fullpath = _stockDIR_ . $this->id . "/images/".$previmg;
+
+            $modelPath = Common::modelPath($row['client'],$this->id);
+
+            $path = _stockDIR_ . $modelPath . "/images/";
+            $fullpath = _stockDIR_ . $modelPath . "/images/".$previmg;
             $image['path'] = $path;
             if ( file_exists($fullpath) ) {
                 $image['previmg'] = $previmg;
+            } else {
+                if (ImageConverter::makePrev( $path, $image['name'] ) )
+                    $image['previmg'] = ImageConverter::getLastImgPrevName();
             }
         }
     }

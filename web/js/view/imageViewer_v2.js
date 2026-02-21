@@ -1,7 +1,9 @@
 "use strict";
-function ImageViewer(images)
+function ImageViewer(images, modelPath)
 {
     if ( images ) this.images = images;
+    if ( modelPath ) this.imagesPath = modelPath;
+
     /**
      *      В Открытом состоянии
      */
@@ -164,9 +166,10 @@ ImageViewer.prototype.start = function()
     let mainImageID = this.mainImage.getAttribute('data-id');
     //let imgSrc = this.images[imgID]['imgPath'];//['img_name'];
     let imgSrc = '';
+    let self = this;
     $.each(this.images, function(id, imgObj) {
         if ( +imgObj.id === +mainImageID )
-            imgSrc = "/web/stock/" + imgObj.pos_id + "/images/" + imgObj.name;
+            return imgSrc = "/stock/" + self.imagesPath + "/images/" + imgObj.name;
     });
 
     //debug(imgSrc,'imgSrc');
@@ -323,7 +326,7 @@ ImageViewer.prototype.smallImagesRow = function()
     $.each(this.images, function(id, image) {
 
         //let src = image.imgPrevPath ? image.imgPrevPath : image.imgPath;//img_name;
-        let src = "/web/stock/" + image.pos_id + "/images/";
+        let src = "/web/stock/" + that.imagesPath + "/images/";
         let fullsrc = src + (image.previmg??image.name);
         let div = document.createElement('div');
             //div.classList.add('col-xs-2', 'col-sm-3', 'p-0', 'imageSmall','border'); 
@@ -606,7 +609,7 @@ ImageViewer.prototype.mainImageSetter = function()
             //let src = this.getAttribute('src');
 
              debug(src,'SRC');
-            that.mainImage.style.backgroundImage = "url(/web/stock/"+ that.modelID +"/images/"+ src +")";
+            that.mainImage.style.backgroundImage = "url(/web/stock/"+ that.imagesPath +"/images/"+ src +")";
             //that.mainImage.style.backgroundImage = "url("+ src +")";
             that.mainImage.setAttribute('data-id',dataID);
 
@@ -633,13 +636,14 @@ ImageViewer.prototype.mainImageLoupe = function()
     let overImage = false;
     let realClientX, realClientY, loupeDelayID, coordinates;
     let naturalWidth, naturalHeight, realW, realH;
+    let self = this;
 
     this.mainImage.addEventListener('mouseover',function () {
         let that = this;
 
         let img = new Image(); // создаем картинку
         //img.src = imageViewer.images[ this.getAttribute('data-id') ]['name'];//['img_name'];
-        img.src = "/web/stock/" + this.getAttribute('data-posid') + "/images/" + this.getAttribute('data-name');
+        img.src = "/web/stock/" + self.imagesPath + "/images/" + this.getAttribute('data-name');
         img.onload = function() {
 
             naturalWidth = this.naturalWidth;

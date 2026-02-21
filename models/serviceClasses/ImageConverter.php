@@ -91,8 +91,10 @@ class ImageConverter
         $strip = self::$strip ? ' -strip ':'';
         $quality = self::$quality ? ' -quality ' . self::$qualityValue . ' ' : '';
 
-        //$command = 'convert ' . $imgOriginPath . $resize . $strip . $quality . $imgPrevPath;
-        $command = 'magick ' . $imgOriginPath . $resize . $strip . $quality . $imgPrevPath;
+        $convert = 'convert ';
+        if ( _DEV_MODE_ ) $convert = 'magick ';
+
+        $command = $convert . $imgOriginPath . $resize . $strip . $quality . $imgPrevPath;
         //debugAjax($command,"command",END_AB);
 
         self::resetConvertParams();

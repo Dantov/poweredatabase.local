@@ -60,19 +60,18 @@ class GeneralController extends Controller
             const _IS_MOBILE_  = {$isMb};
             const _IS_DESKTOP_ = !_IS_MOBILE_;
 JS;
-
-        $m = new Main();
-        $this->clients = $m->getClients();
-        $this->hashtags = $m->getAllHashtags();
-        $this->modelTypes = $m->getAllModelTypes();
-        $this->modelMaterials = $m->getAllMaterials();
-        $this->nonPublished = $m->getNonPublished();
-
-        $this->clientName = $m->getClientName();
-        /*
-        if ( User::hasPermission('hideclients') )
-            $this->clientHidedName = $m->getClientName();
-        */
+        try {
+            $m = new Main();
+            $this->clients = $m->getClients();
+            $this->hashtags = $m->getAllHashtags();
+            $this->modelTypes = $m->getAllModelTypes();
+            $this->modelMaterials = $m->getAllMaterials();
+            $this->nonPublished = $m->getNonPublished();
+            $this->clientName = $m->getClientName();
+        } catch (e) {
+            return $this->redirect(['/auth'])->send();
+        }
+        
         return parent::beforeAction($action);
     }
 

@@ -22,15 +22,17 @@ $this->title = 'Jewel Box ' . User::getFIO();
 <?php $userData = $orderData['userdata']?>
 <div class="row mb-2">
     <div class="col-xs-12">
-        <button class="btn btn-<?=($orderStatus===2)?"success":"secondary"?> btn-block" type="button" data-toggle="collapse" data-target="#OrderCollapse-<?=$orderID?>" aria-expanded="false" aria-controls="OrderCollapse-<?=$orderID?>">
+        <button class="btn btn-<?=($orderStatus===2)?"secondary":"info"?> btn-block" type="button" data-toggle="collapse" data-target="#OrderCollapse-<?=$orderID?>" aria-expanded="false" aria-controls="OrderCollapse-<?=$orderID?>">
             <h5 class="tittle-w3-agileits mb-2 pt-2">Заказ №<?=$orderID?> от <?=$orderData['lastdate']?>
+                <?php if( $orderStatus === 0 ): ?>
+                <span class="badge badge-pill badge-primary">Ожидает...</span>
+                <?php endif; ?>
                 <?php if( $orderStatus === 1 ): ?>
-                <span class="badge badge-pill badge-info">Сформирован и отправлен!</span>
+                <span class="badge badge-pill badge-primary">Сформирован и отправлен!</span>
                 <?php endif; ?>
                 <?php if( $orderStatus === 2 ): ?>
                 <span class="badge badge-pill badge-warning">Выполнен!</span>
                 <?php endif; ?>
-
             </h5>
         </button>
     </div>
@@ -41,14 +43,14 @@ $this->title = 'Jewel Box ' . User::getFIO();
         <div class="row mb-2">
             <div class="col-sm-6 col-xs-12">
                 <?php if ( $orderStatus == 0 ):?>
-                <a type="button" href="<?=Url::to(['site/jewel/','box'=>'sendorder','orderid'=>$orderID])?>" class="btn btn-info btn-sm btn-block"><i class="fa-regular fa-paper-plane"></i> Сформировать заказ (всего моделей: <?=count($storedModels)?>)</a>
+                <a type="button" href="<?=Url::to(['site/jewel/','box'=>'sendorder','orderid'=>$orderID])?>" class="btn btn-success btn-sm btn-block"><i class="fa-regular fa-paper-plane"></i> Сформировать заказ (всего моделей: <?=count($storedModels)?>)</a>
                 <?php elseif($orderStatus == 1):?>
                 <span class="text-danger">Заказ сформирован и отправлен! <br/>Свяжитесь с администратором любым известным вам способом.</span>
                 <?php endif;?>
             </div>
             <?php if($orderStatus !== 2):?>
             <div class="col-sm-6 col-xs-12">
-                <a type="button" href="<?=Url::to(['site/jewel/','box'=>'removeorder','orderid'=>$orderID])?>" class="btn btn-danger btn btn-block"><i class="fa-regular fa-calendar-xmark"></i> Удалить заказ (всего моделей: <?=count($storedModels)?>)</a>
+                <a type="button" href="<?=Url::to(['site/jewel/','box'=>'removeorder','orderid'=>$orderID])?>" class="btn btn-outline-danger btn-sm btn-block"><i class="fa-regular fa-calendar-xmark"></i> Удалить заказ (всего моделей: <?=count($storedModels)?>)</a>
             </div>
             <?php endif;?>
         </div>
@@ -73,12 +75,11 @@ $this->title = 'Jewel Box ' . User::getFIO();
                 <tbody>
                     <?php foreach( $storedModels as $k => $storedModel ):?>
                     <tr align="center">
-
                         <td><img src="<?="/" . $storedModel['mainimage']?>" width="70 rem;"></td>
                         <td><?=$storedModel['model_type']?></td>
                         <td><?= htmlentities($storedModel['client'])?></td>
                         <td>
-                            <a class="btn btn-primary btn-sm" href="<?=Url::to(['/site/view/','id'=>$storedModel['id']])?>" role="button">Перейти</a>
+                            <a class="btn btn-outline-primary btn-sm" href="<?=Url::to(['/site/view/','id'=>$storedModel['id']])?>" role="button">Перейти</a>
                         </td>
                         <td>
                             <?php if ( User::hasFilesAccess( $storedModel['id'] ) ):?>

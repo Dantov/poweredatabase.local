@@ -126,7 +126,9 @@ class User
             return self::$userInstance = $user;
         }
         if ( $userID < 0 || $userID > PHP_INT_MAX )
+        {
             throw new \Exception("We got no user sorry 123!", 510);
+        }
         
         if ( !$userID )
         {

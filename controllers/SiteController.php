@@ -280,7 +280,6 @@ class SiteController extends GeneralController
                 if ( !$jewelbox->accessControl() ) 
                     $response->redirect(['/site/error/','message'=>"forbidden"])->send();
 
-                //$allOrders = $jewelbox->getStoredModels();
                 $allOrders = $jewelbox->getAllOrders( User::getID() );
                 $comp = compact(['allOrders']);
                 return $this->render('jewelbox',$comp);
@@ -417,19 +416,20 @@ class SiteController extends GeneralController
         $mm =  new \app\models\serviceClasses\ModelsMover();
 
         $data = $mm->getStockData();
-        debug($data,1,1);
+        //debug($data,1,1);
         //debug( $mm->checkSHAID(12) );
 
+        $files = app\models\Files::instance();
+
+        $res = [];
         foreach ($data as $model) 
         {
-            //$mm->moveModel($model);
-            debug($model, $model['id'] . " moved");
+            //$mm->moveModel($model,$files);
+            //$res[] = $model['id'] . " moved";
         }
 
-        //debug($mm->moveModel(8));
-
-        debug(__CLASS__,1,1);
-        //return $this->render('options');
+        $comp = compact(['data','res']);
+        return $this->render('options',$comp);
     }
     /**
      * Displays user statistic page.

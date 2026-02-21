@@ -1,8 +1,10 @@
 <?php
 use yii\helpers\Url;
-use app\models\User;
+use app\models\{User,Common};
 
 $this->title = $model['number_3d'] . '-' . $model['model_type'];
+
+$modelPath = Common::modelPath($model['client'],$model['id']);
 
 $tt=time();
 $this->registerCssFile("@web/css/view/view.css?v=$tt");
@@ -10,7 +12,7 @@ $this->registerJsFile("@web/js/view/imageViewer_v2.js?v=$tt");
 $imgEncode = json_encode($model['images'], JSON_UNESCAPED_UNICODE);
 $imgJs = <<<JS
     window.addEventListener('load',function() {
-      new ImageViewer($imgEncode).init();
+      new ImageViewer($imgEncode,'$modelPath').init();
     }, false);
 JS;
 $this->registerJs($imgJs);
@@ -18,6 +20,7 @@ $this->registerJs($imgJs);
 $modelDeleted = ((int)$model['model_status']===2);
 $modelNonPublished = ((int)$model['model_status']===0);
 $modelPublished = ((int)$model['model_status']===1);
+
 ?>
 
 <div class="row justify-content-center bg-light mb-2">
@@ -31,7 +34,7 @@ $modelPublished = ((int)$model['model_status']===1);
                 <button type="button" class="btn btn-info btn-lg btn-block mt-2">Модель уже в Шкатулке</button>
                 <?php else:?>
                 <button type="button" data-id="<?=$model['id']?>" class="btn btn-primary btn-lg btn-block mt-2 jewelboxBtnView">
-                    <input class="addJBdata" type="hidden" data-img="/stock/<?=$model['id']?>/images/<?=$model['mainimage']?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
+                    <input class="addJBdata" type="hidden" data-img="/stock/<?=$modelPath?>/images/<?=$model['mainimage']?>" data-link="<?=Url::to(['site/view','id'=>$model['id'] ])?>" data-n3d="<?=$model['number_3d']?>" data-mtype="<?=$model['model_type']?>" data-client="<?=htmlentities($model['client'])?>">
                     Добавть Модель в Шкатулку
                 </button>
                 <?php endif;?>
@@ -56,7 +59,7 @@ $modelPublished = ((int)$model['model_status']===1);
     <div class="col-sm-12 col-md-6 bg-light pr-0" id="images_block">
         <div class="row">
             <div class="d-none d-sm-block col-sm-12 p-0 mb-2" id="mainImage">
-                <?php $imgUrl = empty($model['mainimage'])?"/pictAssets/default.png":'/stock/'.$model['id'].'/images/'.$model['mainimage']?>
+                <?php $imgUrl = empty($model['mainimage'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$model['mainimage']?>
                 <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$model['mainimageID']?>" data-name="<?=$model['mainimage']?>" style="background-image: url(<?=$imgUrl?>);"></div>
             </div>
             <div class="col-12 pl-0">
@@ -67,7 +70,7 @@ $modelPublished = ((int)$model['model_status']===1);
                             <div class="ratio-inner ratio-4-3">
                                 <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
                                 <div class="ratio-content">
-                                    <img class="imageSmall <?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/web/stock/<?=$image['pos_id']?>/images/<?=$imgname?>" width="100%" height="100%" style="object-fit: cover;">
+                                    <img class="imageSmall <?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/stock/<?=$modelPath?>/images/<?=$imgname?>" width="100%" height="100%" style="object-fit: cover;">
                                 </div>
                             </div>
                         </div>

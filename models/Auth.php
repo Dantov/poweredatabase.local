@@ -20,6 +20,8 @@ class Auth extends Common
     protected array $users = [];
     protected array $user = [];
 
+    private const int APP_VERSION_ACCESS = 305;
+
     public function __construct()
     {
         $this->submited  = filter_has_var(INPUT_POST, 'submit');
@@ -33,6 +35,11 @@ class Auth extends Common
         $this->validator = new Validator();
 
         parent::__construct();
+    }
+
+    public function getAppVersionAccess() : int
+    {
+        return self::APP_VERSION_ACCESS;
     }
 
     public function proceed() : bool
@@ -56,7 +63,6 @@ class Auth extends Common
     }
 
     /**
-     * @param $login
      * @return bool
      * @throws \Exception
      */
@@ -95,6 +101,7 @@ class Auth extends Common
         } else {
              Yii::$app->session->setFlash('wrongPass', ' не верен!');
         }
+
         //$hash = Yii::$app->getSecurity()->generatePasswordHash($password);
         /*
         if (Yii::$app->getSecurity()->validatePassword($password, $hash)) {
@@ -139,6 +146,8 @@ class Auth extends Common
         $user['access'] = $this->user['access'];
         $session->set('user', $user);
 
+        $session->set('AppVersionAccess',$this->getAppVersionAccess() );
+
         $session->set('positionsCount',27);
         $session->set('SelectByClients',[]);
         $session->set('SelectByClient','Все');
@@ -149,7 +158,7 @@ class Auth extends Common
         
         $session->set('selectFromDate','');
         $session->set('selectToDate','');
-        $session->get('selectByOrder', SORT_ASC);
+        $session->get('selectByOrder', SORT_DESC);//SORT_ASC
         $session->set('tilesControlSize', 12);
 
         $session->set('selectByMatColor', '');
@@ -158,35 +167,6 @@ class Auth extends Common
 
         $session->set('SelectByNonPub', '');
         $session->set('SelectByDeleted', '');
-
-        /****  OLD VARIABLES 
-        $assist['maxPos'] = 48;        // кол-во выводимых позиций по дефолту
-        $assist['regStat'] = "Нет";    // выбор статуса по умоляанию
-        $assist['regStatID'] = 0;    // выбор статуса по умоляанию
-        $assist['modelType'] = "Все";  // выбор по типу модели
-        $assist['modelMaterial'] = "Все";  // выбор по типу материала
-        $assist['gemType'] = "Все";  // выбор по типу Камня
-        $assist['byStatHistory'] = 0;    // искать в истории статусов
-        $assist['wcSort'] = [];        // выбор рабочего участка по умоляанию
-        $assist['searchIn'] = 1;
-        $assist['reg'] = "date"; // сорттровка по дефолту number_3d
-        //$assist['startfromPage'] = (int)0;  // начальная страница пагинации
-        $assist['page'] = (int)0;        // устанавливаем первую страницу
-        $assist['drawBy_'] = 1;        // 2 полоски, 1 квадратики
-        $assist['sortDirect'] = "DESC";    // по умолчанию
-        $assist['collectionName'] = "Все Коллекции";
-        $assist['collection_id'] = -1;        // все коллекции
-        $assist['containerFullWidth'] = 2;        // на всю ширину
-        $assist['PushNotice'] = 1;        // показываем уведомления
-        $assist['update'] = Config::get('assistUpdate');
-        $assist['bodyImg'] = 'bodyimg0'; // название класса
-        $session->setKey('assist', $assist);
-        
-        $selectionMode['activeClass'] = "";
-        $selectionMode['models'] = [];
-        $session->setKey('selectionMode', $selectionMode);
-        $session->setKey('lastTime', 0);
-        */
     }
 
     protected function setCookieVariables($session)
@@ -194,6 +174,11 @@ class Auth extends Common
         $cookies = Yii::$app->response->cookies;
         $expired = time() + (3600 * 24 * 30);
 
+        $cookies->add(new Cookie([
+                "name" => "AppVersionAccess",
+                'value' => $this->getAppVersionAccess(),
+                'expire' => $expired,
+            ]));
         $cookies->add(new Cookie([
                 "name" => "meme_sessA",
                 'value' => 1,
@@ -234,6 +219,7 @@ class Auth extends Common
         }
         $session->set('user', $user);
         $session->set('access', 1);
+        $session->set('AppVersionAccess', $cookies->getValue("AppVersionAccess") );
     }
 
     public function accessControl() : bool
@@ -241,46 +227,21 @@ class Auth extends Common
         $session = Yii::$app->session;
         $cookies = Yii::$app->request->cookies;
 
-        if ( $session->get('access') === 1 ) return true;
-
-        // Если нет сесии "access" и есть кука 'meme_sessA' (был установлен флаг "Запомнить меня")
-        // то значит данные пришли в куках
-        // возьмем их оттуда т разложим по массивам в сесии
-        if ( !$session->get('access') && $cookies->getValue('meme_sessA', null) )
+        if ( $session->get('access') === 1 )
         {
-            
-            $session->set('access', (int)$cookies['meme_sessA']->value);
-            $cookies_arr = $cookies->toArray();
+            if ( $session->get('AppVersionAccess') !== $this->getAppVersionAccess() ) 
+                return false;
 
-            if ( !$session->has('assist') )
-            {
-                // куки храняться с ключами типа$_COOKIES[assist-searchIn]
-                // чтоб записать массив сессии, парсим имена кук по разделителю "-"
-                $assist = [];
-                foreach ( $cookies_arr as $cookName => $value )
-                {
-                    if (stristr($cookName, 'assist') !== false)
-                    {
-                        $u = explode('-',$cookName);
-                        $assist[$u[1]] = $value->value;
-                    }
-                }
-                $session->set('assist', $assist);
-            }
+            return true;
+        } 
 
-            if ( !$session->has('user') )
-            {
-                if ( isset($cookies_arr['user']) && !empty($cookies_arr['user']) )
-                {
-                    $userId = (int)$cookies_arr['user'];
-                }
-                $user = Users::findBySql("SELECT id,fio,fullFio,access FROM users WHERE id=$userId")->asArray()->limit(1)->one();
-              
-                $session->set('user', $user);
-                $this->user = $user;
-            }
+        // Если есть кука 'meme_sessA' (был установлен флаг "Запомнить меня")
+        // lets check data in cookies
+        if ( $cookies->getValue('meme_sessA', null) )
+        {
+            $this->restoreSessionByCookies();
+            return true;
         }
-
         return false;
     }
 

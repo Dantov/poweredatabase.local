@@ -4,7 +4,7 @@ use app\assets\AppAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
-use app\models\User;
+use app\models\{User,Common};
 use app\models\serviceClasses\JewelStore;
 
 AppAsset::register($this);

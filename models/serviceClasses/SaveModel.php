@@ -32,8 +32,8 @@ class SaveModel extends Common
         $date = date("Y-m-d");
 
         $stock = new Stock();
-        $stock->number_3d = '0001';
-        $stock->modeller3d = '0001';
+        $stock->number_3d = '001';
+        $stock->modeller3d = 'Быков В.А.';
         $stock->client = '';
         $stock->print_cost = '';
         $stock->model_cost = '';
@@ -52,17 +52,36 @@ class SaveModel extends Common
 
     public function editInputs( int $id, array $post ):bool
     {
-        $request = Yii::$app->request;
-        $session = Yii::$app->session;
-
-        $name = $post['name'];
         $value = trim(strip_tags($post['value']));
         if (empty($value)) return false;
+
+        $name = $post['name'];
+        if ( $name === 'client' )
+            return $this->editClientField( $value );
         
         $stock  = Stock::find()->select(['id',$name])->where(['id' => $id])->one();
-
         $stock->$name = $value;
         return $stock->save(false);
+    }
+    protected function editClientField( string $clientValue ) : bool
+    {
+        $oldPath = $this->getModelPath();
+        $newPath = Common::modelPath($clientValue, $this->modelID);
+
+        $res = ['saved'=>false,'modelsMoved'=>false];
+        $stock = Stock::find()->select(['id','client'])->where(['id' => $this->modelID])->one();
+        $stock->client = $clientValue;
+        $res['saved'] = $stock->save(false);
+        
+        if ( empty($oldPath) && $res['saved'] ) return true;
+
+        if ( !empty($newPath) ) 
+        {
+            $mm = new ModelsMover();
+            return $mm->moveModelFiles( _stockDIR_.$oldPath, _stockDIR_.$newPath );
+        }
+
+        return false;
     }
 
     public function hashtagByClick( int $id, array $post ) : bool
@@ -310,6 +329,7 @@ class SaveModel extends Common
 
         if ( $files->has('UploadImage') )
             return $this->uploadImageFile($files);
+
         if ( $files->has('Upload3DFile') )
         {
             $res = $this->checkOveralFilesize( $files->get('Upload3DFile') );
@@ -321,9 +341,24 @@ class SaveModel extends Common
         }
         return [];
     }
+    /*
+     GET CLIENT NAME FOR PATH
+    */
+    protected function getModelPath() : string
+    {
+        $stock = Stock::find()->select('client')->where(['id'=>$this->modelID]);
+        if ( !$stock->exists() ) return '';
+        $stock = $stock->one();
+        if ( empty($stock->client) ) return '';
+        return Common::modelPath($stock->client,$this->modelID);
+    }
 
     protected function uploadImageFile( Files $files ) : array
     {
+        $modelPath = $this->getModelPath();
+        if ( empty($modelPath) ) 
+            return ['id'=>0,'upload'=>false,'type'=>'picture','txt'=>'Wrong destination! Client name is empty.'];
+
         $uplImg = $files->get('UploadImage');
         $newImgName = '';
         $images = new Images();
@@ -336,7 +371,7 @@ class SaveModel extends Common
         $images->save(false);
         $imgID = $images->getPrimaryKey();
 
-        $destPath = _stockDIR_ . $this->modelID .'/images/'; 
+        $destPath = _stockDIR_ .$modelPath.'/images/'; 
 
         if ( !file_exists($destPath) ) 
             mkdir($destPath, 0777, true);
@@ -371,14 +406,18 @@ class SaveModel extends Common
     }
     protected function uploadDataFile( Files $files ) : array
     {
+        $modelPath = $this->getModelPath();
+        if ( empty($modelPath) ) 
+            return ['id'=>0,'upload'=>false,'type'=>'data','txt'=>'wrong destination! Client name is empty.'];
+
         $uplFile = $files->get('Upload3DFile');
         $fileExtension = $files->getExtension($uplFile['name']);
         //$newFileName = $this->modelID."_".randomStringChars( 10, 'en', 'symbols').'.'.$fileExtension;
         $vl = new Validator();
         $newFileName = $vl->sanitizeFileName( $files->getFileName( $uplFile['name'] ) );
         $newFileName = $newFileName ."_".randomStringChars( 7, 'en', 'symbols').'.'.$fileExtension;
-      
-        $destPath = _stockDIR_ . $this->modelID .'/3dfiles/'; 
+
+        $destPath = _stockDIR_ . $modelPath .'/3dfiles/'; 
         if ( !file_exists($destPath) ) 
             mkdir($destPath, 0777, true);
         $uploadRes = false;
@@ -437,7 +476,10 @@ class SaveModel extends Common
 
     public function dellFile( array $post ) : array
     {
-        $res = ['file'=>false,'row'=>false,'type'=>'']; 
+        $res = ['file'=>false,'row'=>false,'type'=>''];
+
+        $modelPath = $this->getModelPath();
+        if ( empty($modelPath) ) return $res;
 
         switch( $post['fileType'] )
         {
@@ -446,19 +488,27 @@ class SaveModel extends Common
                 $rowID = $post['rowID'];
                 $images = Images::find()->where(['id'=>$rowID])->limit(1)->one();
 
-                $destPath = _stockDIR_ . $this->modelID .'/images/' . $images->name; 
+                $destPath = _stockDIR_ . $modelPath .'/images/' . $images->name; 
 
                 $files = Files::instance();
+                // Need to dell Prev too!!!
+                $fname = $files->getFileName($images->name);
+                $fext = $files->getExtension($images->name);
+                $destPathPrev = _stockDIR_ . $modelPath .'/images/' . $fname.'_prev.'.$fext; 
                 
                 if ( $res['file'] = $files->delete($destPath) )
-                $res['row'] = (bool)$images->delete();
+                {
+                    $files->delete($destPathPrev);
+                    $res['row'] = (bool)$images->delete();
+                }
+                
             break;
             case "data":
                 $res['type'] = "data";
                 $rowID = $post['rowID'];
                 $d3files = D3_files::find()->where(['id'=>$rowID])->limit(1)->one();
 
-                $destPath = _stockDIR_ . $this->modelID .'/3dfiles/' . $d3files->zipname; 
+                $destPath = _stockDIR_ . $modelPath .'/3dfiles/' . $d3files->zipname; 
 
                 $files = Files::instance();
                 
@@ -473,7 +523,6 @@ class SaveModel extends Common
     public function openZip( string $zip_path, string $zip_name ) : array
     {
         $zip = new \ZipArchive();
-        //$zip_name = $this->number_3d."-".$this->model_typeEn.".zip";
         $zip_name = $zip_name . ".zip";
         $zip->open($zip_path.$zip_name, \ZIPARCHIVE::CREATE);
 

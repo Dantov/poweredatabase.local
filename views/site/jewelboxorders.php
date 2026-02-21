@@ -1,6 +1,6 @@
 <?php
 use yii\helpers\{Html,Url};
-use app\models\User;
+use app\models\{User,Common};
 
 $this->title = 'Jewel Box Orders';
 

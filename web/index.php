@@ -4,6 +4,8 @@
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
 
+defined('_DEV_MODE_') or define('_DEV_MODE_', true);
+
 require __DIR__ . '/../vendor/defines_core.php';
 require __DIR__ . '/../vendor/functions.php';
 

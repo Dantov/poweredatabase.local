@@ -20,5 +20,7 @@ $this->title = $name . ' OPTIONS';
         OPTIONS
     </h2>
     </div>
-    
+    <pre style="display: inline-block !important; vertical-align: top; margin-left: 5px; padding: 5px; border-bottom: 1px solid #0f0f0f; border-left: 1px solid #0f0f0f" >
+        <?php print_r($res); ?>
+    </pre>
 </div>

@@ -44,7 +44,6 @@ class AddEdit extends ModelView
 
     public function getStockData() : array
     {
-
         $stock = Stock::find()->where(['id' => $this->id]);
         if ( !$stock->exists() )
             return [];

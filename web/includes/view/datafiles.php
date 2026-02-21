@@ -8,7 +8,7 @@
             </td>
             <td class="va-mid text-bold"><?=$dfile['zipname']?></td>
             <td class="va-mid text-bold"><?=$dfile['zipsize']?> mb</td>
-            <td class="va-mid text-bold" align="middle"><a class="btn btn-sm btn-secondary text-light" href="/stock/<?=$dfile['pos_id']?>/3dfiles/<?=$dfile['zipname']?>" download="<?=$dfile['zipname']?>">Скачать</a></td>
+            <td class="va-mid text-bold" align="middle"><a class="btn btn-sm btn-secondary text-light" href="/stock/<?=$modelPath?>/3dfiles/<?=$dfile['zipname']?>" download="<?=$dfile['zipname']?>">Скачать</a></td>
         </tr>
     <?php endforeach; ?>
     </tbody>
