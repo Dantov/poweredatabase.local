@@ -442,7 +442,42 @@ class SiteController extends GeneralController
             Yii::$app->response->redirect('/site/error?id=frule')->send();
 
 
+
+
         return $this->render('statistic');
+    }
+
+    public function sendEmail()
+    {
+        $data = $this->post;
+        //debug($data,'$data',1);
+
+        $name = Validator::validateString($data['name']);
+        $email = Validator::validateString($data['email']);
+        $message = Validator::validateString($data['message']);
+        $subject  = Validator::validateString($data['subject']);
+
+        if ( empty($name) || empty($email) || empty($message) || empty($subject) ) return null;
+
+        $to  = "AlmTade s.r.o. <info@almtradesro.com>";
+        
+        $c_message = " 
+        <html>
+            <body>
+                <p>
+                   Новое сообщение от: <strong>$name</strong><br>
+                </p>
+                <p>$message</p>
+            </body>
+        </html>";
+
+        $headers  = "Content-type: text/html; charset=utf-8 \r\n";
+        $headers .= "From: $name <$email>";
+
+        
+        if ( mail($to, $subject, $c_message, $headers) ) return 1;
+            
+        return null;
     }
 
     /**

@@ -233,16 +233,19 @@ $session = Yii::$app->session;
                 <input class="form-control" style="width: 13rem;" type="date" name="create_date" editable value="<?=$stockData['create_date'] ?>" />
             </div>
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <br/>
             <?php if ( $modelStatus !== 2 ): ?>
                 <a class="btn btn-outline-danger" href="<?=Url::to(["site/view", 'id'=>$stockData['id']])?>" role="button">Просмотр</a>
-                <a class="btn btn-outline-warning" id="clone-position" role="button">Клонировать</a>
+                <a class="btn btn-outline-warning float-right" id="clone-position" role="button">Клонировать</a>
+                <div class="clearfix"></div>
             <?php endif; ?>
         </div>
-         <div class="col-sm-5 float-right">
-            <div class="float-right"><span>Добавил: <?=User::getUsernameByID($stockData['creator_id'])?></span><span>Дата добавления 3д модели в базу: </span>
-                <input class="form-control" readonly type="date" name="date" value="<?=$stockData['date'] ?>" />
+         <div class="col-sm-4 float-right">
+            <div class="float-right">
+                <span>Дата добавления 3д модели в базу:</span>
+                <input class="form-control" readonly type="date" name="date" value="<?=$stockData['date'] ?>"/>
+                <span>Добавил: <?=User::getUsernameByID($stockData['creator_id'])?></span>
             </div>
         </div>
     </div>

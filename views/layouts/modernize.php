@@ -487,7 +487,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                     <button class="btn btn-outline-secondary border-0 dropdown-toggle" type="button" title="Где искать" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-gem"></i>
                         <span>
-                            <?= $showClname ?>
+                            <?php //$showClname ?>
                         </span>
                     </button>
                     <div class="dropdown-menu">
