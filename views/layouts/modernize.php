@@ -67,7 +67,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         </div>
         <ul class="list-unstyled components">
             <li class="activeSB">
-                <a href="#showSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                <a href="#showSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                     <i class="fas fa-th-large"></i>
                     База Моделей
                     <i class="fas fa-angle-left fa-pull-right"></i>
@@ -95,14 +95,14 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                 </ul>
             </li>
             <li>
-                <a href="#sortSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                <a href="#sortSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                     <i class="far fa-window-restore"></i>
                     Сортировка
                     <i class="fas fa-angle-left fa-pull-right"></i>
                 </a>
                 <ul class="collapse list-unstyled" id="sortSubmenu1">
                     <li>
-                        <a href="#positionsSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#positionsSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                             <i class="fas fa-th"></i>
                             <span>Позиций: <?=$session->get('positionsCount')?></span>
                             <i class="fas fa-angle-left fa-pull-right"></i>
@@ -120,7 +120,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
-                        <a href="#modeltypeSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#modeltypeSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                             <i class="fa-solid fa-swatchbook"></i>
                             По Типу: <?=$session->get('selectByModelType')?$session->get('selectByModelType'):"Нет" ?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
@@ -140,7 +140,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
-                        <a href="#materialsSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#materialsSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                             <i class="fa-solid fa-ring"></i>
                             По Материалам: <?=$matSelectedCheck?' <i class="fa-solid fa-check"></i>':"Нет" ?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
@@ -167,7 +167,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 </ul>
                             </li>
                             <li>
-                                <a href="#materialsColorSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                                <a href="#materialsColorSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                                     &nbsp;&nbsp;<i class="fa-solid fa-palette"></i>
                                     По Цвету: <?=$session->get('selectByMatColor')?$session->get('selectByMatColor'):"Нет" ?>
                                     <i class="fas fa-angle-left fa-pull-right"></i>
@@ -186,7 +186,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                 </ul>
                             </li>
                             <li>
-                                <a href="#materialsProbeSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                                <a href="#materialsProbeSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                                     &nbsp;&nbsp;<i class="fa-solid fa-eye-dropper"></i>
                                     По Пробе: <?=$session->get('selectByMatProbe')?$session->get('selectByMatProbe'):"Нет" ?>
                                     <i class="fas fa-angle-left fa-pull-right"></i>
@@ -207,7 +207,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
-                        <a href="#hashtagSubmenu1" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#hashtagSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                             <i class="fa-solid fa-tags"></i>
                             По Хештегу: <?=$session->get('selectByHashtags')?' <i class="fa-solid fa-check"></i>':"Нет" ?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
@@ -227,7 +227,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
-                        <a href="#bySubmenu" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#bySubmenu" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                             <i class="far fa-calendar-alt"></i>
                             По Дате: <?=$session->get('selectFromDate')?$session->get('selectFromDate'):"Нет" ?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
@@ -245,7 +245,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
-                        <a href="#growingSubmenu" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#growingSubmenu" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                             <i class="fas fa-sort-amount-up-alt"></i>
                             По: <?=($session->get('selectByOrder')===SORT_ASC)?"Самые старые":"Самые новые"?>
                             <i class="fas fa-angle-left fa-pull-right"></i>
@@ -275,7 +275,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                 <?php endif;?>
             </li>
             <li>
-                <a href="#noticesSubmenu" data-toggle="collapse" aria-expanded="false" class="sidebarMenuA">
+                <a href="#noticesSubmenu" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
                     <i class="far fa-bell"></i>Оповещения
                     <?php if ( count($nonPublished) ): ?>
                         <span class="badge badge-secondary bg-danger"><?=count($nonPublished)?> Новых</span>

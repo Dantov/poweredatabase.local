@@ -726,3 +726,6 @@ ImageViewer.prototype.mainImageLoupe = function()
         mainImage.style.backgroundPositionY = y + "px";
     }
 };
+
+
+debug(JSON.parse(localStorage.getItem('listNames'), 'listNames: '));
