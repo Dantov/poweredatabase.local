@@ -74,6 +74,7 @@ class ModelView extends Common
             if ( file_exists($fullpath) ) {
                 $image['previmg'] = $previmg;
             } else {
+                if ( !file_exists($path) ) continue;
                 if (ImageConverter::makePrev( $path, $image['name'] ) )
                     $image['previmg'] = ImageConverter::getLastImgPrevName();
             }

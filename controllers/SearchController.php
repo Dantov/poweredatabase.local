@@ -35,7 +35,7 @@ class SearchController extends GeneralController
 
         $session->set('selectFromDate','');
         $session->set('selectToDate','');
-        $session->set('selectByOrder', SORT_ASC);
+        //$session->set('selectByOrder', SORT_ASC);
 
         $session->set('SelectByNonPub', '');
         $session->set('SelectByDeleted', '');

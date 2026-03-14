@@ -292,6 +292,7 @@ class Main extends Common
         if ( file_exists($path.$previmg) ) {
             return $previmg;
         } else {
+            if ( !file_exists($path) ) return "";
             if (ImageConverter::makePrev( $path, $mainimgname ) )
                 return ImageConverter::getLastImgPrevName();
         }

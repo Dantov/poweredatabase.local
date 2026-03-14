@@ -459,7 +459,7 @@ class SiteController extends GeneralController
 
         if ( empty($name) || empty($email) || empty($message) || empty($subject) ) return null;
 
-        $to  = "AlmTade s.r.o. <info@almtradesro.com>";
+        //$to  = "AlmTade s.r.o. <info@almtradesro.com>";
         
         $c_message = " 
         <html>

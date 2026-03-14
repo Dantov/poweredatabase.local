@@ -158,7 +158,7 @@ class Auth extends Common
         
         $session->set('selectFromDate','');
         $session->set('selectToDate','');
-        $session->get('selectByOrder', SORT_DESC);//SORT_ASC
+        $session->set('selectByOrder', SORT_DESC);//SORT_ASC
         $session->set('tilesControlSize', 12);
 
         $session->set('selectByMatColor', '');

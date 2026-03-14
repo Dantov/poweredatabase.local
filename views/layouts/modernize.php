@@ -28,6 +28,7 @@ if (isset($controller->totalCount))
 //$addClName = (count($session->get('SelectByClients')) > 1) ? "..." : $session->get('SelectByClient');
 //$showClname = isset($controller->clientHidedName)?$controller->clientHidedName:$addClName;
 
+
 $matSelectedCheck = (bool)($session->get('selectByMatMetal') || $session->get('selectByMatColor') || $session->get('selectByMatProbe'));
 
 $searchFor = $session->has('searchFor')?$session->get('searchFor') : '';
