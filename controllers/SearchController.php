@@ -21,12 +21,15 @@ class SearchController extends GeneralController
     protected function purge()
     {
         $session = Yii::$app->session;
+        
+        $session->set('selectByHashtags', []);
+        $session->set('selectByHashtag', '');
 
         $session->set('SelectByClients',[]);
-
         $session->set('SelectByClient','Все');
+
         $session->set('searchFor', '');
-        $session->set('selectByHashtag', '');
+        
         $session->set('selectByModelType', '');
 
         $session->set('selectByMatColor', '');
@@ -40,6 +43,7 @@ class SearchController extends GeneralController
         $session->set('SelectByNonPub', '');
         $session->set('SelectByDeleted', '');
     }
+    
     public function actionPurge()
     {
         $request = Yii::$app->request;
@@ -51,6 +55,19 @@ class SearchController extends GeneralController
         }
 
         Yii::$app->response->redirect(['/site'])->send();
+    }
+
+    public function actionHash()
+    {
+        $request = Yii::$app->request;
+        if ( !($request->isAjax && $request->isPost) ) return "bad request";
+        
+        //if ( (int)$request->post('clean') !== 1 ) exit(json_encode(false));
+
+        $tag = $request->get('tag');
+        if ( empty($tag) ) exit(json_encode(false));
+        
+        exit(json_encode( $this->SelectByHashtags( $tag ) ));
     }
 
     public function actionSelect()
@@ -69,6 +86,7 @@ class SearchController extends GeneralController
                 }  
             break;
             case "hashtag":
+                // For purge all htags 123
                 if ( $value )
                     $this->SelectByHashtags( $value );
             break;
@@ -200,8 +218,44 @@ class SearchController extends GeneralController
             }
         }
     }
-   
-    protected function SelectByHashtags( string $hashtag )
+
+    protected function SelectByHashtags( string $hashtag ) : bool
+    {
+        $session = Yii::$app->session;
+        if ( (int)$hashtag === 123 )
+        {
+            $session->set('selectByHashtags', []);
+            return true;
+        }
+
+        $hashtags = $session->get('selectByHashtags');
+        foreach ( $this->hashtags as $singleHashtag )
+        {
+            if ( $singleHashtag['name'] === $hashtag )
+            {
+                if ( in_array($hashtag, $hashtags) ) {
+                    //Delete Htag if already in query
+                    foreach ( $hashtags as $key => $htag ) {
+                        if ( $htag == $hashtag ) {
+                            unset($hashtags[$key]);
+                            break;
+                        }
+                    }
+                    
+                } else {
+                    // Add Htag for query
+                    $hashtags[] = $hashtag;
+                }
+                break;
+            }
+        }
+
+        $session->set('selectByHashtags', $hashtags);
+        return true;
+    }
+
+    // OLD
+    protected function SelectByHashtagsOLD( string $hashtag )
     {
         $session = Yii::$app->session;
         if ( (int)$hashtag === 123 )

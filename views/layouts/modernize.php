@@ -208,24 +208,10 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </ul>
                     </li>
                     <li>
-                        <a href="#hashtagSubmenu1" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
+                        <a href="#hashtagSubmenu1" data-toggle="modal" data-target="#hashtagModal" class="sidebarMenuA">
                             <i class="fa-solid fa-tags"></i>
                             По Хештегу: <?=$session->get('selectByHashtags')?' <i class="fa-solid fa-check"></i>':"Нет" ?>
-                            <i class="fas fa-angle-left fa-pull-right"></i>
                         </a>
-                        <ul class="collapse list-unstyled" id="hashtagSubmenu1">
-                            <li><a href="<?= Url::to(['/search/select/','by'=>'hashtag','v'=>123])?>">Нет</a></li>
-                            <?php foreach( $allHashtags as $singlehashtag ): ?>
-                                <li>
-                                    <a class="pt-2 pb-2" href="<?= Url::to(['/search/select/','by'=>'hashtag','v'=>$singlehashtag['name']])?>">
-                                        &nbsp;&nbsp;<i class="fa-solid fa-ellipsis"></i><?=$singlehashtag['name']?>
-                                        <?php if (isset($singlehashtag['active'])): ?>
-                                            &nbsp;&nbsp;<i class="fa-solid fa-check"></i>
-                                        <?php endif;?>
-                                    </a>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
                     </li>
                     <li>
                         <a href="#bySubmenu" data-toggle="collapse" data-closed="true" aria-expanded="false" class="sidebarMenuA">
@@ -473,6 +459,43 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- HASHTAGS MODAL -->
+        <div class="modal fade" tabindex="-1" aria-labelledby="hashtagModalLabel" aria-hidden="true" id="hashtagModal">
+            <div class="modal-lg modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <!-- HEADER -->
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hashtagModalLabel"><i class="fa-solid fa-tags"></i> Select Hashatgs</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="modal-body">
+                        <a href="<?=Url::to(['/search/select?by=hashtag&v=123'])?>" type="button" class="btn btn-secondary"><i class="fa-solid fa-broom"></i> Clear all Hashtags</a>
+                        
+                        <p>&nbsp;</p>
+                        <div class="btn-group-toggle" data-toggle="buttons" id="modal_hashtags">
+                        <?php foreach( $allHashtags as $singlehashtag ): ?>
+                        <label class="btn btn-outline-info shadow-sm mb-1 <?php if (isset($singlehashtag['active'])) echo "active"?>">
+                            <input type="checkbox" <?php if (isset($singlehashtag['active'])) echo "checked"?> value="<?=$singlehashtag['name']?>" /><span><?php echo $singlehashtag['name'] ?></span>
+                        </label>
+                        <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <!-- footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa-solid fa-xmark"></i> Close</button>
+                        <a href="<?=Url::to(['/'])?>" type="button" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Find by selected</a>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <div class="container-fluid content" id="wrapp">

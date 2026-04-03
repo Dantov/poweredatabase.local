@@ -72,6 +72,11 @@ Search.prototype.init = function()
         }
     }
 
+    //if ( hashTagsCheckApply )
+    //{
+        this.hashTagsCheckApply();
+    //}
+
     debug('Search init ok');
 };
 
@@ -105,6 +110,45 @@ Search.prototype.tilesControlSize = function( obj )
                 });
             }
         }
+    });
+};
+
+Search.prototype.hashTagsCheckApply = function() 
+{
+    let hashtags = document.querySelector('#modal_hashtags').querySelectorAll('input');
+    let self = this;
+
+    $.each(hashtags, function(i, input) {
+        self.singleHashtagCheck(input);
+    });
+
+//method hashTagCheck
+};
+
+Search.prototype.singleHashtagCheck = function(input)
+{
+    let self = this;
+
+    input.addEventListener('click', function () {
+
+        let selfInpt = this;
+        let tagname = this.getAttribute('value');
+
+        let obj = {
+            value   : tagname,
+        };
+        $.ajax({
+            url: "/search/hash?tag=" + tagname,
+            type: 'POST',
+            data: obj,
+            dataType:"json",
+            success:function(resp) {
+                console.log(resp);
+
+                if (resp == true) selfInpt.removeAttribute('checked')
+                if (resp == true) selfInpt.setAttribute('checked','')
+            }
+        });
     });
 };
 
