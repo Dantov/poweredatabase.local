@@ -415,21 +415,14 @@ class SiteController extends GeneralController
 
         $mm =  new \app\models\serviceClasses\ModelsMover();
 
-        $data = $mm->getStockData();
-        //debug($data,1,1);
-        //debug( $mm->checkSHAID(12) );
+        //$hufdata = $mm->getHufStockData(100,10);
+        //$merged = $mm->mergeStock();
+        //$merged = [];
+        //$count = $mm->getHufStockCount();
+        //$countAffected = $mm->getStockAffected();
 
-        $files = app\models\Files::instance();
-
-        $res = [];
-        foreach ($data as $model) 
-        {
-            //$mm->moveModel($model,$files);
-            //$res[] = $model['id'] . " moved";
-        }
-
-        $comp = compact(['data','res']);
-        return $this->render('options',$comp);
+        //$comp = compact(['hufdata','merged','count','countAffected']);
+        return $this->render('options');
     }
     /**
      * Displays user statistic page.

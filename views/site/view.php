@@ -62,6 +62,12 @@ $modelPublished = ((int)$model['model_status']===1);
                 <?php $imgUrl = empty($model['mainimage'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$model['mainimage']?>
                 <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$model['mainimageID']?>" data-name="<?=$model['mainimage']?>" style="background-image: url(<?=$imgUrl?>);"></div>
             </div>
+            <!--
+            <div class="col-12 pl-0">
+                <video autoplay="" loop="true" muted="true" playsinline="" preload="auto" oncontextmenu="return false;" loading="lazy">
+                    <source src="/web/images/testvideo.mp4" type="video/mp4">
+                </video>
+            </div>-->
             <div class="col-12 pl-0">
                 <div class="row p-0 m-0 dopImages" id="bottomDopImages">
                 <?php foreach( $model['images'] as $image ): ?>

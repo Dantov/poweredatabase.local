@@ -137,8 +137,8 @@ class ModelView extends Common
         $this->row['overal_zipsize'] = 0;
         foreach ( $this->row['d3_files'] as &$dfile )
         {
-            $this->row['overal_size'] += $dfile['size'];
-            $this->row['overal_zipsize'] += $dfile['zipsize'];
+            $this->row['overal_size'] += (int)$dfile['size'];
+            $this->row['overal_zipsize'] += (int)$dfile['zipsize'];
             
             $dfile['size'] = $this->convertFileSize($dfile['size']);    
             $dfile['zipsize'] = $this->convertFileSize($dfile['zipsize']); 

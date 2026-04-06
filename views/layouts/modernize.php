@@ -25,10 +25,6 @@ $totC = '';
 if (isset($controller->totalCount))
     $totC = '('.$controller->totalCount.')';
 
-//$addClName = (count($session->get('SelectByClients')) > 1) ? "..." : $session->get('SelectByClient');
-//$showClname = isset($controller->clientHidedName)?$controller->clientHidedName:$addClName;
-
-
 $matSelectedCheck = (bool)($session->get('selectByMatMetal') || $session->get('selectByMatColor') || $session->get('selectByMatProbe'));
 
 $searchFor = $session->has('searchFor')?$session->get('searchFor') : '';
@@ -481,8 +477,12 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         <p>&nbsp;</p>
                         <div class="btn-group-toggle" data-toggle="buttons" id="modal_hashtags">
                         <?php foreach( $allHashtags as $singlehashtag ): ?>
-                        <label class="btn btn-outline-info shadow-sm mb-1 <?php if (isset($singlehashtag['active'])) echo "active"?>">
-                            <input type="checkbox" <?php if (isset($singlehashtag['active'])) echo "checked"?> value="<?=$singlehashtag['name']?>" /><span><?php echo $singlehashtag['name'] ?></span>
+                            <?php $colorNameHT = "info"; ?>
+                            <?php if ( $singlehashtag['name'] == "В Работе" ): ?>
+                            <?php $colorNameHT = "success"; ?>
+                            <?php endif; ?>    
+                        <label class="btn btn-outline-<?=$colorNameHT?> shadow-sm mb-1 <?php if (isset($singlehashtag['active'])) echo "active"?>">
+                            <input type="checkbox" <?php if (isset($singlehashtag['active'])) echo "checked"?> value="<?=$singlehashtag['name']?>" /><span><?=$singlehashtag['name'] ?></span>
                         </label>
                         <?php endforeach; ?>
                         </div>

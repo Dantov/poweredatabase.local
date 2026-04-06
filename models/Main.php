@@ -179,7 +179,8 @@ class Main extends Common
         $session = Yii::$app->session;
         $orderBy = $session->get('selectByOrder');
         if ( empty($orderBy) ) return;
-        $ColName = 'stock.id'; // for adding date by default 
+        //$ColName = 'stock.id'; // for adding date by default 
+        $ColName = 'stock.create_date'; // for adding date by default 
 
         if ($session->get('selectFromDate') || $session->get('selectToDate') )
             $ColName = 'create_date';

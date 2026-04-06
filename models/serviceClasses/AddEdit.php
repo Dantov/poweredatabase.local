@@ -119,9 +119,9 @@ class AddEdit extends ModelView
         
         foreach ( $this->stock['d3_files'] as &$dfile )
         {
-            $this->originSize += $dfile['size'];
-            $this->zipSize += $dfile['zipsize'];
-            $dfile['size'] = round($dfile['size'] / $measureTypes[$measure], $precision ) . $measure;    
+            $this->originSize += (int)$dfile['size'];
+            $this->zipSize += (int)$dfile['zipsize'];
+            $dfile['size'] = round((int)$dfile['size'] / $measureTypes[$measure], $precision ) . $measure;    
         }
 
         $this->datafileSizes['zip'] = round($this->zipSize / $measureTypes[$measure], $precision ) . $measure; 

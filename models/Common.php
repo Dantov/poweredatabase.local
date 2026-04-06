@@ -68,7 +68,7 @@ class Common
             'pb' => 1e+15,
         ];
         
-        return round( $sizeByte / $measureTypes[$measure], $precision );    
+        return round( (int)$sizeByte / $measureTypes[$measure], $precision );    
 	}
 
 	public function getClients() : array
