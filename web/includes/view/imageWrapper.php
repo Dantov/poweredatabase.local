@@ -5,7 +5,7 @@
         <a class="iziModal-button sizeFull" title="Полный размер картинки"><i class="fas fa-expand-arrows-alt"></i></a>&nbsp;
         <a class="iziModal-button sizeDefault" title="Вписать в экран"><i class="fas fa-compress-arrows-alt"></i></a>
     </div>
-    <div id="modalImageViewerContent">
+    <div id="modalImageViewerContent" class="d-none">
 
         <div id="carousel_ImageViewer" class="ImageViewerMainImage carousel slide" data-ride="carousel">
           <div class="carousel-inner" style="height: 100%;">

@@ -48,9 +48,10 @@ function ImageViewer(images, modelPath)
     this.modelID = document.getElementById('modalImageViewer').getAttribute('data-modelid');
 }
 
+// This code run just one time
 ImageViewer.prototype.init = function()
 {
-    debug(this.images);
+    //debug(this.images);
     let that = this;
 
     $('#carouselMainImg').carousel({
@@ -88,7 +89,7 @@ ImageViewer.prototype.init = function()
         overlayClose: false,
         closeButton: true,
         afterRender: function () {
-            document.getElementById('modalImageViewerContent').classList.remove('hidden');
+            //document.getElementById('modalImageViewerContent').classList.remove('d-none');
         }
     });
 
@@ -105,6 +106,8 @@ ImageViewer.prototype.init = function()
         $('#modalImageViewer').iziModal('setTitle',titleStr);
 
         $('#carouselMainImg').carousel('pause');
+
+        document.getElementById('modalImageViewerContent').classList.remove('d-none');
 
         that.start();
     });
@@ -138,11 +141,12 @@ ImageViewer.prototype.init = function()
         }
 
     });
+
     // Начало закрытия
     $(document).on('closing', '#modalImageViewer', function (event){
         event.preventDefault();
         that.stop();
-
+        document.getElementById('modalImageViewerContent').classList.add('d-none');
         $('#carouselMainImg').carousel();
     });
     // исчезло
@@ -216,6 +220,7 @@ ImageViewer.prototype.start_OLD = function()
 
 ImageViewer.prototype.start = function()
 {
+
     let that = this;
     let selectedImageID = this.mainImage.getAttribute('data-id');
     let slideNumber = this.images[selectedImageID]['numOrigin'];
