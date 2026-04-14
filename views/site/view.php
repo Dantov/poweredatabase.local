@@ -8,7 +8,7 @@ $modelPath = Common::modelPath($model['client'],$model['id']);
 
 $tt=time();
 $this->registerCssFile("@web/css/view/view.css?v=$tt");
-$this->registerJsFile("@web/js/view/imageViewer_v2.js?v=$tt");
+$this->registerJsFile("@web/js/view/imageViewer_v2.5.js?v=$tt");
 $imgEncode = json_encode($model['images'], JSON_UNESCAPED_UNICODE);
 $imgJs = <<<JS
     window.addEventListener('load',function() {
@@ -59,8 +59,30 @@ $modelPublished = ((int)$model['model_status']===1);
     <div class="col-sm-12 col-md-6 bg-light pr-0" id="images_block">
         <div class="row">
             <div class="d-none d-sm-block col-sm-12 p-0 mb-2" id="mainImage">
-                <?php $imgUrl = empty($model['mainimage'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$model['mainimage']?>
-                <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$model['mainimageID']?>" data-name="<?=$model['mainimage']?>" style="background-image: url(<?=$imgUrl?>);"></div>
+                <div id="carouselMainImg" class="carousel slide" data-ride="carousel">
+                  <div class="carousel-inner">
+                    <?php foreach( $model['images'] as $image ): ?>
+                        <?php $imgUrl = empty($image['name'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$image['name']?>
+                        <div class="carousel-item <?=$image['status']?"active":""?>"> <?php //activeImage?>
+                          <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$image['id']?>" data-name="<?=$image['name']?>" style="background-image: url(<?=$imgUrl?>);"></div>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php if ( empty($model['images']) ): ?>
+                        <div class="carousel-item active">
+                          <div class="mainImage" data-posid="<?=$model['id']?>" data-id="" data-name="" style="background-image: url('/pictAssets/default.png');">
+                          </div>
+                        </div>
+                    <?php endif; ?>
+                  </div>
+                  <button class="carousel-control-prev" type="button" data-target="#carouselMainImg" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-target="#carouselMainImg" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </button>
+                </div>
             </div>
             <!--
             <div class="col-12 pl-0">
@@ -256,24 +278,3 @@ $modelPublished = ((int)$model['model_status']===1);
     <div class="clearfix"></div>
 </div>
 <?php require 'includes/view/imageWrapper.php'; ?>
-
-<div class="modal fade" id="imageViewer" data-id="<?=$model['id']?>" style="height: 100%; width: 100%;" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered m-auto" style="height: 100%; max-width: 100%">
-        <div class="modal-content p-0 m-0 imageViewer bg-transparent rounded-0">
-            <div class="d-flex flex-row-reverse flex-row">
-                <div class="p-2 pl-3 pr-3 bd-highlight rightPanel text-info closeImageViewer" data-dismiss="modal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </div>
-                <div class="p-2 pl-3 pr-3 bd-highlight text-info sizePlus rightPanel">
-                    <i class="fas fa-search-plus"></i>
-                </div>
-                <div class="p-2 pl-3 pr-3 bd-highlight text-info sizeMinus rightPanel">
-                    <i class="fas fa-search-minus"></i>
-                </div>
-            </div>
-            <div class="d-flex flex-row bottomImgRow cursorPointer">
-            </div>
-        </div>
-    </div>
-</div>
-
