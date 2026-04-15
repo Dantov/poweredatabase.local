@@ -42,10 +42,13 @@ function ImageViewer(images, modelPath)
      *  В закрытом состоянии
      */
     $('#carousel_ImageViewer').carousel('pause');
+    // on view page
     this.carouseItems = document.querySelector("#carouselMainImg").querySelectorAll('.carousel-item');
     this.mainImage = document.querySelector(".mainImage");
     this.bottomDopImages = document.querySelector(".dopImages").querySelectorAll(".imageSmall");
     this.modelID = document.getElementById('modalImageViewer').getAttribute('data-modelid');
+
+    this.carouseItemsIV = document.getElementById("carousel_ImageViewer").querySelectorAll('.carousel-item');
 }
 
 // This code run just one time
@@ -220,11 +223,13 @@ ImageViewer.prototype.start_OLD = function()
 
 ImageViewer.prototype.start = function()
 {
-
     let that = this;
     let selectedImageID = this.mainImage.getAttribute('data-id');
     let slideNumber = this.images[selectedImageID]['numOrigin'];
     $('#carousel_ImageViewer').carousel(slideNumber);
+
+    this.setBackgroundImage( this.images[selectedImageID] );
+    this.setBgSize( this.carouseItemsIV[slideNumber].children[0] );
 
     this.smallImagesRow(selectedImageID);
 
@@ -234,19 +239,21 @@ ImageViewer.prototype.start = function()
         let prev = that.insideDopImages[event.from];
         let next = that.insideDopImages[event.to];
 
+        //Bottom images
         prev.classList.remove('activeImage','border-primary');
         prev.classList.add('border-secondary');
-
         next.classList.remove('border-secondary');
         next.classList.add('activeImage','border-primary');
 
-        /*
-        prev.parentElement.parentElement.parentElement.classList.remove('activeImage','border-primary');
-        prev.parentElement.parentElement.parentElement.classList.add("border-light");
+        let img;
+        $.each(that.images, function(id, imgO) {
+            if ( +imgO.numOrigin === +event.to )
+                return img = imgO;
+                //return imgSrc = "/stock/" + that.imagesPath + "/images/" + img.name;
+        });
 
-        next.parentElement.parentElement.parentElement.classList.remove('border-light');
-        next.parentElement.parentElement.parentElement.classList.add('activeImage','border-primary');
-        */ 
+        that.setBackgroundImage(img);
+        that.setBgSize( that.carouseItemsIV[event.to].children[0] );
     });
 };
 
@@ -272,8 +279,10 @@ ImageViewer.prototype.clearMovingVars = function()
 /**
  *    Устанавливаем картинку в просмотре
  */
-ImageViewer.prototype.setBackgroundImage = function(imgSrc)
+ImageViewer.prototype.setBackgroundImage = function(img)
 {
+    debug(img,"imgXXX");
+    let imgSrc = "/stock/" + this.imagesPath + "/images/" + img.name;
     let imageViewer = document.querySelector('#modalImageViewer');
     let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
 
@@ -282,9 +291,9 @@ ImageViewer.prototype.setBackgroundImage = function(imgSrc)
 
     let that = this;
 
-    let img = new Image(); // создаем картинку
-    img.src = imgSrc;
-    img.onload = function() {
+    let loadimg = new Image(); // создаем картинку
+    loadimg.src = imgSrc;
+    loadimg.onload = function() {
 
         that.nW = this.naturalWidth;
         that.nH = this.naturalHeight;
@@ -293,39 +302,43 @@ ImageViewer.prototype.setBackgroundImage = function(imgSrc)
         that.realW = this.naturalWidth;
         that.realH = this.naturalHeight;
 
-        viewerContent.style.backgroundImage =  "url("+ imgSrc +")";
-        debug(viewerContent.style.backgroundImage,'backgroundImage');
-        debug(this.width + 'x' + this.height);
+        //viewerContent.style.backgroundImage =  "url("+ imgSrc +")";
+        //debug(viewerContent.style.backgroundImage,'backgroundImage');
+        debug(this.width + 'x' + this.height,"loadimg w+h");
         debug(this.naturalWidth + 'x' + this.naturalHeight);
 
         //document.body.style.overflow = 'hidden'; // убираем полосу прокрутки
 
-        that.setBgSize();
+        //that.setBgSize();
     };
 
 };
-ImageViewer.prototype.setBgSize = function() // ставит backgroundSize на просмотре
+ImageViewer.prototype.setBgSize = function( current_slide ) // ставит backgroundSize на просмотре
 {
-    let imageViewer = document.querySelector('#modalImageViewer');
-    let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
+    //let imageViewer = document.querySelector('#modalImageViewer');
+    //let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
 
     let screenW = document.documentElement.clientWidth;
     let screenH = document.documentElement.clientHeight;
 
     if ( this.nH > screenH || this.nW > screenW ) {
         //if ( this.imageViewer.style.backgroundSize == "contain" ) return;
-        viewerContent.style.backgroundSize = "contain";
+        //viewerContent.style.backgroundSize = "contain";
+        current_slide.style.backgroundSize = "contain";
 
-        debug('setBgSize used = ' +  viewerContent.style.backgroundSize);
+        debug('123setBgSize used = ' +  current_slide.style.backgroundSize);
     } else {
         //if ( this.imageViewer.style.backgroundSize == "auto" ) return;
-        viewerContent.style.backgroundSize = "auto";
+        //viewerContent.style.backgroundSize = "auto";
+        current_slide.style.backgroundSize = "cover";
 
-        debug('setBgSize used = ' + viewerContent.style.backgroundSize);
+        debug('321setBgSize used = ' + current_slide.style.backgroundSize);
     }
-
-    viewerContent.style.backgroundPositionX = "";
-    viewerContent.style.backgroundPositionY = "";
+    debug(current_slide);
+    //viewerContent.style.backgroundPositionX = "";
+    current_slide.style.backgroundPositionX = "";
+    //viewerContent.style.backgroundPositionY = "";
+    current_slide.style.backgroundPositionY = "";
 
     this.setBgRealSizePxPercent();
 };
