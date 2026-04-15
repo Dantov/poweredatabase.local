@@ -9,6 +9,7 @@ $modelPath = Common::modelPath($model['client'],$model['id']);
 $tt=time();
 $this->registerCssFile("@web/css/view/view.css?v=$tt");
 $this->registerJsFile("@web/js/view/imageViewer_v2.5.js?v=$tt");
+//debug($model['images'],1,1);
 $imgEncode = json_encode($model['images'], JSON_UNESCAPED_UNICODE);
 $imgJs = <<<JS
     window.addEventListener('load',function() {
@@ -63,7 +64,7 @@ $modelPublished = ((int)$model['model_status']===1);
                   <div class="carousel-inner">
                     <?php foreach( $model['images'] as $image ): ?>
                         <?php $imgUrl = empty($image['name'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$image['name']?>
-                        <div class="carousel-item <?=$image['status']?"active":""?>"> <?php //activeImage?>
+                        <div class="carousel-item <?=$image['status']?"active":""?>">
                           <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$image['id']?>" data-name="<?=$image['name']?>" style="background-image: url(<?=$imgUrl?>);"></div>
                         </div>
                     <?php endforeach; ?>
