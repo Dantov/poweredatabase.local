@@ -9,6 +9,7 @@ function ImageViewer(images, modelPath)
      */
     this.smallImagesRowIsSet = false;
     this.activeImage = null; // активная маленькая картинка внизу слева
+    this.activeMainSlide = null; // активная маленькая картинка внизу слева
 
     this.nW = null; //natural Width (оригинальная ширина картинки)
     this.nH = null; //natural Height (оригинальная высота картинки)
@@ -63,7 +64,6 @@ ImageViewer.prototype.init = function()
 
     //carousel has completed its slide transition.
     $('#carouselMainImg').on('slide.bs.carousel', function (event) {
-        //this.mainImage set
         that.mainImage = event.relatedTarget.children[0];
         that.mainImageLoupe();
 
@@ -96,6 +96,7 @@ ImageViewer.prototype.init = function()
         }
     });
 
+    // Image Viewer modal just start opening
     $(document).on('opening', '#modalImageViewer', function () {
 
         let num3D = document.getElementById('num3d').innerHTML;
@@ -115,36 +116,43 @@ ImageViewer.prototype.init = function()
         that.start();
     });
 
-    // открылось
+    // Image Viewer modal has open
     $(document).on('opened', '#modalImageViewer', function () {
 
+        // Adding move event for all slides only one time when modal is open
         if ( that.attachedEvents === false )
         {
-            let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
-            viewerContent.addEventListener('mousedown', that.mouseDownIMG.bind(event, that, viewerContent), false );
-            viewerContent.addEventListener('mouseup', that.mouseUpIMG.bind(event, that, viewerContent), false );
-            viewerContent.addEventListener('mousemove', that.mouseMoveIMG.bind(event, that, viewerContent), false );
+            let allslides = document.getElementById("carousel_ImageViewer").querySelectorAll('.IV-main-slide');
+            allslides.forEach(slide => {
+                
+                slide.addEventListener('mousedown', that.mouseDownIMG.bind(event, that, slide), false );
+                slide.addEventListener('mouseup', that.mouseUpIMG.bind(event, that, slide), false );
+                slide.addEventListener('mousemove', that.mouseMoveIMG.bind(event, that, slide), false );
 
-            viewerContent.addEventListener('mouseout', function () {
-                that.mouseOutIMG();
-            }, false );
-            viewerContent.addEventListener('mouseover', function () {
-                that.mouseInIMG();
-            }, false );
+                slide.addEventListener('mouseout', function () {
+                    that.mouseOutIMG();
+                }, false );
+                
+                slide.addEventListener('mouseover', function () {
+                    that.mouseInIMG();
+                }, false );
 
-            imageViewer.addEventListener('mouseup', function (event) {
-                if ( that.plusActive === true && that.mouseIsDown === true && that.mouseOnImage === false )
-                {
-                    that.mouseUpIMG(that, viewerContent, event);
-                }
-            }, false );
+                slide.addEventListener('mouseup', function (event) {
+                    if ( that.plusActive === true && that.mouseIsDown === true && that.mouseOnImage === false )
+                    {
+                        that.mouseUpIMG(that, slide, event);
+                    }
+                }, false );
+
+            });
 
             that.attachedEvents = true;
         }
+
         document.body.style.overflow = 'hidden'; // убираем полосу прокрутки
     });
 
-    // Начало закрытия
+    // // Image Viewer modal just start closing
     $(document).on('closing', '#modalImageViewer', function (event){
         event.preventDefault();
         that.stop();
@@ -169,27 +177,38 @@ ImageViewer.prototype.init = function()
 
     });
 
-    
-    let dopButtons = imageViewer.querySelector('.dopButtons').querySelectorAll('a');
-    dopButtons[0].addEventListener('click',function (event)
+    /**  Image Size  **/
+    let top_buttons = imageViewer.querySelector('.dopButtons').querySelectorAll('a');
+
+    top_buttons[0].addEventListener('click',function (event)
     {
         event.preventDefault();
+
+        $('#carousel_ImageViewer').carousel('pause');
         that.sizeIncrease();
     }, false);
 
-    dopButtons[1].addEventListener('click', function (event)
+    top_buttons[1].addEventListener('click', function (event)
     {
         event.preventDefault();
+
+        $('#carousel_ImageViewer').carousel('pause');
         that.sizeDecrease();
     }, false);
-    dopButtons[2].addEventListener('click', function (event)
+
+    top_buttons[2].addEventListener('click', function (event)
     {
         event.preventDefault();
+
+        $('#carousel_ImageViewer').carousel('pause');
         that.sizeFull();
     }, false);
-    dopButtons[3].addEventListener('click', function (event)
+
+    top_buttons[3].addEventListener('click', function (event)
     {
         event.preventDefault();
+
+        $('#carousel_ImageViewer').carousel();
         that.sizeDefault();
     }, false);
 
@@ -210,7 +229,7 @@ ImageViewer.prototype.start = function()
     this.setBackgroundImage( this.images[selectedImageID].name, slideNumber );
     this.smallImagesRow(selectedImageID);
 
-    //carousel has completed its slide transition.
+    //carousel has just start its slide transition.
     $('#carousel_ImageViewer').on('slide.bs.carousel', function (event) {
 
         let prev = that.insideDopImages[event.from];
@@ -227,7 +246,14 @@ ImageViewer.prototype.start = function()
                 return that.setBackgroundImage(imgO.name, event.to);
         });
 
+        $('#carousel_ImageViewer').carousel();
     });
+
+    //carousel has completed its slide transition.
+    $('#carousel_ImageViewer').on('slid.bs.carousel', function (event) {
+
+    });
+
 };
 
 
@@ -265,26 +291,25 @@ ImageViewer.prototype.setBackgroundImage = function(name, slidenum)
 
 ImageViewer.prototype.setBgSize = function( current_slide_num ) // ставит backgroundSize на просмотре
 {
-
     let allslides = document.getElementById("carousel_ImageViewer").querySelectorAll('.IV-main-slide');
-    let current_slide = allslides[current_slide_num];
+    this.activeMainSlide = allslides[current_slide_num];
 
-    debug(current_slide);
+    //debug(this.activeMainSlide);
 
     let screenW = document.documentElement.clientWidth;
     let screenH = document.documentElement.clientHeight;
 
     if ( this.nH > screenH || this.nW > screenW ) {
-        current_slide.style.backgroundSize = "contain";
+        this.activeMainSlide.style.backgroundSize = "contain";
 
-        debug('contain_SetBgSize: ' +  current_slide.style.backgroundSize);
+        debug('contain_SetBgSize: ' +  this.activeMainSlide.style.backgroundSize);
     } else {
-        current_slide.style.backgroundSize = "auto";
+        this.activeMainSlide.style.backgroundSize = "auto";
 
-        debug('auto_SetBgSize: ' + current_slide.style.backgroundSize);
+        debug('auto_SetBgSize: ' + this.activeMainSlide.style.backgroundSize);
     }
-    current_slide.style.backgroundPositionX = "";
-    current_slide.style.backgroundPositionY = "";
+    this.activeMainSlide.style.backgroundPositionX = "";
+    this.activeMainSlide.style.backgroundPositionY = "";
 
     this.setBgRealSizePxPercent();
 };
@@ -430,6 +455,7 @@ ImageViewer.prototype.setBgPosition = function(background)
 {
     let screenW = document.documentElement.clientWidth;
     let screenH = document.documentElement.clientHeight;
+
     let offsetImgHeight,offsetImgWidth, screenCenterX, screenCenterY;
     offsetImgWidth = this.realW / 2;
     offsetImgHeight = this.realH / 2;
@@ -447,81 +473,73 @@ ImageViewer.prototype.sizeIncrease = function() // увеличим картин
 {
     if ( this.percent >= 200 ) return; // макс увеличение в 2 раза
 
-    if ( this.plusActive !== true )
-    {
+    if ( this.plusActive !== true ) 
         this.plusActive = true;
-    }
+    
     this.percent += 25;
     if ( this.percent > 200 ) this.percent = 200;
-
-    let imageViewer = document.querySelector('#modalImageViewer');
-    let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
 
     this.realW = (this.nW * this.percent ) / 100;
     this.realH = (this.nH * this.percent ) / 100;
 
-    viewerContent.style.backgroundSize = this.realW + "px" + "," + this.realH + "px";
-    this.setBgPosition(viewerContent);
+    this.activeMainSlide.style.backgroundSize = this.realW + "px" + "," + this.realH + "px";
+    this.setBgPosition(this.activeMainSlide);
 
-    viewerContent.classList.add('cursorGrab');
+    this.activeMainSlide.classList.add('cursorGrab');
 
-    debug(this.percent,'+%');
-    debug(this.realH ,'realH');
-    debug(this.realW ,'realW');
+    //debug(this.percent,'+%');
+    //debug(this.realH ,'realH');
+    //debug(this.realW ,'realW');
 };
-ImageViewer.prototype.sizeDecrease = function() // уменьшим картинку на 1/4
+
+// уменьшим картинку на 1/4
+ImageViewer.prototype.sizeDecrease = function() 
 {
     if ( this.percent <= 25 ) return;
     if ( this.plusActive !== true )
-    {
         this.plusActive = true;
-    }
 
     this.percent -= 25;
     if ( this.percent <= 25 ) this.percent = 25;
 
-    let imageViewer = document.querySelector('#modalImageViewer');
-    let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
-
     this.realW = (this.nW * this.percent ) / 100;
     this.realH = (this.nH * this.percent ) / 100;
 
-    viewerContent.style.backgroundSize = this.realW + "px" + "," + this.realH + "px";
-    this.setBgPosition(viewerContent);
+    this.activeMainSlide.style.backgroundSize = this.realW + "px" + "," + this.realH + "px";
+    this.setBgPosition(this.activeMainSlide);
 
-    viewerContent.classList.add('cursorGrab');
+    this.activeMainSlide.classList.add('cursorGrab');
 
-    debug(this.percent,'-%');
-    debug(this.realH ,'realH');
-    debug(this.realW ,'realW');
+    //debug(this.percent,'-%');
+    //debug(this.realH ,'realH');
+    //debug(this.realW ,'realW');
 };
 /**
  * увеличим картинку на полную
  */
 ImageViewer.prototype.sizeFull = function()
 {
-    let imageViewer = document.querySelector('#modalImageViewer');
-    let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
-
     this.plusActive = true;
     this.realH = this.nH;
     this.realW = this.nW;
     this.percent = 100;
 
-    viewerContent.style.backgroundSize = 'auto auto';
-    this.setBgPosition(viewerContent);
+    this.activeMainSlide.style.backgroundSize = 'auto auto';
+    this.setBgPosition(this.activeMainSlide);
 
-    viewerContent.classList.add('cursorGrab');
+    this.activeMainSlide.classList.add('cursorGrab');
 
+    /*
     debug("-------sizeFull bgPos-------");
     debug(this.realH ,'realH');
     debug(this.realW ,'realW');
     debug(this.percent ,'%');
 
-    debug(viewerContent.style.backgroundSize,'backgroundSize');
-    debug(viewerContent.style.backgroundPositionX,'bgPos X');
-    debug(viewerContent.style.backgroundPositionY,'bgPos Y');
+    debug(this.activeMainSlide.style.backgroundSize,'backgroundSize');
+    debug(this.activeMainSlide.style.backgroundPositionX,'bgPos X');
+    debug(this.activeMainSlide.style.backgroundPositionY,'bgPos Y');
     debug("------------End-------------");
+    */
 };
 /**
  * Размер картинки по умолчанию
@@ -532,16 +550,12 @@ ImageViewer.prototype.sizeDefault = function()
     this.plusActive = false;
     this.percent = 0;
 
-    let imageViewer = document.querySelector('#modalImageViewer');
-    let viewerContent = imageViewer.querySelector('.ImageViewerMainImage');
+    this.activeMainSlide.classList.remove('cursorGrab');
+    this.activeMainSlide.classList.remove('cursorGrabbing');
 
-    viewerContent.classList.remove('cursorGrab');
-    viewerContent.classList.remove('cursorGrabbing');
-
-    this.setBgSize();
+    this.setBgSize( this.activeMainSlide.getAttribute('data-num') );
     this.clearMovingVars();
 };
-
 
 
 /**
@@ -820,4 +834,4 @@ ImageViewer.prototype.moveImage = function(mainImage,lupeData)
     mainImage.style.backgroundPositionY = y + "px";
 };
 
-debug(JSON.parse(localStorage.getItem('listNames'), 'listNames: '));
+//debug(JSON.parse(localStorage.getItem('listNames'), 'listNames: '));

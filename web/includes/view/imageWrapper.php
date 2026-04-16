@@ -12,7 +12,7 @@
             <?php foreach( $model['images'] as $image ): ?>
             <?php $imgUrl = empty($image['name'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$image['name']?>
             <div class="carousel-item <?=$image['status']?"active":""?> " style="height: 100%;" >
-                <div class="IV-main-slide" style="background-image: url(<?=$imgUrl?>);"></div>
+                <div data-num="<?=$image['numOrigin']?>" class="IV-main-slide" style="background-image: url(<?=$imgUrl?>);"></div>
             </div>
             <?php endforeach; ?>
           </div>
