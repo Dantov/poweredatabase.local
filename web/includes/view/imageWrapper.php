@@ -11,9 +11,19 @@
           <div class="carousel-inner" style="height: 100%;">
             <?php foreach( $model['images'] as $image ): ?>
             <?php $imgUrl = empty($image['name'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$image['name']?>
-            <div class="carousel-item <?=$image['status']?"active":""?> " style="height: 100%;" >
-                <div data-num="<?=$image['numOrigin']?>" class="IV-main-slide" style="background-image: url(<?=$imgUrl?>);"></div>
-            </div>
+
+                <?php if ( $image['type'] == 'video' ): ?>
+                <div class="carousel-item <?=$image['status']?"active":""?> " style="height: 100%;" >
+                    <video class="IV-main-slide" data-num="<?=$image['numOrigin']?>" data-type="video" width="100%" autoplay="" loop="true" muted="true" playsinline="" preload="true" oncontextmenu="return false;" loading="lazy">
+                        <source src="<?="/stock/".$modelPath."/images/".$image['name']?>" type="video/mp4">
+                    </video>
+                </div>
+                <?php else: ?>
+                    <div class="carousel-item <?=$image['status']?"active":""?> " style="height: 100%;" >
+                        <div data-num="<?=$image['numOrigin']?>" class="IV-main-slide" style="background-image: url(<?=$imgUrl?>);"></div>
+                    </div>
+                <?php endif; ?>
+
             <?php endforeach; ?>
           </div>
           <button class="carousel-control-prev" type="button" data-target="#carousel_ImageViewer" data-slide="prev">

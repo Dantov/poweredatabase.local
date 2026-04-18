@@ -9,7 +9,7 @@ function ImageViewer(images, modelPath)
      */
     this.smallImagesRowIsSet = false;
     this.activeImage = null; // активная маленькая картинка внизу слева
-    this.activeMainSlide = null; // активная маленькая картинка внизу слева
+    this.activeMainSlide = null; // активная 
 
     this.nW = null; //natural Width (оригинальная ширина картинки)
     this.nH = null; //natural Height (оригинальная высота картинки)
@@ -213,6 +213,8 @@ ImageViewer.prototype.init = function()
     }, false);
 
     debug('Image Viewer 2.5 Init');
+
+
 };
 
 /**
@@ -267,6 +269,12 @@ ImageViewer.prototype.setBackgroundImage = function(name, slidenum)
 
     viewerContent.classList.remove('cursorGrab');
     viewerContent.classList.remove('cursorGrabbing');
+
+    let allslides = document.getElementById("carousel_ImageViewer").querySelectorAll('.IV-main-slide');
+    let activeMainSlide = allslides[slidenum];
+    if ( activeMainSlide.getAttribute('data-type') == 'video' )
+        return this.activeMainSlide = activeMainSlide;
+    
 
     let that = this;
     let loadimg = new Image(); // создаем картинку
@@ -402,11 +410,25 @@ ImageViewer.prototype.smallImagesRow = function()
         let src = "/web/stock/" + that.imagesPath + "/images/";
         let fullsrc = src + (image.previmg??image.name);
 
-        let div = document.createElement('div');
-            div.classList.add('p-0','cursorPointer','imageSmall','imageViewerSmallImgDown','border');
-            div.setAttribute('data-num-origin',image.numOrigin);
-            div.setAttribute('data-id',image.id);
+        let div;
+        if ( image.type == 'video' ) {
+            div = document.createElement('video');
+        } else {
+            div = document.createElement('div');
+        }
+
+        div.classList.add('p-0','cursorPointer','imageSmall','imageViewerSmallImgDown','border');
+        div.setAttribute('data-num-origin',image.numOrigin);
+        div.setAttribute('data-id',image.id);
+
+        if ( image.type == 'video' ) {
+            let source = document.createElement('source');
+            source.setAttribute('type','video/mp4');
+            source.src = fullsrc;
+            div.appendChild(source);
+        } else {
             div.style.backgroundImage = "url("+ fullsrc  +")";
+        }
 
         let mainImgID = that.mainImage.getAttribute('data-id');
         if ( +mainImgID === +image.id )
@@ -471,6 +493,8 @@ ImageViewer.prototype.setBgPosition = function(background)
 };
 ImageViewer.prototype.sizeIncrease = function() // увеличим картинку на 1/4
 {
+    if ( this.activeMainSlide.getAttribute('data-type') == 'video' ) return;
+
     if ( this.percent >= 200 ) return; // макс увеличение в 2 раза
 
     if ( this.plusActive !== true ) 
@@ -495,6 +519,8 @@ ImageViewer.prototype.sizeIncrease = function() // увеличим картин
 // уменьшим картинку на 1/4
 ImageViewer.prototype.sizeDecrease = function() 
 {
+    if ( this.activeMainSlide.getAttribute('data-type') == 'video' ) return;
+
     if ( this.percent <= 25 ) return;
     if ( this.plusActive !== true )
         this.plusActive = true;
@@ -519,6 +545,8 @@ ImageViewer.prototype.sizeDecrease = function()
  */
 ImageViewer.prototype.sizeFull = function()
 {
+    if ( this.activeMainSlide.getAttribute('data-type') == 'video' ) return;
+
     this.plusActive = true;
     this.realH = this.nH;
     this.realW = this.nW;
@@ -546,6 +574,8 @@ ImageViewer.prototype.sizeFull = function()
  */
 ImageViewer.prototype.sizeDefault = function()
 {
+    if ( this.activeMainSlide.getAttribute('data-type') == 'video' ) return;
+
     if ( this.plusActive === false ) return;
     this.plusActive = false;
     this.percent = 0;
@@ -702,6 +732,9 @@ ImageViewer.prototype.mainImageSetter = function()
  */
 ImageViewer.prototype.mainImageLoupe = function()
 {
+    let type = this.mainImage.getAttribute('data-type');
+    if ( type == 'video' ) return;
+
     let self = this;
 
     let lupeData = {
@@ -713,6 +746,7 @@ ImageViewer.prototype.mainImageLoupe = function()
         realH: null,
         coordinates: null,
         loupeDelayID: null,
+        bgsizeTotal: 120,
         overImage: false,
     };
 
@@ -720,6 +754,7 @@ ImageViewer.prototype.mainImageLoupe = function()
     if ( this.mainImage.getAttribute('listMOver') != 'true' ) {
 
         this.mainImage.addEventListener('mouseover',function () {
+            if ( type == 'video' ) return;
             self.loupeOver(this,lupeData);
         });
 
@@ -730,6 +765,7 @@ ImageViewer.prototype.mainImageLoupe = function()
     if ( this.mainImage.getAttribute('listMOut') != 'true' ) {
 
         this.mainImage.addEventListener('mouseout',function () {
+            if ( type == 'video' ) return;
             self.loupeOut(this, lupeData);
         });
 
@@ -740,11 +776,40 @@ ImageViewer.prototype.mainImageLoupe = function()
     if ( this.mainImage.getAttribute('listMMove') != 'true' ) {
 
         this.mainImage.addEventListener('mousemove',function (event) {
+            if ( type == 'video' ) return;
             self.loupeMove(this,event,lupeData);
         });
 
         this.mainImage.setAttribute('listMMove',true);
     }
+
+    /** Wheel scroll **/
+    if ( this.mainImage.getAttribute('listWheel') != 'true' ) {
+
+        this.mainImage.addEventListener('wheel',function (event) {
+            if ( type == 'video' ) return;
+            
+            self.loupeSize(this,event,lupeData);
+        });
+
+        this.mainImage.setAttribute('listWheel',true);
+    }
+};
+ImageViewer.prototype.loupeSize = function(mainimg,event,lupeData)
+{
+    event.preventDefault();
+    event.stopPropagation();
+
+    let step = -(event.deltaY / 5);
+
+    lupeData.bgsizeTotal += step;
+    if ( lupeData.bgsizeTotal > 300 ) lupeData.bgsizeTotal = 300;
+    if ( lupeData.bgsizeTotal < 50 ) lupeData.bgsizeTotal = 50;
+        
+    mainimg.style.backgroundSize = lupeData.bgsizeTotal + "%";
+    
+    //debug(step);
+    //debug(lupeData.bgsizeTotal,'bgsizeTotal');
 };
 ImageViewer.prototype.loupeOver = function(mainimg,lupeData) {
     let that = this;
@@ -767,7 +832,8 @@ ImageViewer.prototype.loupeOver = function(mainimg,lupeData) {
         lupeData.coordinates = mainimg.getBoundingClientRect();
         //debug(coordinates);
         //that.style.backgroundSize = realW * 2 + 'px ' + realH * 2 + 'px';//200 + "%";
-        mainimg.style.backgroundSize = 200 + "%";
+        //mainimg.style.backgroundSize = 200 + "%";
+        mainimg.style.backgroundSize = lupeData.bgsizeTotal + "%";
         //realW = realW * 2;
         //realH = realH * 2;
         //debug('realW: ' + realW + 'x realH: ' + realH);
@@ -794,6 +860,7 @@ ImageViewer.prototype.loupeOut = function(img,lupeData)
     lupeData.coordinates = null;
     img.style.backgroundSize = "contain";
     img.style.backgroundPosition = "center center";
+    lupeData.bgsizeTotal = 120;
     img.classList.remove('loupeCursor');
 };
 ImageViewer.prototype.loupeMove = function(img,event,lupeData)

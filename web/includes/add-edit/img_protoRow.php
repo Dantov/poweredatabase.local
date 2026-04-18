@@ -5,7 +5,7 @@ use app\models\{User,Common};
 <div class="card bg-light mb-1 mr-1 mainCard" style="width: 10rem;">
     <div class="card-header p-0 text-center cursorPointer bg-<?=($main_Img)?"success":"dark"; ?> text-white">
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="imgMainRadioOption" data-table="tableIMG" data-rowID="<?=$image['id']?>" id="<?=$image['name']?>" <?= $main_Img ? "checked" : ""; ?> value="" />
+          <input class="form-check-input" type="radio" name="imgMainRadioOption" data-type="<?=$image['type']?>" data-table="tableIMG" data-rowID="<?=$image['id']?>" id="<?=$image['name']?>" <?= $main_Img ? "checked" : ""; ?> value="" />
           <label class="form-check-label" for="<?=$image['name']?>"><?= $main_Img ? " Главная":""; ?></label>
         </div>
         <div class="clearfix"></div>
@@ -13,8 +13,15 @@ use app\models\{User,Common};
     <div class="ratio">
         <div class="ratio-inner ratio-4-3">
             <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
+            <?php $imgSrc = "/stock/" . Common::modelPath($stockData['client'],$stockData['id'])."/images/".$imgname ?>
             <div class="ratio-content">
-                <img src="/stock/<?=Common::modelPath($stockData['client'],$stockData['id'])?>/images/<?=$imgname?>" class="card-img-top" alt="...">
+                <?php if ( $image['type'] == 'video' ): ?>
+                    <video class="card-img-top" autoplay="" loop="true" muted="true" playsinline="" preload="true" oncontextmenu="" loading="lazy">
+                        <source src="<?="/stock/".Common::modelPath($stockData['client'],$stockData['id'])."/images/".$image['name']?>" type="video/mp4">
+                    </video>
+                <?php else: ?>
+                    <img src="<?=$imgSrc?>" class="card-img-top" alt="...">
+                <?php endif; ?>
             </div>
             <a class="btn btn-info btn-sm editBtnMain img_dell" role="button" data-table="tableIMG" data-rowID="<?=$image['id']?>" data-toggle="tooltip" data-placement="bottom" title="Delete image"><i class="fa-solid fa-trash-can"></i></a>
         </div>

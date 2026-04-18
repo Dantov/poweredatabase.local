@@ -143,6 +143,7 @@ class SiteController extends GeneralController
     {
         $request = Yii::$app->request;
         if ( !($request->isAjax && $request->isPost) ) die;
+        
         $v = $request->get('v');
         if ( empty($v) ) die;
 

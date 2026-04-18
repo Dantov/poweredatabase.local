@@ -95,7 +95,7 @@ class ImageConverter
         if ( _DEV_MODE_ ) $convert = 'magick ';
 
         $command = $convert . $imgOriginPath . $resize . $strip . $quality . $imgPrevPath;
-        //debugAjax($command,"command",END_AB);
+        //debug($command,"command",1,1);
 
         self::resetConvertParams();
         return $command;
@@ -133,6 +133,31 @@ class ImageConverter
         if ( $retVal ) return false;
 
         self::$lastPreviewImgName = $lastPreviewImgName;
+        return true;
+    }
+
+    public static function optimizeUploadedVideo( string $path, string $filename, string $ext ) : bool
+    {
+
+        //if ( empty($fullPath) ) return false;
+        if ( empty($path) ) return false;
+
+        //if ( !self::setConvParamsForUploadedImg($fullPath) )
+            //return false;
+
+        //magick video.mp4 frame_%1.png  // badly extracting all frames
+        //magick video.mp4 animation.gif // bad
+
+        //self::$quality = true;
+        //self::$qualityValue = 75;
+
+        //self::$resize = true;
+        //self::$resizePercent = 75;
+
+        $c = self::makeCommand($path.$filename . ".$ext", $path.$filename . ".$ext");
+        exec( $c,$output,$retVal );
+        if ( $retVal ) return false;
+
         return true;
     }
 

@@ -55,7 +55,6 @@ $modelPublished = ((int)$model['model_status']===1);
     </div>
 </div>
 
-
 <div class="row justify-content-center mb-2">
     <div class="col-sm-12 col-md-6 bg-light pr-0" id="images_block">
         <div class="row">
@@ -63,11 +62,23 @@ $modelPublished = ((int)$model['model_status']===1);
                 <div id="carouselMainImg" class="carousel slide" data-ride="carousel">
                   <div class="carousel-inner">
                     <?php foreach( $model['images'] as $image ): ?>
-                        <?php $imgUrl = empty($image['name'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$image['name']?>
-                        <div class="carousel-item <?=$image['status']?"active":""?>">
-                          <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$image['id']?>" data-name="<?=$image['name']?>" style="background-image: url(<?=$imgUrl?>);"></div>
+                    <?php $imgUrl = empty($image['name'])?"/pictAssets/default.png":'/stock/'.$modelPath.'/images/'.$image['name']?>
+
+                        <?php if ( $image['type'] == 'video' ): ?>
+                        <div class="carousel-item <?=$image['status']?"active":""?>" style="object-position: 100% 100%;" >
+                            <video class="mainImage" width="100%" data-posid="<?=$model['id']?>" data-id="<?=$image['id']?>" data-name="<?=$image['name']?>" data-type="video" autoplay="" loop="true" muted="true" playsinline="" preload="true" oncontextmenu="return false;" loading="lazy" style="">
+                                <source src="<?="/stock/".$modelPath."/images/".$image['name']?>" type="video/mp4">
+                            </video>
                         </div>
+                        <?php else: ?>
+                            <div class="carousel-item <?=$image['status']?"active":""?>">
+                              <div class="mainImage" data-posid="<?=$model['id']?>" data-id="<?=$image['id']?>" data-name="<?=$image['name']?>" data-type="image" style="background-image: url(<?=$imgUrl?>);"></div>
+                            </div>
+                        <?php endif; ?>
+        
                     <?php endforeach; ?>
+
+
                     <?php if ( empty($model['images']) ): ?>
                         <div class="carousel-item active">
                           <div class="mainImage" data-posid="<?=$model['id']?>" data-id="" data-name="" style="background-image: url('/pictAssets/default.png');">
@@ -85,12 +96,7 @@ $modelPublished = ((int)$model['model_status']===1);
                   </button>
                 </div>
             </div>
-            <!--
-            <div class="col-12 pl-0">
-                <video autoplay="" loop="true" muted="true" playsinline="" preload="auto" oncontextmenu="return false;" loading="lazy">
-                    <source src="/web/images/testvideo.mp4" type="video/mp4">
-                </video>
-            </div>-->
+            
             <div class="col-12 pl-0">
                 <div class="row p-0 m-0 dopImages" id="bottomDopImages">
                 <?php foreach( $model['images'] as $image ): ?>
@@ -98,8 +104,15 @@ $modelPublished = ((int)$model['model_status']===1);
                         <div class="ratio border border-<?=$image['status']?"primary":"light"?> cursorPointer">
                             <div class="ratio-inner ratio-4-3">
                                 <?php $imgname = isset($image['previmg'])?$image['previmg']:$image['name'] ?>
+                                <?php $imgSrc = "/stock/" .$modelPath."/images/".$imgname ?>
                                 <div class="ratio-content">
-                                    <img class="imageSmall <?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="/stock/<?=$modelPath?>/images/<?=$imgname?>" width="100%" height="100%" style="object-fit: cover;">
+                                    <?php if ( $image['type'] == 'video' ): ?>
+                                        <video class="imageSmall <?=$image['status']?" activeImage":""?>" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" data-type="video" width="100%" autoplay="" loop="true" muted="true" playsinline="" preload="true" oncontextmenu="return false;" loading="lazy" style="object-fit: cover;">
+                                            <source src="<?="/stock/".$modelPath."/images/".$image['name']?>" type="video/mp4">
+                                        </video>
+                                    <?php else: ?>
+                                        <img class="imageSmall <?=$image['status']?" activeImage":""?>" data-type="image" data-posid="<?=$image['pos_id']?>" data-id="<?=$image['id']?>" src="<?=$imgSrc?>" width="100%" height="100%" style="object-fit: cover;">
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

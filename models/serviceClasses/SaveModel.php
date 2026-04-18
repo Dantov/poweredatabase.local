@@ -310,14 +310,16 @@ class SaveModel extends Common
 
     public function setMainImg(int $imgRowID) : bool
     {
+        $imageToSet = Images::findOne($imgRowID);
+        if ( $imageToSet->type == "video" ) return false;
+
         $imageToUnset = Images::find()->where(['status'=>1])->andWhere(['pos_id' => $this->modelID])->one();
-        if ( $imageToUnset ) 
+        if ( $imageToUnset )
         {
             $imageToUnset->status = 0;
             $imageToUnset->save(false);
         }
         
-        $imageToSet = Images::findOne($imgRowID);
         return $imageToSet->updateCounters(['status' => 1]);
     }
 
@@ -326,6 +328,8 @@ class SaveModel extends Common
     {
         $files = Files::instance();
         //debug( $files->get(),1,1);
+        if ( $files->has('UploadVideo') )
+            return $this->uploadVideoFile($files);
 
         if ( $files->has('UploadImage') )
             return $this->uploadImageFile($files);
@@ -341,6 +345,7 @@ class SaveModel extends Common
         }
         return [];
     }
+
     /*
      GET CLIENT NAME FOR PATH
     */
@@ -351,6 +356,51 @@ class SaveModel extends Common
         $stock = $stock->one();
         if ( empty($stock->client) ) return '';
         return Common::modelPath($stock->client,$this->modelID);
+    }
+
+    protected function uploadVideoFile( Files $files ) : array
+    {
+        $modelPath = $this->getModelPath();
+        if ( empty($modelPath) ) 
+            return ['id'=>0,'upload'=>false,'type'=>'video','txt'=>'Wrong destination! Client name is empty.'];
+
+        $uplVid = $files->get('UploadVideo');
+
+        $size = round( ($uplVid['size'] / 1024) / 1024, 2 );
+        if ( $size > 15 )
+            return ['id'=>0,'upload'=>false,'type'=>'video','txt'=>"Video file size can't be bigger then 15mb!"];
+
+        //FILE PART
+        $ext = $files->getExtension($uplVid['name']);
+        $vidName = $this->modelID."-".randomStringChars( 20, 'en', 'symbols');
+        $newVidName = $vidName . '.' . $ext;
+        $destPath = _stockDIR_ .$modelPath.'/images/';
+        if ( !file_exists($destPath) ) 
+            mkdir($destPath, 0777, true);
+        $res = false;
+        $res = $files->upload($uplVid['tmp_name'], $destPath.$newVidName, ['mp4']);
+        if ($res)
+        {
+            /** оптимизация размера файла */
+            //ImageConverter::optimizeUploadedVideo($destPath, $vidName, $ext);
+            /** Сднлаем превью загруженного файла */
+            //ImageConverter::makePrev($destPath.$newImgName);
+
+            //DB PART
+            $images = new Images();
+            $images->name = $newVidName;
+            $images->status = 0;
+            $images->size = $uplVid['size'];
+            $images->type = "video";
+            $images->pos_id = $this->modelID;
+
+            $images->save(false);
+            $vidID = $images->getPrimaryKey();
+
+            return ['id'=>$vidID,'upload'=>$res,'type'=>'video','path'=>$modelPath.'/images/'.$newVidName];
+        }
+
+        return ['id'=>0,'upload'=>false,'type'=>'video','path'=>$modelPath.'/images/'.$newVidName];
     }
 
     protected function uploadImageFile( Files $files ) : array

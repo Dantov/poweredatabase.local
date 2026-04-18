@@ -119,24 +119,42 @@ HandlerFiles.prototype.handleFiles = function(files)
     let self = this;
     Array.prototype.push.apply( this.fileBuffer, files );
     files = [...files];
+    
     //debug( self.fileTypes,'fileTypes');
+    
     let swfileType = '';
+    let procced = true;
     files.forEach(function (file)
     {
         let arr_split = file.name.split('.');
         let fileExtension = arr_split[arr_split.length-1].toLowerCase();
+
         if ( self.fileTypes.includes(file.type) )
         {   
-            //*** картинки здесь ***//
+            //*** images ***//
             swfileType = 'img';
+
+            //* Video *//
+            if ( file.type === "video/mp4" ) 
+            {
+                let size = ( (file.size / 1024) / 1024 ).toFixed(2);
+                if ( size > 15 )
+                {
+                    AR.warning("Video file size can't be bigger then 15mb!",333);
+                    return procced = false;
+                }
+                swfileType = 'video';
+            }
+
         } else if ( self.fileTypes.includes('.' + fileExtension) ) {
             
             //*** Остальные ***//
             swfileType = 'others';
-            //self.addDataFile(file, fileExtension);
         }
 
-        self.pushFileToServ(file, fileExtension, swfileType);
+        if ( procced )
+            self.pushFileToServ(file, fileExtension, swfileType);
+
     });
     this.fileBuffer = [];
 };
@@ -159,7 +177,6 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
             preLoadRow = document.getElementById('proto-pre-load-img').cloneNode(true);
             preLoadRow.removeAttribute('id');
             preLoadRow.classList.remove('d-none');
-            //preLoadDataRow.classList.add('d-flex');
             break;
         case "others":
             formData.append('Upload3DFile',file);
@@ -168,7 +185,14 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
             preLoadRow = document.getElementById('proto-pre-load-data').cloneNode(true);
             preLoadRow.removeAttribute('id');
             preLoadRow.classList.remove('d-none');
-            //preLoadRow.classList.add('d-flex');
+            break;
+        case "video":
+            formData.append('UploadVideo',file);
+            formData.append('fileExtension',fileExtension);
+
+            preLoadRow = document.getElementById('proto-pre-load-img').cloneNode(true);
+            preLoadRow.removeAttribute('id');
+            preLoadRow.classList.remove('d-none');
             break;
     }
 
@@ -186,12 +210,11 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
         {
             if ( swfileType == 'others' )
                 tempRow = document.getElementById('d3-files-area').appendChild(preLoadRow);
-            if ( swfileType == 'img' )
+            if ( swfileType == 'img' || swfileType == 'video' )
             {
                 let target = document.getElementById('picts').parentElement;
                 tempRow = target.insertBefore(preLoadRow, document.getElementById('picts'));
             }
-                //tempRow = document.getElementById('picts').appendChild(preLoadRow);
         },
         xhr: function() {
             let xhr = $.ajaxSettings.xhr(); // получаем объект XMLHttpRequest
@@ -209,7 +232,7 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
                     // progressUpload.val(percentComplete).text('Загружено ' + percentComplete + '%');
                     if ( swfileType == 'others' )
                         self.preLoadDataFile(percentComplete, tempRow, file.name);
-                    if ( swfileType == 'img' )
+                    if ( swfileType == 'img' || swfileType == 'video' )
                         self.preLoadImgFile(percentComplete, tempRow);
                 }
 
@@ -227,9 +250,13 @@ HandlerFiles.prototype.pushFileToServ = function(file, fileExtension, swfileType
             }
 
             if ( resp['type'] === 'picture' ) {
-                //self.imageFilesBuffer.push(file);
                 self.previewIMGFile( file, resp['id'], tempRow );
             }
+
+            if ( resp['type'] === 'video') {
+                self.previewVideoFile( file, resp, tempRow );
+            }
+
             if ( resp['type'] === 'data' ) {
                 self.preview3DFile( file, fileExtension, resp['id'], tempRow );
             }
@@ -299,11 +326,59 @@ HandlerFiles.prototype.preLoadImgFile = function(percentComplete, tempImgRow)
         progressUpload.style.width = percentComplete + "%";
         progressUpload.innerHTML = percentComplete + "%";
 
-    if ( percentComplete == 100 )
-    {
+    if ( percentComplete == 100 ) {
         progressUpload.innerHTML = '<i class="fa-regular fa-floppy-disk"></i> Сохранение... ';
     }
 };
+HandlerFiles.prototype.previewVideoFile = function(file, videoData, tempImgRow) 
+{
+    debug(file, 'file prew vid');
+
+    let self = this;
+
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = function() {
+        let imgRow = document.getElementById('proto_video_row').cloneNode(true);
+        imgRow.removeAttribute('id');
+        imgRow.setAttribute('fileId',file.lastModified);
+        imgRow.classList.add('image_row');
+        imgRow.classList.remove('d-none');
+
+        let dellButton = imgRow.querySelector('.img_dell');
+            dellButton.removeAttribute('onclick');
+            dellButton.setAttribute('data-rowid',videoData.id);
+            dellButton.setAttribute('data-table','tableIMG');
+            dellButton.addEventListener('click',function () {
+                if ( confirm('Удалить картинку?') )
+                    self.removeFile(this, videoData.id, 'picture');
+            });
+
+        let radioInput = imgRow.querySelector('input[name="imgMainRadioOption"]');
+            radioInput.setAttribute('data-rowid',videoData.id);
+            radioInput.setAttribute('data-table','tableIMG');
+            radioInput.setAttribute('data-type','video');
+            radioInput.addEventListener('change',function () {
+                self.setMainImgTag(this, videoData.id); //setMainImg
+            });
+        imgRow.firstElementChild.addEventListener('click',function () {
+                radioInput.click();
+            });
+
+        imgRow.querySelector('.img_name_show').innerHTML = file.name;
+        imgRow.querySelector('input').setAttribute('id',file.lastModified);
+        imgRow.querySelector('input').setAttribute('data-rowID',videoData.id);
+        imgRow.querySelector('input').setAttribute('data-table','tableIMG');
+        imgRow.querySelector('label').setAttribute('for',file.lastModified);
+        
+        let source = imgRow.getElementsByTagName('source');
+            source[0].src = reader.result;
+
+        if ( document.getElementById('picts').appendChild(imgRow) ) tempImgRow.remove();
+    };
+    
+};
+
 HandlerFiles.prototype.previewIMGFile = function(file, imgRowID, tempImgRow) 
 {
     debug(file, 'file prew img');
@@ -332,6 +407,7 @@ HandlerFiles.prototype.previewIMGFile = function(file, imgRowID, tempImgRow)
         let radioInput = imgRow.querySelector('input[name="imgMainRadioOption"]');
             radioInput.setAttribute('data-rowid',imgRowID);
             radioInput.setAttribute('data-table','tableIMG');
+            radioInput.setAttribute('data-type','image');
             radioInput.addEventListener('change',function () {
                 self.setMainImgTag(this, imgRowID); //setMainImg
             });
@@ -344,20 +420,14 @@ HandlerFiles.prototype.previewIMGFile = function(file, imgRowID, tempImgRow)
         imgRow.querySelector('input').setAttribute('data-rowID',imgRowID);
         imgRow.querySelector('input').setAttribute('data-table','tableIMG');
         imgRow.querySelector('label').setAttribute('for',file.lastModified);
-
-        /*
-        imgRow.querySelector('select').addEventListener('change',function () {
-            self.onSelect(this);
-        });
-        */
-
+        
         let img = imgRow.getElementsByTagName('img');
             img[0].src = reader.result;
 
         //document.getElementById('picts').insertBefore(imgRow, self.dropArea.parentElement);
         let res = document.getElementById('picts').appendChild(imgRow);
         if ( res )
-        tempImgRow.remove();
+            tempImgRow.remove();
     }
 };
 
@@ -394,6 +464,10 @@ HandlerFiles.prototype.removeFile = function(self, imgRowID, fileType)
 HandlerFiles.prototype.setMainImgTag = function(self, imgRowID)
 {
     //debug(imgRowID, 'imgRowID setMainImg');
+    //debug(self, 'self');
+    if (self.getAttribute('data-type') == 'video') {
+        return AR.warning("Video can't be as main image. Pls choose something else.",332);
+    }
     let obj = {
             imgRowID : imgRowID,
             modelID  : this.modelID,
@@ -422,7 +496,7 @@ HandlerFiles.prototype.setMainImgTag = function(self, imgRowID)
     });
 }
 
-let fileTypes = ["image/jpeg", "image/png", "image/gif","image/webp",'.3dm','.stl','.mgx','.ai','.dxf','.obj','.rar','.zip'];
+let fileTypes = ["image/jpeg", "image/png", "image/gif","image/webp",'video/mp4','.3dm','.stl','.mgx','.ai','.dxf','.obj','.rar','.zip'];
 window.addEventListener('load',function() {
   handlerFiles = new HandlerFiles( document.getElementById('drop-area'), document.getElementById('addImageFiles'),fileTypes);
 },false);

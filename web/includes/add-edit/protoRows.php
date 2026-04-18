@@ -171,6 +171,32 @@ use yii\helpers\Url;
         </div>
     </div>
 </div>
+<!--// PROTO Videos -->
+<div class="card bg-light mb-1 mainCard d-none" id="proto_video_row" style="width: 10rem;">
+    <div class="card-header p-0 text-center bg-dark text-white cursorPointer">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="imgMainRadioOption" data-table="" data-rowID="" id="" value="">
+          <label class="form-check-label" for="inlineRadio1"></label>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="ratio">
+        <div class="ratio-inner ratio-4-3">
+            <div class="ratio-content">
+                <video class="card-img-top" autoplay="" loop="true" muted="true" playsinline="" preload="auto" oncontextmenu="return false;" loading="lazy">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+            <a class="btn btn-info btn-sm editBtnMain img_dell" role="button" data-toggle="tooltip" data-placement="bottom" title="delete"><i class="fa-solid fa-trash-can"></i></a>
+        </div>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item p-1" style="font-size: small;">
+            <small class="float-left img_name_show"></small>
+            <div class="clearfix"></div>
+        </li>
+    </ul>
+</div>
 
 <!--// PROTO IMAGES -->
 <div class="card bg-light mb-1 mainCard d-none" id="proto_image_row" style="width: 10rem;">

@@ -220,11 +220,6 @@ AddEdit.prototype.addRowNew = function( protoName, targetTableName)
 						
 				self.applyEventsChange(inputs);
 
-				/*
-				$.foreach(inputs, function(i,input){
-				});
-				*/
-
 				table.appendChild(newRow);
 			}
 		}
@@ -477,21 +472,14 @@ AddEdit.prototype.clonePosition = function()
 			beforeSend:function() {
 			},
 			success:function( resp ) {
-				if ( (resp['result'] == true) && resp['newid'] )
-				{
+
+				if ( (resp['result'] == true) && resp['newid'] ) {
 					debug(resp);
 					alert('Model was cloned successfully!');
 					redirect('/site/edits?model=' + resp['newid']);
 					return;
 				}
-				/*
-				let modal = self.content.querySelector('#delete-pos-modal');
-				if (modal) {
-					if (resp)
-						modal.querySelector('.gems').children[0].innerHTML = resp;
-				}
-				$('#delete-pos-modal').modal('show');
-				*/
+
 			}
 		});
 
@@ -522,6 +510,7 @@ AddEdit.prototype.fullyRestore = function()
 			}
 		});
 };
+
 AddEdit.prototype.deleteFull = function()
 {
 		let conf = confirm("Delete model totally? This action can't be undone!!!");
