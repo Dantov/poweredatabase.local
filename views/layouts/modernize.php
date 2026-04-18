@@ -531,7 +531,7 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         <!-- Copyright -->
         <div class="copyright-w3layouts shadow pt-2 pb-2 mt-2 text-center" style="bottom: 0 !important;" id="footer">
             <p class="float-left ml-3"><small>Developed by Vadym Bykov</small></p>
-            <p class="float-right mr-3"> ver 3.0.2 beta</p>
+            <p class="float-right mr-3"> ver 3.0.7 beta</p>
             <div class="clearfix"></div>
         </div>
         <!--// Copyright -->

@@ -20,7 +20,7 @@ class Auth extends Common
     protected array $users = [];
     protected array $user = [];
 
-    private const int APP_VERSION_ACCESS = 305;
+    private const int APP_VERSION_ACCESS = 307;
 
     public function __construct()
     {
