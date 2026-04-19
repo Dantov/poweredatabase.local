@@ -749,15 +749,18 @@ ImageViewer.prototype.mainImageLoupe = function()
         bgsizeTotal: 120,
         overImage: false,
     };
+    let prevSlidBeutton = document.getElementById('carouselMainImg').querySelector('.carousel-control-prev');
+    let nextSlidBeutton = document.getElementById('carouselMainImg').querySelector('.carousel-control-next');
 
     /** MOUSE OVER **/
     if ( this.mainImage.getAttribute('listMOver') != 'true' ) {
 
         this.mainImage.addEventListener('mouseover',function () {
             if ( type == 'video' ) return;
-            self.loupeOver(this,lupeData);
-        });
 
+            self.loupeOver(this,lupeData,prevSlidBeutton,nextSlidBeutton);
+        });
+        
         this.mainImage.setAttribute('listMOver',true);
     }
 
@@ -766,9 +769,13 @@ ImageViewer.prototype.mainImageLoupe = function()
 
         this.mainImage.addEventListener('mouseout',function () {
             if ( type == 'video' ) return;
+
+            prevSlidBeutton.classList.remove('d-none');
+            nextSlidBeutton.classList.remove('d-none');
+
             self.loupeOut(this, lupeData);
         });
-
+        
         this.mainImage.setAttribute('listMOut',true);
     }
 
@@ -811,7 +818,7 @@ ImageViewer.prototype.loupeSize = function(mainimg,event,lupeData)
     //debug(step);
     //debug(lupeData.bgsizeTotal,'bgsizeTotal');
 };
-ImageViewer.prototype.loupeOver = function(mainimg,lupeData) {
+ImageViewer.prototype.loupeOver = function(mainimg,lupeData,prevSlidBeutton,nextSlidBeutton) {
     let that = this;
     let img = new Image(); // создаем картинку
     img.src = "/web/stock/" + this.imagesPath + "/images/" + mainimg.getAttribute('data-name');
@@ -831,14 +838,12 @@ ImageViewer.prototype.loupeOver = function(mainimg,lupeData) {
         lupeData.overImage = true;
         lupeData.coordinates = mainimg.getBoundingClientRect();
         //debug(coordinates);
-        //that.style.backgroundSize = realW * 2 + 'px ' + realH * 2 + 'px';//200 + "%";
-        //mainimg.style.backgroundSize = 200 + "%";
         mainimg.style.backgroundSize = lupeData.bgsizeTotal + "%";
-        //realW = realW * 2;
-        //realH = realH * 2;
-        //debug('realW: ' + realW + 'x realH: ' + realH);
         that.moveImage(mainimg, lupeData);
         mainimg.classList.add('loupeCursor');
+
+        prevSlidBeutton.classList.add('d-none');
+        nextSlidBeutton.classList.add('d-none');
 
         // debug(coordinates.left,"left");
         // debug(coordinates.top,"top");
@@ -847,7 +852,7 @@ ImageViewer.prototype.loupeOver = function(mainimg,lupeData) {
         // debug(coordinates.width,"width");
         // debug(coordinates.height,"height");
 
-    }, 300);
+    }, 350);
 
     // ширина высота
     // debug(this.offsetHeight,"offsetHeight");

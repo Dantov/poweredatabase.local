@@ -86,12 +86,12 @@ $modelPublished = ((int)$model['model_status']===1);
                         </div>
                     <?php endif; ?>
                   </div>
-                  <button class="carousel-control-prev" type="button" data-target="#carouselMainImg" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <button class="carousel-control-prev text-dark" type="button" data-target="#carouselMainImg" data-slide="prev">
+                    <i class="fa-solid fa-chevron-left" style="height:2em;"></i>
                     <span class="sr-only">Previous</span>
                   </button>
-                  <button class="carousel-control-next" type="button" data-target="#carouselMainImg" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <button class="carousel-control-next text-dark" type="button" data-target="#carouselMainImg" data-slide="next">
+                    <i class="fa-solid fa-chevron-right" style="height:2em;"></i>
                     <span class="sr-only">Next</span>
                   </button>
                 </div>
@@ -214,14 +214,30 @@ $modelPublished = ((int)$model['model_status']===1);
                 </b>
             </div>
         </div>
+        <?php foreach( $model['materials'] as $mat ): ?>
+        <div class="d-flex justify-content-between bg-dots fontsView">
+            <div class="p-1 bg-light">
+                <i class="fa-solid fa-clone"></i>
+                <span class="d-none d-lg-inline">Деталь: <b><?=$mat['part']?></b></span>
+            </div>
+            <div class="p-1 bg-light">
+                <button type="button" class="btn btn-sm btn-outline-secondary"><?=$mat['metal']?></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary"><?=$mat['color']?></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary"><?=$mat['probe']?></button>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <?php if ( !empty($model['description']) ):?>
         <div class="d-none d-lg-block" id="notes">
             <div class="alert alert-light" role="alert">
                 <h5 class="alert-heading"><i class="fas fa-comment-alt"></i> Примечания:</h5>
                 <p><?=$model['description']?></p>
             </div>
         </div>
+        <?php endif; ?>
+
         <?php if ( count($model['hashtags']) ):?>
-        <hr>
         <div class=""><i class="fa-solid fa-hashtag"></i><b>Хештеги:</b></div>
         <div class="d-flex justify-content-left ">
             <div class="">
@@ -233,20 +249,14 @@ $modelPublished = ((int)$model['model_status']===1);
         <?php endif; ?>
         <hr>
         <div class="d-none d-lg-block">
-            <?php require "includes/view/gems.php"?>
-        </div>
-        <div class="d-none d-lg-block">
-            <?php require "includes/view/materials.php"?>
+            <?php require "includes/view/gems2.php"?>
         </div>
     </div>
 </div>
 
 <div class="row bg-light mb-2 d-lg-none pt-1" id="tablesSM">
     <div class="col-12">
-        <?php require "includes/view/gems.php"?>
-    </div>
-    <div class="col-12">
-        <?php require "includes/view/materials.php"?>
+        <?php require "includes/view/gems2.php"?>
     </div>
 </div>
 
