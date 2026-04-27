@@ -181,22 +181,28 @@ class ModelsMover extends Common
             $oldImgPath =  $path."/".$imgrow['name'];
             if ( !file_exists($oldImgPath) ) continue;
 
-            //DB PART
-            $newImgRow = new Images();
-            $newImgRow->name = $imgrow['name'];
-            $newImgRow->status = $imgrow['status'];
-            $newImgRow->size = $this->files->getFileSize($oldImgPath);
-            $newImgRow->pos_id = $newModelID;
-
             //MOVE FILE
             $modelPath =_stockDIR_ . Common::modelPath(512,$newModelID) . "/images/";
             if ( !file_exists($modelPath) )
                 mkdir($modelPath, 0777, true);
 
-            if ( $this->files->copy($oldImgPath, $modelPath.$imgrow['name']) )
+            $newImgName = randomStringChars( 20, 'en', 'symbols').'.'.$this->files->getExtension($imgrow['name']);
+
+            if ( $this->files->copy($oldImgPath, $modelPath.$newImgName) )
             {
-                $newImgRow->save(false);
-                $result[] = $newImgRow->getPrimaryKey();
+                //DB PART
+                $newImgRow = new Images();
+                $newImgRow->name = $newImgName;
+                $newImgRow->status = $imgrow['status'];
+                $newImgRow->size = $this->files->getFileSize($oldImgPath);
+                $newImgRow->pos_id = $newModelID;
+                if ( $newImgRow->save(false) ) {
+                    $result[] = $newImgRow->getPrimaryKey();
+                } else {
+                    $this->errors[$newModelID][] = "Can't record DB image file ($newImgName) on id $newModelID";    
+                }
+            } else {
+                $this->errors[$newModelID][] = "Can't copy image file (".$imgrow['name'].") on $oldImgPath";
             }
         }
 
