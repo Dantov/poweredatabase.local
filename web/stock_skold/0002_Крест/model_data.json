@@ -1,0 +1,35 @@
+{
+	"number_3d"   :"0002",
+	"client"      :"Кулинич Old",
+	"modeller3d"  :"Магера",
+	"model_type"  :"Крест",
+	"size_range"  :"",
+	"print_cost"  :"",
+	"model_cost"  :"",
+	"model_weight":"8",
+	"description" :"",
+	"hashtags"    :"Религия",
+	"model_status":0,
+	"create_date" :"2009-06-19",
+	"images":[
+		{
+			"id"     :"",
+			"name"   :"folder.jpg",
+			"status" :1,
+			"size"   :"",
+			"type"   :"image",
+			"pos_id" :""
+		}
+	],
+	"d3_files":[
+		{
+			"id"     :"",
+			"name"   :"0002.rar",
+			"zipname":"",
+			"type"   :"3dm",
+			"size"   :"",
+			"zipsize":"",
+			"pos_id" :""
+		}
+	]
+}

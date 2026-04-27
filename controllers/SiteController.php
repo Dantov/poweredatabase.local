@@ -6,7 +6,7 @@ use yii\filters\AccessControl;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\{Main,User,Nom};
+use app\models\{Main,User,Nom,Stats,Options};
 use app\models\serviceClasses\{SaveModel,AddEdit,ModelView,JewelStore,UsersAll,Crypt,ApprovePosition};
 
 class SiteController extends GeneralController
@@ -415,6 +415,13 @@ class SiteController extends GeneralController
             Yii::$app->response->redirect('/site')->send();
 
         $mm =  new \app\models\serviceClasses\ModelsMover();
+        //$opt = new Options();
+        //$opt->writeToFile();
+        //$opt->readJson();
+
+        $mm->moveSKModel();
+
+        //debug($dat,'$dat',1);
 
         //$hufdata = $mm->getHufStockData(100,10);
         //$merged = $mm->mergeStock();
@@ -435,10 +442,47 @@ class SiteController extends GeneralController
         if (!User::hasPermission(36)) 
             Yii::$app->response->redirect('/site/error?id=frule')->send();
 
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+        $session = Yii::$app->session;
 
+        $stats = new Stats();
+        $byDates = "";
+        $dateFrom = "";
+        $dateTo = "";
+        $sumByYear = "";
+        $sumByMonth = "";
+        $byYear = $request->get('by-year')??$year = $session->get('stat_prices_year');
+        $byMonth = (string)$request->get('by-month');
 
+        if ( $byYear ){
+            $sumByYear = $stats->pricesByYear($byYear);
 
-        return $this->render('statistic');
+            //debug($byYear,'$byYear');
+            //debug($sumByYear,'$sumByYear',1);
+        }
+        if ( $byMonth )
+            $sumByMonth = $stats->pricesByMonth($byMonth);
+
+        
+        if ( $request->isPost )
+        {
+            $post = $request->post();
+            $var = $post['byDates']??"";
+            switch ( $var )
+            {
+                case "fromto":
+                    $dateFrom = $post['date_from'];
+                    $dateTo = $post['date_to'];
+                    $byDates = $stats->pricesByDate( $dateFrom, $dateTo );  
+                break;
+            }
+        }
+        
+        $total = $stats->pricesTotal();
+
+        $comp = compact(['total','byYear','byMonth','sumByYear','sumByMonth','byDates','dateFrom','dateTo']);
+        return $this->render('statistic',$comp);
     }
 
     public function sendEmail()

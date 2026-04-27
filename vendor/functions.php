@@ -240,8 +240,9 @@ function alphabet() : array
         "°"=>"_"
     );
 };
-function getMonthRu( int $num ) : string
+function getMonthRu( $num ) : string
 {
+    if ( $num == 0 ) return "";
     $_monthsList = array(
     "1"=>"Январь","2"=>"Февраль","3"=>"Март",
     "4"=>"Апрель","5"=>"Май", "6"=>"Июнь",
@@ -249,7 +250,7 @@ function getMonthRu( int $num ) : string
     "10"=>"Октябрь","11"=>"Ноябрь","12"=>"Декабрь"
     );
 
-    return $_monthsList[(string)$num];
+    return $_monthsList[(string)$num]??"";
 }
 
 function in_array_recursive( $needle, array &$array, bool $strict = false ) : bool
