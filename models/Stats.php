@@ -54,14 +54,16 @@ class Stats extends Common
         if ( $month > 12 ) $month = "12";
 
         if ( $nextMonth < 9 ) $nextMonth = "0" . $nextMonth;
-        if ( $nextMonth >= 12 ) {
+        if ( $nextMonth >= 12 ) $nextMonth = "12";
+            
+        if ( $month == 12 ) {
             $nextMonth = "12";
             $lastDay = "31";
         }
 
         return (int)Stock::find()
             ->where(['>=','create_date',"$year-$month-01"])
-            ->andWhere(['<','create_date',"$year-$month-$lastDay"])
+            ->andWhere(['<','create_date',"$year-$nextMonth-$lastDay"])
             ->sum('model_cost');
     }
 
