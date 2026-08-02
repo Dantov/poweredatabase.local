@@ -24,20 +24,25 @@ class ModelsMover extends Common
     protected $errors = [];
     protected $result = [];
 
+    protected string $number3D = '';
+
+    protected array $modelImages = [];
+    protected array $modelFiles3d = [];
+    protected array $filesfordate = [];
+
     public function __construct(  )
     {
         $this->files = Files::instance();
         parent::__construct();
     }
 
-    public function getHufStockCount() : int
+    public function getErrors() : array
     {
-        return Huf_stock::find()->count();
+        return $this->errors;
     }
-
-    public function getStockAffected() : int
+    public function getResult() : array
     {
-        return Stock::find()->select(['id','client'])->where(['client'=>'ХЮФ'])->count();
+        return $this->result;
     }
 
     public function moveSKModel()
@@ -45,7 +50,7 @@ class ModelsMover extends Common
         //debug(self::STOCKSKOLD,"self::STOCKSKOLD",1);
 
         $stockskold = opendir(self::STOCKSKOLD);
-        $file = readdir($stockskold);
+        //$file = readdir($stockskold);
 
         while(false !== ( $file = readdir($stockskold) ) ) 
         {
@@ -64,29 +69,56 @@ class ModelsMover extends Common
         }
 
         closedir($stockskold);
-        debug($this->result,"result");
-        debug($this->errors,"errors",1);
+        //debug($this->result,"result");
+        //debug($this->errors,"errors",1);
     }
 
     public function readModelDir( &$modelDir, string $modelDirName )
     {
+        $hasJsonFile = false;
+        $this->modelImages = [];
+        $this->modelFiles3d = [];
+        $this->filesfordate = [];
         while(false !== ( $file = readdir($modelDir)) ) 
         {
             if ( ( $file == '.' ) || ( $file == '..' ) ) continue;
 
+            /*
             if ($file == 'model_data.json') {
                 //debug($modelDirName,'$modelDirName');
-                $this->readModelData($modelDirName);
+                $hasJsonFile = true;
+                //$this->readModelData($modelDirName);
             }
+            */
+
+            $ext = $this->files->getExtension($file);
+            if ( $ext == "jpg" || $ext == "jpeg" || $ext == "png" || $ext == "gif")
+                $this->modelImages[] = $file;
+            if ( $ext == "rar" || $ext == "zip" || $ext == "stl" || $ext == "mgx" || $ext == "3dm")
+                $this->modelFiles3d[] = $file;
+            if ( $ext == "stl" || $ext == "mgx" || $ext == "3dm")
+                $this->filesfordate[] = $file;
         }
+
+        $this->readModelData($modelDirName);
+        /*
+        if ( $hasJsonFile ) {
+            
+        } else {
+            $this->errors[$modelDirName] = 'No json file in this folder';
+        }
+        */
     }
 
     public function readModelData( string $modelDirName )
     {
-        $path = self::STOCKSKOLD ."/". $modelDirName;
+        $path = self::STOCKSKOLD . $modelDirName;
+
+        /*
         $filename = $path."/model_data.json";
         if ( !$fp = fopen($filename, 'r') ) 
-             return $this->errors[$modelDirName] = 'Не могу открыть json файл';
+             return $this->errors[$modelDirName] = 'cant open json file';
+
         
         $contents = fread($fp, filesize($filename));
         fclose($fp);
@@ -96,10 +128,67 @@ class ModelsMover extends Common
         $dat = json_decode($contents,true);
         if ( empty($dat) )
             return $this->errors[$modelDirName] = 'cant read json file';
+        */
 
         //debug( $dat, $modelDirName );
+        //debug( $this->modelImages, "modelImages" );
+        //debug( $this->modelFiles3d, "modelFiles3d");
+        //exit('test');
 
-        $this->addStockModel($dat, $path);
+        $explDirName = explode('_',$modelDirName);
+        $num3D = $explDirName[0];
+        $mtypeRough = $explDirName[1];
+        $mt = explode(' ', $mtypeRough)[0];
+
+        $data = [
+            'number_3d'=>$num3D,
+            'model_type'=>$mt,
+            'create_date'=>'',
+            'mainimage'=>''
+        ];
+        $found = false;
+
+        foreach ( $this->modelImages as $mimage ) 
+        {
+            $imgdat = explode("_", $this->files->getFileName($mimage) );
+            if ( $imgdat[0] == 'mainimage' ) {
+                $data['mainimage'] = $mimage;
+                $data['create_date'] = $imgdat[1];
+            }
+        }
+
+        /*
+        $currDate = date("2025-01-02");
+        $date = '';
+        foreach ( $this->filesfordate as $file ) 
+        {
+            $fdate = date("Y-m-d", filemtime($path.'/'.$file));
+            if ( strtotime($fdate) < strtotime($currDate) )
+                $date = $fdate;
+        }
+        if ( empty($date) )
+        {
+            foreach ( $this->modelImages as $ifile ) 
+            {
+                $ifdate = date("Y-m-d", filemtime($path.'/'.$ifile));
+                if ( strtotime($ifdate) < strtotime($currDate) )
+                    $date = $ifdate;
+            }
+        }
+        */
+
+        //$data['create_date'] = empty($date)?'2016-01-06':$date;
+        /*
+        $this->result[basename($path)] = [
+            'name' => $data,
+            'gems' => [],
+            'images' => [],
+            '3dfiles' => [],
+            'materials' => [],
+        ];
+        */
+        //debug( $data, "data",1);
+        $this->addStockModel($data, $path);
     }
 
     public function addStockModel( array $jsondata, string $path )
@@ -107,16 +196,16 @@ class ModelsMover extends Common
         //$result = [];
         $newModel = new Stock();
         $newModel->number_3d  = $jsondata['number_3d'];
-        $newModel->client    =  $jsondata['client'];
-        $newModel->modeller3d = $jsondata['modeller3d'];
+        $newModel->client     = 'Кулинич Old';
+        $newModel->modeller3d = 'Модельер';
         $newModel->model_type = $jsondata['model_type'];
-        $newModel->size_range = $jsondata['size_range'];
-        $newModel->print_cost = $jsondata['print_cost'];
-        $newModel->model_cost = $jsondata['model_cost'];
-        $newModel->model_weight = $jsondata['model_weight'];
-        $newModel->description = $jsondata['description'] . basename($path);
-        $newModel->hashtags = $jsondata['hashtags'];
-        $newModel->model_status = 0;
+        $newModel->size_range = '';
+        $newModel->print_cost = '';
+        $newModel->model_cost = '';
+        $newModel->model_weight = 1;
+        $newModel->hashtags = "";
+        $newModel->description = basename($path);
+        $newModel->model_status = 1;
         $newModel->date = date("Y-m-d");
         $newModel->create_date = $jsondata['create_date'];
         $newModel->creator_id = User::getID();
@@ -142,16 +231,18 @@ class ModelsMover extends Common
         $newMatRow->pos_id = $newModelID;
         if ( $newMatRow->save(false) )
             $this->result[$newModelID]['materials'] = $newMatRow->getPrimaryKey();
-        
 
+        /*
         if ( !empty($jsondata['gems']) )
             $this->result[$newModelID]['gems'] = $this->addGems($jsondata['gems'],$newModelID);
+        */
 
-        if ( !empty($jsondata['images']) )
-            $this->result[$newModelID]['images'] = $this->addImages($jsondata['images'],$newModelID,$path);
+        if ( !empty($jsondata['mainimage']) && !empty($this->modelImages) )
+            $this->result[$newModelID]['images'] = $this->addImages($jsondata['mainimage'],$newModelID,$path);
 
-        if ( !empty($jsondata['d3_files']) )
-            $this->result[$newModelID]['3dfiles'] = $this->add3DFiles($jsondata['d3_files'],$newModelID,$path);
+        //if ( !empty($jsondata['d3_files']) )
+        if ( !empty($this->modelFiles3d) )
+            $this->result[$newModelID]['3dfiles'] = $this->add3DFiles($this->modelFiles3d,$newModelID,$path);
     }
     public function addGems($gems, $newModelID)
     {
@@ -173,12 +264,13 @@ class ModelsMover extends Common
 
         return $result;
     }
-    public function addImages($images, $newModelID, $path)
+    public function addImages($mainImgName, $newModelID, $path)
     {
         $result = [];
-        foreach ($images as $imgrow) 
+        //foreach ($images as $imgrow) 
+        foreach ($this->modelImages as $imgname) 
         {
-            $oldImgPath =  $path."/".$imgrow['name'];
+            $oldImgPath =  $path."/".$imgname;
             if ( !file_exists($oldImgPath) ) continue;
 
             //MOVE FILE
@@ -186,14 +278,14 @@ class ModelsMover extends Common
             if ( !file_exists($modelPath) )
                 mkdir($modelPath, 0777, true);
 
-            $newImgName = randomStringChars( 20, 'en', 'symbols').'.'.$this->files->getExtension($imgrow['name']);
+            $newImgName = randomStringChars( 20, 'en', 'symbols').'.'.$this->files->getExtension($imgname);
 
             if ( $this->files->copy($oldImgPath, $modelPath.$newImgName) )
             {
                 //DB PART
                 $newImgRow = new Images();
                 $newImgRow->name = $newImgName;
-                $newImgRow->status = $imgrow['status'];
+                $newImgRow->status = ($imgname==$mainImgName) ? 1 : 0;
                 $newImgRow->size = $this->files->getFileSize($oldImgPath);
                 $newImgRow->pos_id = $newModelID;
                 if ( $newImgRow->save(false) ) {
@@ -202,7 +294,7 @@ class ModelsMover extends Common
                     $this->errors[$newModelID][] = "Can't record DB image file ($newImgName) on id $newModelID";    
                 }
             } else {
-                $this->errors[$newModelID][] = "Can't copy image file (".$imgrow['name'].") on $oldImgPath";
+                $this->errors[$newModelID][] = "Can't copy image file from(".$oldImgPath.") \n to $modelPath$newImgName";
             }
         }
 
@@ -211,9 +303,10 @@ class ModelsMover extends Common
     public function add3DFiles($d3files, $newModelID, $path)
     {
         $result = [];
-        foreach ($d3files as $d3fileRow) 
+        //foreach ($d3files as $d3fileRow) 
+        foreach ($d3files as $d3fileName) 
         {
-            $oldStlPath =  $path."/".$d3fileRow['name'];
+            $oldStlPath =  $path."/".$d3fileName;
             if ( !file_exists($oldStlPath) ) continue;
 
             //MOVE FILE
@@ -223,26 +316,31 @@ class ModelsMover extends Common
 
             $fileExtension = $this->files->getExtension($oldStlPath);
             $newFileNameZip = "";
-            if ( $this->files->copy($oldStlPath, $modelPath.$d3fileRow['name']) )
+            $fileType = "";
+            if ( $this->files->copy($oldStlPath, $modelPath.$d3fileName) )
             {
-                if ( !($fileExtension == 'zip' || $fileExtension == 'rar') ) 
+                if ( $fileExtension == 'zip' || $fileExtension == 'rar' ) 
                 {
+                    $newFileNameZip = $d3fileName;
+                    $fileType = explode("_", $d3fileName)[0];
+                } else {
+                    //rest 3d files need to archivate
                     $newFileNameZip = "zip_".randomStringChars( 10, 'en', 'symbols');
                     $zipArch = $this->openZip( $modelPath , $newFileNameZip );
-                    $zipArch['inst']->addFile( $modelPath.$d3fileRow['name'], $d3fileRow['name'] );
+                    $zipArch['inst']->addFile( $modelPath.$d3fileName, $d3fileName );
 
                     $newFileNameZip = $zipArch['zipName'];
 
                     $this->closeZip($zipArch['inst']);
-                    $this->files->delete($modelPath.$d3fileRow['name']);
-                } else {
-                    $newFileNameZip = $d3fileRow['name'];
+                    $this->files->delete($modelPath.$d3fileName);
+
+                    $fileType = $fileExtension;
                 }
 
                 $newStlRow = new D3_files();
-                $newStlRow->name = $d3fileRow['name'];
+                $newStlRow->name = $d3fileName;
                 $newStlRow->zipname = $newFileNameZip;
-                $newStlRow->type = $d3fileRow['type'];
+                $newStlRow->type = $fileType;
                 $newStlRow->size = $this->files->getFileSize($oldStlPath); 
                 $newStlRow->zipsize = $this->files->getFileSize($modelPath.$newFileNameZip);
                 $newStlRow->pos_id = $newModelID;
@@ -290,8 +388,15 @@ class ModelsMover extends Common
 
 
 
+    public function getHufStockCount() : int
+    {
+        return Huf_stock::find()->count();
+    }
 
-
+    public function getStockAffected() : int
+    {
+        return Stock::find()->select(['id','client'])->where(['client'=>'ХЮФ'])->count();
+    }
 
     public function getHufStockData( int $offset = 0, int $limit = 1 ) : array
     {
@@ -547,23 +652,6 @@ class ModelsMover extends Common
         return [];
     }
 
-    public function moveModelFiles( string $oldPath, string $newPath ) : bool
-    {
-        if ( file_exists($oldPath) )
-        {
-            if ( !file_exists($newPath) ) 
-                mkdir($newPath, 0777, true);
-
-            $files = Files::instance();
-            $files->xcopy($oldPath,$newPath);
-            $files->rrmdir($oldPath);
-
-            return true;
-        }
-
-        return false;
-    }
-
     public function moveModel( array $modeltomove, Files $files ) : bool
     {
         $oldPath = _stockDIR_ . $modeltomove['id']; 
@@ -582,6 +670,23 @@ class ModelsMover extends Common
         return true;
     }
     */
+
+    public function moveModelFiles( string $oldPath, string $newPath ) : bool
+    {
+        if ( file_exists($oldPath) )
+        {
+            if ( !file_exists($newPath) ) 
+                mkdir($newPath, 0777, true);
+
+            $files = Files::instance();
+            $files->xcopy($oldPath,$newPath);
+            $files->rrmdir($oldPath);
+
+            return true;
+        }
+
+        return false;
+    }
 
     protected function xcopy($src, $dest) 
     {

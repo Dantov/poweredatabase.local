@@ -20,9 +20,7 @@ $this->title = $name . ' OPTIONS';
         OPTIONS
     </h2>
     </div>
-    <?= 1//debug( $count, 'Total: ') ?>
-    <?= 1//debug( $countAffected, 'Total Affected:') ?>
-    <?= 1//debug( ($count-$countAffected), 'Осталось: ') ?>
-    <?= 1//debug( $merged, '(current affected: ' . count($merged). ') Merged data:' ) ?>
-    <?= 1//debug( $hufdata ) ?>
+    <?= debug( count($result), 'Affected: ') ?>
+    <?= debug( $result, 'Result: ') ?>
+    <?= debug( $errors, 'Errors:') ?>
 </div>

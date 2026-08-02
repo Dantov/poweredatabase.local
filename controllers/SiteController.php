@@ -421,6 +421,9 @@ class SiteController extends GeneralController
 
         $mm->moveSKModel();
 
+        $errors = $mm->getErrors();
+        $result = $mm->getResult();
+
         //debug($dat,'$dat',1);
 
         //$hufdata = $mm->getHufStockData(100,10);
@@ -429,8 +432,8 @@ class SiteController extends GeneralController
         //$count = $mm->getHufStockCount();
         //$countAffected = $mm->getStockAffected();
 
-        //$comp = compact(['hufdata','merged','count','countAffected']);
-        return $this->render('options');
+        $comp = compact(['errors','result']);
+        return $this->render('options',$comp);
     }
     /**
      * Displays user statistic page.

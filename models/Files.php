@@ -141,7 +141,8 @@ class Files
      */
     protected function check_file_uploaded_name($filename) : bool
     {
-        return (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+        //return (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+        return (bool) ((preg_match("`^[-0-9A-Zа-яёа-яЁё_/\s\.]+$`ui",$filename)) ? true : false);
     }
 
     /**

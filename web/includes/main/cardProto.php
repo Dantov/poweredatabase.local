@@ -43,8 +43,8 @@ $clientName = empty($model['client']) ? '<b class="text-muted">empty</b>' : html
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item p-1" style="font-size: small;">
-                <small onclick="copyValueToClipBoard(this)" class="float-left text-truncate" data-toggle="tooltip" data-placement="top" title="Дата создания"><?=$main->dateConvert($model['create_date'])?></small>
-                <small class="float-right"><b><?=$model['model_type']?></b></small>
+                <small onclick="copyValueToClipBoard(this)" class="float-left text-truncate" data-toggle="tooltip" data-placement="top" title="Дата создания"><?=$main->dateConvert($model['create_date']??'')?></small>
+                <small class="float-right"><b><?=$model['model_type']??''?></b></small>
                 <small onclick = "copyValueToClipBoard(this)" class="float-right text-truncate" data-toggle="tooltip" data-placement="top" title="№3D"><?=$model['number_3d']?> |&nbsp;</small>
                 <div class="clearfix"></div>
             </li>

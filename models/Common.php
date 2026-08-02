@@ -49,7 +49,7 @@ class Common
     	return self::$userData = $user;
     }
 
-	public function dateConvert( string $date ) : string
+	public function dateConvert( string $date='0000-00-00' ) : string
 	{
 		if ( empty( $date ) ) return '';
 
