@@ -320,12 +320,13 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                                         <?= $clientName ?>
                                     </span>
                                 </button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown-menu" id="cl-dpd-menu">
                                     <a class="dropdown-item" data-clientID="11" href="<?=Url::to(['/search/select','by'=>'client','v'=>11])?>">Все</a>
                                     <div class="dropdown-divider"></div>
                                     <?php foreach( $clients as $client ):?>
+                                        
                                     <?php $clname = User::hasPermission('hideclients')?$client['secondname']:$client['name'] ?>
-                                    <a class="dropdown-item" data-clientID="<?=$client['id']?>" href="<?=Url::to(['/search/select','by'=>'client','v'=>$client['id'] ])?>"><?=htmlentities($clname)?>
+                                    <a class="dropdown-item cl-dpd-name cursorPointer" data-clientID="<?=$client['id']?>" href="<?=Url::to(['/search/select','by'=>'client','v'=>$client['id'] ])?>"><?=htmlentities($clname)?>
                                     <?php if( in_array($client['name'],$session->get('SelectByClients')??[] ) ):?>
                                         <span class="float-right"><i class="fa-solid fa-square-check"></i></span>
                                     <?php endif; ?>

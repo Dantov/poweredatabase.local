@@ -77,12 +77,19 @@ class SearchController extends GeneralController
         $session = Yii::$app->session; 
 
         $value = $request->get('v');
+        $cladd = $request->get('cladd');
+
+        //debug($request->get(),'get',1);
+
         switch( $request->get('by') )
         {
             case "client":
                 if ( $value ) {
-                    $this->SelectByClient( (int)$value );
-                    $this->SelectByClients( (int)$value );
+                    if ( $cladd ) {
+                        $this->SelectByClients( (int)$value );
+                    } else {
+                        $this->SelectBySingleClient( (int)$value );
+                    }
                 }  
             break;
             case "hashtag":
@@ -200,20 +207,21 @@ class SearchController extends GeneralController
         }
     }
 
-    protected function SelectByClient( int $client )
+    protected function SelectBySingleClient( int $client )
     {
         $session = Yii::$app->session;
         if ( (int)$client === 11 )
         {
-            $session->set('SelectByClient', 'Все');
+            $session->set('SelectByClients', []);
             return;
         }
+
         foreach ( $this->clients as $singleClient )
         {
             
             if ( $singleClient['id'] === $client )
             {
-                $session->set('SelectByClient', $singleClient['name']);
+                $session->set('SelectByClients', [$singleClient['name']] );
                 break;
             }
         }

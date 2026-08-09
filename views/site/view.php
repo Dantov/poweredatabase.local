@@ -22,6 +22,8 @@ $modelDeleted = ((int)$model['model_status']===2);
 $modelNonPublished = ((int)$model['model_status']===0);
 $modelPublished = ((int)$model['model_status']===1);
 
+//debug($model['images'],'img');
+
 ?>
 
 <div class="row justify-content-center bg-light mb-2">

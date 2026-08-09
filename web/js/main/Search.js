@@ -76,8 +76,9 @@ Search.prototype.init = function()
     //{
         this.hashTagsCheckApply();
     //}
+        this.clientsMenuImproove();
 
-    debug('Search init ok');
+    debug('Search init fine');
 };
 
 Search.prototype.request = function( url, obj )
@@ -88,7 +89,8 @@ Search.prototype.request = function( url, obj )
         data: obj,
         dataType:"json",
         success:function(resp) {
-            if (resp) reload(true);
+            //if (resp) reload(true);
+            if (resp) redirect("/site");
         }
     });
 };
@@ -151,5 +153,54 @@ Search.prototype.singleHashtagCheck = function(input)
         });
     });
 };
+
+Search.prototype.clientsMenuImproove = function(input)
+{
+    let cldpdmenu = document.getElementById('cl-dpd-menu');
+    if (!cldpdmenu) return;
+    
+    let cldpdnames = cldpdmenu.querySelectorAll('.cl-dpd-name');
+    let commonHref = '';
+
+    $.each(cldpdnames, function(i, clname) 
+    {
+        clname.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            redirect(this.href);
+        });
+
+        clname.addEventListener("mouseover", function (event) {
+            this.focus();
+            commonHref = this.getAttribute('href');
+            //debug(this.innerHTML);
+        });
+
+        // SHIFT IS PUSHED
+        clname.addEventListener("keydown", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            let ec = event.code;
+            if (ec === "ShiftLeft" || ec === "ControlLeft" || ec === "ControlRight" || ec === "ShiftRight") {
+                let newhref = this.getAttribute('href');
+                newhref = commonHref + '&cladd=1';
+                this.setAttribute('href',newhref);
+            }
+        },false);
+
+        // SHIFT IS UP
+        clname.addEventListener("keyup", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            let ec = event.code;
+            if (ec === "ShiftLeft" || ec === "ControlLeft" || ec === "ControlRight" || ec === "ShiftRight") {
+                this.setAttribute('href',commonHref);
+            }
+        });
+        
+    });
+    
+};
+
 
 let search_for = new Search();
