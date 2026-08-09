@@ -160,42 +160,52 @@ Search.prototype.clientsMenuImproove = function(input)
     if (!cldpdmenu) return;
     
     let cldpdnames = cldpdmenu.querySelectorAll('.cl-dpd-name');
-    let commonHref = '';
+    let SHIFT_IS_PUSHED = false;
 
     $.each(cldpdnames, function(i, clname) 
     {
         clname.addEventListener("click", function (event) {
             event.preventDefault();
             event.stopPropagation();
+
+            if ( SHIFT_IS_PUSHED )
+            {
+                let newhref = this.getAttribute('href');
+                newhref += '&cladd=1';
+                this.setAttribute('href',newhref);
+            }
+
             redirect(this.href);
         });
 
+        // Its need for proper work keydown event on element...
         clname.addEventListener("mouseover", function (event) {
             this.focus();
-            commonHref = this.getAttribute('href');
-            //debug(this.innerHTML);
+ 
         });
 
         // SHIFT IS PUSHED
         clname.addEventListener("keydown", function (event) {
             event.preventDefault();
             event.stopPropagation();
+            
             let ec = event.code;
             if (ec === "ShiftLeft" || ec === "ControlLeft" || ec === "ControlRight" || ec === "ShiftRight") {
-                let newhref = this.getAttribute('href');
-                newhref = commonHref + '&cladd=1';
-                this.setAttribute('href',newhref);
+                SHIFT_IS_PUSHED = true;
             }
+            
         },false);
 
         // SHIFT IS UP
         clname.addEventListener("keyup", function (event) {
             event.preventDefault();
             event.stopPropagation();
+            
             let ec = event.code;
             if (ec === "ShiftLeft" || ec === "ControlLeft" || ec === "ControlRight" || ec === "ShiftRight") {
-                this.setAttribute('href',commonHref);
+                SHIFT_IS_PUSHED = false;
             }
+            
         });
         
     });
