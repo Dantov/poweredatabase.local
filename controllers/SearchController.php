@@ -359,20 +359,20 @@ class SearchController extends GeneralController
         $session = Yii::$app->session;
         switch ( $get )
         {
-            case 27:
-                $session->set('positionsCount', 27);
+            case 32:
+                $session->set('positionsCount', 32);
             break;
-            case 54:
-                $session->set('positionsCount', 54);
+            case 56:
+                $session->set('positionsCount', 56);
             break;
-            case 108:
-                $session->set('positionsCount', 108);
+            case 112:
+                $session->set('positionsCount', 112);
             break;
-            case 216:
-                $session->set('positionsCount', 216);
+            case 224:
+                $session->set('positionsCount', 224);
             break;
             default:
-                $session->set('positionsCount', 27);
+                $session->set('positionsCount', 32);
             break;
         }
         Yii::$app->response->redirect(['/site'])->send();

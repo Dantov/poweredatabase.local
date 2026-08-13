@@ -28,7 +28,7 @@ class ModelsMover extends Common
 
     protected array $modelImages = [];
     protected array $modelFiles3d = [];
-    protected array $filesfordate = [];
+    protected array $filesforDescr = [];
 
     public function __construct(  )
     {
@@ -78,7 +78,7 @@ class ModelsMover extends Common
         $hasJsonFile = false;
         $this->modelImages = [];
         $this->modelFiles3d = [];
-        $this->filesfordate = [];
+        $this->filesforDescr = [];
         while(false !== ( $file = readdir($modelDir)) ) 
         {
             if ( ( $file == '.' ) || ( $file == '..' ) ) continue;
@@ -96,8 +96,8 @@ class ModelsMover extends Common
                 $this->modelImages[] = $file;
             if ( $ext == "rar" || $ext == "zip" || $ext == "stl" || $ext == "mgx" || $ext == "3dm")
                 $this->modelFiles3d[] = $file;
-            if ( $ext == "stl" || $ext == "mgx" || $ext == "3dm")
-                $this->filesfordate[] = $file;
+            if ( $ext == "txt")
+                $this->filesforDescr[] = $file;
         }
 
         $this->readModelData($modelDirName);
@@ -114,12 +114,11 @@ class ModelsMover extends Common
     {
         $path = self::STOCKSKOLD . $modelDirName;
 
-        /*
+        /* JSON BLOCK
         $filename = $path."/model_data.json";
         if ( !$fp = fopen($filename, 'r') ) 
              return $this->errors[$modelDirName] = 'cant open json file';
 
-        
         $contents = fread($fp, filesize($filename));
         fclose($fp);
 
@@ -129,22 +128,24 @@ class ModelsMover extends Common
         if ( empty($dat) )
             return $this->errors[$modelDirName] = 'cant read json file';
         */
-
-        //debug( $dat, $modelDirName );
-        //debug( $this->modelImages, "modelImages" );
-        //debug( $this->modelFiles3d, "modelFiles3d");
-        //exit('test');
+        /*
+        debug( $dat, $modelDirName );
+        debug( $this->modelImages, "modelImages" );
+        debug( $this->modelFiles3d, "modelFiles3d");
+        exit('test');
+        */
 
         $explDirName = explode('_',$modelDirName);
         $num3D = $explDirName[0];
         $mtypeRough = $explDirName[1];
-        $mt = explode(' ', $mtypeRough)[0];
+        $mt = trim(explode(' ', $mtypeRough)[0]);
 
         $data = [
             'number_3d'=>$num3D,
             'model_type'=>$mt,
             'create_date'=>'',
-            'mainimage'=>''
+            'mainimage'=>'',
+            'description'=>''
         ];
         $found = false;
 
@@ -176,24 +177,48 @@ class ModelsMover extends Common
             }
         }
         */
-
         //$data['create_date'] = empty($date)?'2016-01-06':$date;
-        /*
-        $this->result[basename($path)] = [
-            'name' => $data,
-            'gems' => [],
-            'images' => [],
-            '3dfiles' => [],
-            'materials' => [],
-        ];
-        */
+
+        foreach ( $this->filesforDescr as $dfile ) 
+        {
+            $data['description'] .= $this->readTextInfo($modelDirName, $dfile);
+        }
+
         //debug( $data, "data",1);
+
         $this->addStockModel($data, $path);
+    }
+
+    public function readTextInfo( string $modelDirName, string $filename ) : string
+    {
+        $path = self::STOCKSKOLD . $modelDirName;
+
+        $filename = $path.'/'.$filename;
+        if ( !$fp = fopen($filename, 'r') ) 
+             return $this->errors[$filename] = 'cant open text file';
+
+        $contents = fread($fp, filesize($filename));
+        $contents = iconv('CP1251', 'UTF-8', $contents); // Set file decoding for read cyrilic
+        fclose($fp);
+
+        //debug( $contents,"text contents",1);
+
+        if ( empty($contents) )
+        {
+             $this->errors[$filename] = 'text file is empty';
+             return '';
+        }
+
+        //debug( $dat, $modelDirName );
+        //debug( $this->modelFiles3d, "modelFiles3d");
+        //exit('test');
+
+        return $contents;
     }
 
     public function addStockModel( array $jsondata, string $path )
     {
-        //$result = [];
+        
         $newModel = new Stock();
         $newModel->number_3d  = $jsondata['number_3d'];
         $newModel->client     = 'Кулинич Old';
@@ -204,7 +229,7 @@ class ModelsMover extends Common
         $newModel->model_cost = '';
         $newModel->model_weight = 1;
         $newModel->hashtags = "";
-        $newModel->description = basename($path);
+        $newModel->description = basename($path) .' '. $jsondata['description'];
         $newModel->model_status = 1;
         $newModel->date = date("Y-m-d");
         $newModel->create_date = $jsondata['create_date'];
@@ -345,11 +370,11 @@ class ModelsMover extends Common
                 $newStlRow->zipsize = $this->files->getFileSize($modelPath.$newFileNameZip);
                 $newStlRow->pos_id = $newModelID;
                 if ( !$newStlRow->save(false) )
-                    $this->errors[$newModelID]['add3DFiles'][] = "Error while recording DB 3d file $newFileNameZip";
+                    $this->errors[$oldStlPath]['add3DFiles'][] = "Error while recording DB 3d file $newFileNameZip";
                 
                 $result[] = $newStlRow->getPrimaryKey();
             } else {
-                $this->errors[$newModelID]['add3DFiles'][] = "Error while coping 3d file: $newFileNameZip to new path";
+                $this->errors[$oldStlPath]['add3DFiles'][] = "Error while coping 3d file: $newFileNameZip to new path";
             }
             
         }

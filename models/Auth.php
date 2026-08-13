@@ -148,7 +148,7 @@ class Auth extends Common
 
         $session->set('AppVersionAccess',$this->getAppVersionAccess() );
 
-        $session->set('positionsCount',27);
+        $session->set('positionsCount',32);
         $session->set('SelectByClients',[]);
         $session->set('SelectByClient','Все');
         $session->set('searchFor', '');

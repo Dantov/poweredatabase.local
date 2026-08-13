@@ -106,13 +106,13 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
                         </a>
                         <ul class="collapse list-unstyled" id="positionsSubmenu1">
                             <li>
-                                <a href="<?=Url::to(['/search/positions-count','v'=>27])?>">27</a>
+                                <a href="<?=Url::to(['/search/positions-count','v'=>32])?>">32</a>
                             </li>
                             <li>
-                                <a href="<?=Url::to(['/search/positions-count','v'=>54])?>">54</a>
+                                <a href="<?=Url::to(['/search/positions-count','v'=>56])?>">56</a>
                             </li>
                             <li>
-                                <a href="<?=Url::to(['/search/positions-count','v'=>108])?>">108</a>
+                                <a href="<?=Url::to(['/search/positions-count','v'=>112])?>">112</a>
                             </li>
                         </ul>
                     </li>
