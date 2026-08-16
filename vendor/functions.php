@@ -75,7 +75,8 @@ if ( _DEV_MODE_ )
 
         if ( $ob === END_AB )
         {
-            $result = ['debug'=>ob_get_contents()];
+            $result = [ob_get_contents()];
+            //$result = ['debug'=>ob_get_contents()];
             ob_end_clean();
             exit( json_encode( $result ) );
         }

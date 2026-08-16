@@ -167,6 +167,12 @@ class Validator
         return $name;
     }
 
+    public static function validateFileName($filename) : bool
+    {
+        //return (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i",$filename)) ? true : false);
+        return (bool) ((preg_match("`^[-0-9A-Zа-яёа-яЁё_/\s\.]+$`ui",$filename)) ? true : false);
+    }
+
     private function setErrorText( string $rule, string $ruleName, $value )
     {
         self::$lastError = $this->rulesErrorText($rule, $ruleName, $value);

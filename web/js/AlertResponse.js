@@ -1,4 +1,48 @@
 "use strict";
+let aDebDiv = document.createElement('div');
+    aDebDiv.setAttribute('id','alertDebug');
+    aDebDiv.setAttribute('aria-hidden','true');
+    aDebDiv.setAttribute('aria-labelledby','alertDebug');
+    aDebDiv.setAttribute('role','dialog');
+    aDebDiv.setAttribute('class','iziModal');
+let aDebCont = document.createElement('div');
+    aDebCont.setAttribute('class','hidden p2');
+    aDebCont.setAttribute('id','alertDebugContent');
+aDebDiv.appendChild(aDebCont);
+document.querySelector('body').appendChild(aDebDiv);
+aDebDiv = null;aDebCont = null; 
+let arRespDiv = document.createElement('div');
+    arRespDiv.setAttribute('id','alertResponseModal');
+    arRespDiv.setAttribute('aria-hidden','true');
+    arRespDiv.setAttribute('aria-labelledby','alertResponseModal');
+    arRespDiv.setAttribute('role','dialog');
+    arRespDiv.setAttribute('class','iziModal');
+let arCont = document.createElement('div');
+    arCont.setAttribute('class','hidden');
+    arCont.setAttribute('style','padding: 10px');
+    arCont.setAttribute('id','alertResponseContent');
+arRespDiv.appendChild(arCont);
+document.querySelector('body').appendChild(arRespDiv);
+arRespDiv = null;arCont = null; 
+
+
+const ALERT_DEBUG = $('#alertDebug'); // ID дебаг окна
+ALERT_DEBUG.iziModal({
+    title: 'Debug',
+    subtitle: '',
+    headerColor: '#88A0B9',
+    icon: 'fas fa-laptop-code', // fas fa-bug
+    iconText: '',
+    width: '80%',
+    fullscreen: true,
+    zindex: 1500,
+    restoreDefaultContent: true,
+});
+function debugModal(message)
+{
+    ALERT_DEBUG.iziModal('setContent', '<div>'+ message +'</div>');
+    ALERT_DEBUG.iziModal("open");
+}
 
 function AlertResponse( modalID, initObj )
 {
@@ -229,12 +273,16 @@ AlertResponse.prototype.call = function( callType, message, code, errorObject )
         case "debug":
         {
         	if ( typeof debugModal === 'function' )
-                return debugModal(data.debug);
+                return debugModal(message);
         } break;
         default:
         {
         } break;
     }
 };
+AlertResponse.prototype.debug = function( message )
+{
+    if ( typeof debugModal === 'function' ) return debugModal(message);
+}
 
 let AR = new AlertResponse( "#alertResponseModal" );

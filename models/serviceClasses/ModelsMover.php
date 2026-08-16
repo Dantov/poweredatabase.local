@@ -21,10 +21,15 @@ class ModelsMover extends Common
 
     protected Files $files;
 
+    protected bool $allGood = false;
+    protected bool $hasErrors = false;
+
     protected $errors = [];
     protected $result = [];
 
     protected string $number3D = '';
+
+    protected array $allModelTypes = [];
 
     protected array $modelImages = [];
     protected array $modelFiles3d = [];
@@ -33,6 +38,10 @@ class ModelsMover extends Common
     public function __construct(  )
     {
         $this->files = Files::instance();
+        $allModelTypes = Service_data::find()->where(['tab'=>'model_type'])->asArray()->orderBy('name')->all();
+        foreach ($allModelTypes as $value)
+            $this->allModelTypes[] = mb_strtolower($value['name']);
+        
         parent::__construct();
     }
 
@@ -43,6 +52,10 @@ class ModelsMover extends Common
     public function getResult() : array
     {
         return $this->result;
+    }
+    public function setAllGood() : bool
+    {
+        return $this->allGood = true;
     }
 
     public function moveSKModel()
@@ -75,7 +88,6 @@ class ModelsMover extends Common
 
     public function readModelDir( &$modelDir, string $modelDirName )
     {
-        $hasJsonFile = false;
         $this->modelImages = [];
         $this->modelFiles3d = [];
         $this->filesforDescr = [];
@@ -83,115 +95,23 @@ class ModelsMover extends Common
         {
             if ( ( $file == '.' ) || ( $file == '..' ) ) continue;
 
-            /*
-            if ($file == 'model_data.json') {
-                //debug($modelDirName,'$modelDirName');
-                $hasJsonFile = true;
-                //$this->readModelData($modelDirName);
-            }
-            */
-
             $ext = $this->files->getExtension($file);
             if ( $ext == "jpg" || $ext == "jpeg" || $ext == "png" || $ext == "gif")
                 $this->modelImages[] = $file;
-            if ( $ext == "rar" || $ext == "zip" || $ext == "stl" || $ext == "mgx" || $ext == "3dm")
+            if ( $ext == "rar" || $ext == "zip" || $ext == "stl" || $ext == "mgx" || $ext == "3dm" || $ext == "7z")
                 $this->modelFiles3d[] = $file;
             if ( $ext == "txt")
                 $this->filesforDescr[] = $file;
         }
 
         $this->readModelData($modelDirName);
-        /*
-        if ( $hasJsonFile ) {
-            
-        } else {
-            $this->errors[$modelDirName] = 'No json file in this folder';
-        }
-        */
-    }
-
-    public function readModelData( string $modelDirName )
-    {
-        $path = self::STOCKSKOLD . $modelDirName;
-
-        /* JSON BLOCK
-        $filename = $path."/model_data.json";
-        if ( !$fp = fopen($filename, 'r') ) 
-             return $this->errors[$modelDirName] = 'cant open json file';
-
-        $contents = fread($fp, filesize($filename));
-        fclose($fp);
-
-        //debug( $contents,"contents" );
-
-        $dat = json_decode($contents,true);
-        if ( empty($dat) )
-            return $this->errors[$modelDirName] = 'cant read json file';
-        */
-        /*
-        debug( $dat, $modelDirName );
-        debug( $this->modelImages, "modelImages" );
-        debug( $this->modelFiles3d, "modelFiles3d");
-        exit('test');
-        */
-
-        $explDirName = explode('_',$modelDirName);
-        $num3D = $explDirName[0];
-        $mtypeRough = $explDirName[1];
-        $mt = trim(explode(' ', $mtypeRough)[0]);
-
-        $data = [
-            'number_3d'=>$num3D,
-            'model_type'=>$mt,
-            'create_date'=>'',
-            'mainimage'=>'',
-            'description'=>''
-        ];
-        $found = false;
-
-        foreach ( $this->modelImages as $mimage ) 
-        {
-            $imgdat = explode("_", $this->files->getFileName($mimage) );
-            if ( $imgdat[0] == 'mainimage' ) {
-                $data['mainimage'] = $mimage;
-                $data['create_date'] = $imgdat[1];
-            }
-        }
-
-        /*
-        $currDate = date("2025-01-02");
-        $date = '';
-        foreach ( $this->filesfordate as $file ) 
-        {
-            $fdate = date("Y-m-d", filemtime($path.'/'.$file));
-            if ( strtotime($fdate) < strtotime($currDate) )
-                $date = $fdate;
-        }
-        if ( empty($date) )
-        {
-            foreach ( $this->modelImages as $ifile ) 
-            {
-                $ifdate = date("Y-m-d", filemtime($path.'/'.$ifile));
-                if ( strtotime($ifdate) < strtotime($currDate) )
-                    $date = $ifdate;
-            }
-        }
-        */
-        //$data['create_date'] = empty($date)?'2016-01-06':$date;
-
-        foreach ( $this->filesforDescr as $dfile ) 
-        {
-            $data['description'] .= $this->readTextInfo($modelDirName, $dfile);
-        }
-
-        //debug( $data, "data",1);
-
-        $this->addStockModel($data, $path);
     }
 
     public function readTextInfo( string $modelDirName, string $filename ) : string
     {
         $path = self::STOCKSKOLD . $modelDirName;
+
+        $contents = '';
 
         $filename = $path.'/'.$filename;
         if ( !$fp = fopen($filename, 'r') ) 
@@ -201,20 +121,116 @@ class ModelsMover extends Common
         $contents = iconv('CP1251', 'UTF-8', $contents); // Set file decoding for read cyrilic
         fclose($fp);
 
-        //debug( $contents,"text contents",1);
-
+        /*
         if ( empty($contents) )
         {
              $this->errors[$filename] = 'text file is empty';
              return '';
         }
-
-        //debug( $dat, $modelDirName );
-        //debug( $this->modelFiles3d, "modelFiles3d");
-        //exit('test');
+        */
 
         return $contents;
     }
+
+    public function readModelData( string $modelDirName )
+    {
+        $path = self::STOCKSKOLD . $modelDirName;
+
+        $explDirName = preg_replace(['/-/','/_/','/!/','/\+/','/\(/','/\)/'], ' ', $modelDirName);
+        $explDirName = preg_replace('/\s\s+/', ' ', $explDirName);
+        $explDirName = explode(' ',$explDirName);
+
+        $num3D = $explDirName[0];
+
+        $data = [
+            'number_3d'=>$num3D,
+            'model_type'=>'',
+            'create_date'=>'',
+            'mainimage'=>'',
+            'description'=>'',
+            'errors' => [],
+        ];
+
+        if ( isset($explDirName[1]) ) 
+        {
+            $mtypeRough = $explDirName[1];
+            $mtypeRough = trim($mtypeRough,' ');
+
+            $data['model_type'] = mb_strtolower(explode(' ', $mtypeRough)[0]);
+
+            if ( !in_array($data['model_type'], $this->allModelTypes) )
+                $data['errors'][] = '<<'.$data['model_type'].'>> Model type is incorrect in << ' . $modelDirName . ' >>';
+            
+        } else {
+            $data['errors'][] = 'No Model type in << ' . $modelDirName . ' >>';
+        }
+        
+        $found = false;
+        foreach ( $this->modelImages as $ki => $mimage ) 
+        {
+            if ( !Validator::validateFileName($mimage) ){
+                $this->modelImages[$ki] = $newIName = preg_replace(['/,/', '/!/', '/\+/', '/\(/','/\)/'], '', $mimage);
+                rename($path.'/'.$mimage, $path.'/'.$newIName);
+                //$data['errors'][] = 'File << '. $mimage .' >>' . ' has incorrect chars!';
+            }
+
+            $imgdat = explode("_", $this->files->getFileName($mimage) );
+            if ( $imgdat[0] === 'mainimage' ) {
+                $found = true;
+                $data['mainimage'] = $mimage;
+
+                if ( isset($imgdat[1]) ) {
+                    if ( validateDate($imgdat[1]) ) $data['create_date'] = $imgdat[1];
+                } else {
+                    $data['errors'][] = 'date not found in << ' . $modelDirName .' >>';
+                }
+                break;
+            } 
+        }
+
+        if ( !$found ) 
+            $data['errors'][] = 'Main image does not found in << ' . $modelDirName .' >>';
+
+        if ( empty($data['create_date']) ) 
+            $data['errors'][] = 'Incorrect date in << ' . $modelDirName .' >>';
+
+        foreach ( $this->filesforDescr as $dfile ) 
+        {
+            $data['description'] .= $this->readTextInfo($modelDirName, $dfile) . "\n";
+        }
+
+        foreach ( $this->modelFiles3d as $kd => $file3d ) 
+        {
+            if ( !Validator::validateFileName($file3d) ) {
+                $this->modelFiles3d[$kd] = $newf3dName = preg_replace(['/,/', '/!/', '/\+/', '/\(/','/\)/'], '', $file3d);
+                rename($path.'/'.$file3d, $path.'/'.$newf3dName);
+                //$data['errors'][] = 'File << '. $file3d .' >>' . ' has incorrect chars!';
+            }
+        }
+
+
+        if ( $this->allGood ) 
+        {
+            //debug( $data, "data All Good",1);
+            //$this->result[] = $data;
+            $this->addStockModel($data, $path);
+        }
+
+        if ( !empty($data['errors']) )
+        {
+            $this->errors[] = $data;
+            $this->hasErrors = true;
+        }    
+    }
+
+    
+
+
+
+
+
+
+
 
     public function addStockModel( array $jsondata, string $path )
     {
@@ -245,7 +261,7 @@ class ModelsMover extends Common
             'gems' => [],
             'images' => [],
             '3dfiles' => [],
-            'materials' => [],
+            'data' => $jsondata,
         ];
 
         $newMatRow = new Materials();
@@ -257,11 +273,6 @@ class ModelsMover extends Common
         if ( $newMatRow->save(false) )
             $this->result[$newModelID]['materials'] = $newMatRow->getPrimaryKey();
 
-        /*
-        if ( !empty($jsondata['gems']) )
-            $this->result[$newModelID]['gems'] = $this->addGems($jsondata['gems'],$newModelID);
-        */
-
         if ( !empty($jsondata['mainimage']) && !empty($this->modelImages) )
             $this->result[$newModelID]['images'] = $this->addImages($jsondata['mainimage'],$newModelID,$path);
 
@@ -269,26 +280,7 @@ class ModelsMover extends Common
         if ( !empty($this->modelFiles3d) )
             $this->result[$newModelID]['3dfiles'] = $this->add3DFiles($this->modelFiles3d,$newModelID,$path);
     }
-    public function addGems($gems, $newModelID)
-    {
-        $result = [];
 
-        foreach ($gems as $gemsrow) 
-        {
-            $newGemsRow = new Gems();
-            $newGemsRow->name = $gemsrow['name'];
-            $newGemsRow->cut = $gemsrow['cut'];
-            $newGemsRow->value = $gemsrow['value'];
-            $newGemsRow->size = $gemsrow['size'];
-            $newGemsRow->color = $gemsrow['color'];
-            $newGemsRow->pos_id = $newModelID;
-            $newGemsRow->save(false);
-
-            $result[] = $newGemsRow->getPrimaryKey();
-        }
-
-        return $result;
-    }
     public function addImages($mainImgName, $newModelID, $path)
     {
         $result = [];
@@ -399,6 +391,28 @@ class ModelsMover extends Common
         return false;
     }
 
+    /*
+    public function addGems($gems, $newModelID)
+    {
+        $result = [];
+
+        foreach ($gems as $gemsrow) 
+        {
+            $newGemsRow = new Gems();
+            $newGemsRow->name = $gemsrow['name'];
+            $newGemsRow->cut = $gemsrow['cut'];
+            $newGemsRow->value = $gemsrow['value'];
+            $newGemsRow->size = $gemsrow['size'];
+            $newGemsRow->color = $gemsrow['color'];
+            $newGemsRow->pos_id = $newModelID;
+            $newGemsRow->save(false);
+
+            $result[] = $newGemsRow->getPrimaryKey();
+        }
+
+        return $result;
+    }
+    */
 
 
 

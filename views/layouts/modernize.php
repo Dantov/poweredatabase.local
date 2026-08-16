@@ -538,9 +538,6 @@ $this->registerJs($controller->jsCONSTANTS,View::POS_HEAD);
         <!--// Copyright -->
     </div>
 </div>
-<div id="alertResponseModal" aria-hidden="true" aria-labelledby="alertResponseModal" role="dialog" class="iziModal">
-    <div id="alertResponseContent" style="padding: 10px" class="hidden"></div>
-</div>
 <?php $this->endBody() ?>
 </body>
 </html>

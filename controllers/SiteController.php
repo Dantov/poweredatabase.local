@@ -411,28 +411,42 @@ class SiteController extends GeneralController
      */
     public function actionOptions()
     {
-        if (!User::hasPermission(69)) 
-            Yii::$app->response->redirect('/site')->send();
+        if ( !_DEV_MODE_ ) Yii::$app->response->redirect('/site')->send();
+        if (!User::hasPermission(69)) Yii::$app->response->redirect('/site')->send();
 
         $mm =  new \app\models\serviceClasses\ModelsMover();
         //$opt = new Options();
         //$opt->writeToFile();
         //$opt->readJson();
 
-        $mm->moveSKModel();
+        $request = Yii::$app->request;
+        if ($request->isAjax && $request->isPost)
+        {
+            $post = $request->post();
+            if (!isset($post['uid']) ) exit(json_encode( false ));
 
+            $mm->setAllGood();
+            $mm->moveSKModel();
+
+            $result = $mm->getResult();
+            $errors = $mm->getErrors();
+
+            debugAjax($result, 'result');
+            debugAjax($errors, 'errors', END_AB);
+            //exit(json_encode([$result,$errors], true) );
+        }
+
+        $mm->moveSKModel();
         $errors = $mm->getErrors();
-        $result = $mm->getResult();
 
         //debug($dat,'$dat',1);
-
         //$hufdata = $mm->getHufStockData(100,10);
         //$merged = $mm->mergeStock();
         //$merged = [];
         //$count = $mm->getHufStockCount();
         //$countAffected = $mm->getStockAffected();
 
-        $comp = compact(['errors','result']);
+        $comp = compact(['errors']);
         return $this->render('options',$comp);
     }
     /**
