@@ -1,6 +1,7 @@
 <?php
 namespace app\models;
 
+use Yii;
 use yii\widgets\LinkPager;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -43,7 +44,13 @@ class MyLinkPager extends LinkPager
             $linkOptions['class'] = 'page-link bg-info';
         }
 
-        return Html::tag($linkWrapTag, Html::a($label, $this->pagination->createUrl($page), $linkOptions), $options);
+        $url = $this->pagination->createUrl($page);
+        $urlExpl = explode("?", $url);
+        $urlExpl[0] .= Yii::$app->controller->id;
+        $url = implode("?", $urlExpl);
+
+        return Html::tag($linkWrapTag, Html::a($label, $url, $linkOptions), $options);
+        //return Html::tag($linkWrapTag, Html::a($label, $this->pagination->createUrl($page), $linkOptions), $options);
     }
 
 }
